@@ -22,6 +22,8 @@ import Profile from '@/pages/Profile';
 import BodyComposition from '@/pages/BodyComposition';
 import Coupons from '@/pages/Coupons';
 import Notices from '@/pages/Notices';
+import LessonHistory from '@/pages/LessonHistory';
+import LessonSignature from '@/pages/LessonSignature';
 import NotFound from '@/pages/NotFound';
 
 /** PWA 설치 프롬프트 배너 */
@@ -118,6 +120,8 @@ export default function App() {
           <Route path="/body-composition" element={<PrivateRoute><BodyComposition /></PrivateRoute>} />
           <Route path="/coupons" element={<PrivateRoute><Coupons /></PrivateRoute>} />
           <Route path="/notices" element={<PrivateRoute><Notices /></PrivateRoute>} />
+          <Route path="/lessons" element={<PrivateRoute><LessonHistory /></PrivateRoute>} />
+          <Route path="/lesson-sign/:classId" element={<PrivateRoute><LessonSignature /></PrivateRoute>} />
 
           {/* 404 */}
           <Route path="*" element={<NotFound />} />

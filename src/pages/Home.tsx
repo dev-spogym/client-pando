@@ -187,6 +187,23 @@ export default function Home() {
           )}
         </div>
 
+        {/* 서명 대기 배너 (수업 후 서명 필요 시) */}
+        {todayClasses.some((c: any) => c.lesson_status === 'completed' && !c.signature_url) && (
+          <button
+            onClick={() => navigate('/lessons')}
+            className="w-full p-3 bg-orange-50 border border-orange-200 rounded-card flex items-center gap-3 active:scale-[0.98] transition-all"
+          >
+            <div className="w-9 h-9 rounded-full bg-orange-100 flex items-center justify-center shrink-0">
+              <span className="text-orange-600 text-lg">✍️</span>
+            </div>
+            <div className="flex-1 text-left">
+              <p className="text-[13px] font-bold text-orange-700">서명 대기 수업이 있습니다</p>
+              <p className="text-[11px] text-orange-600">수업 확인 서명을 완료해주세요</p>
+            </div>
+            <ChevronRight className="w-5 h-5 text-orange-400" />
+          </button>
+        )}
+
         {/* 오늘 예약 수업 */}
         <div className="bg-surface rounded-card p-4 shadow-card">
           <div className="flex items-center justify-between mb-3">
@@ -195,10 +212,10 @@ export default function Home() {
               <span className="font-semibold text-sm">오늘 수업</span>
             </div>
             <button
-              onClick={() => navigate('/classes')}
+              onClick={() => navigate('/lessons')}
               className="text-xs text-primary font-medium flex items-center gap-0.5"
             >
-              전체보기 <ChevronRight className="w-4 h-4" />
+              내 수업 <ChevronRight className="w-4 h-4" />
             </button>
           </div>
 

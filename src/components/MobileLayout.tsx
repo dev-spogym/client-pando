@@ -2,7 +2,7 @@ import { Outlet, useLocation } from 'react-router-dom';
 import BottomTabBar from './BottomTabBar';
 
 /** 탭바를 숨길 경로 목록 */
-const HIDE_TAB_PATHS = ['/login', '/register'];
+const HIDE_TAB_PATHS = ['/login', '/register', '/lesson-sign'];
 
 /** 모바일 레이아웃 (헤더 + 탭바) */
 export default function MobileLayout() {

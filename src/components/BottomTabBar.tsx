@@ -23,8 +23,8 @@ export default function BottomTabBar() {
   };
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-40 bg-surface border-t border-line">
-      <div className="flex items-end justify-around max-w-lg mx-auto tab-bar-safe">
+    <nav className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-lg z-40 bg-surface border-t border-line">
+      <div className="flex items-end justify-around tab-bar-safe">
         {tabs.map((tab) => {
           const active = isActive(tab.path);
           const Icon = tab.icon;

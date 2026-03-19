@@ -10,11 +10,13 @@ export default function MobileLayout() {
   const hideTab = HIDE_TAB_PATHS.some((p) => location.pathname.startsWith(p));
 
   return (
-    <div className="min-h-screen max-w-lg mx-auto relative">
-      <main className={hideTab ? '' : 'page-content'}>
-        <Outlet />
-      </main>
-      {!hideTab && <BottomTabBar />}
+    <div className="min-h-screen flex justify-center bg-gray-100">
+      <div className="w-full max-w-lg min-h-screen bg-surface relative shadow-xl">
+        <main className={hideTab ? '' : 'page-content'}>
+          <Outlet />
+        </main>
+        {!hideTab && <BottomTabBar />}
+      </div>
     </div>
   );
 }

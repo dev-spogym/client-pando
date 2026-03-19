@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192" fill="none">
+  <rect width="192" height="192" rx="40" fill="#3B82F6"/>
+  <path d="M96 40C65.072 40 40 65.072 40 96s25.072 56 56 56 56-25.072 56-56S126.928 40 96 40zm0 16c22.091 0 40 17.909 40 40s-17.909 40-40 40-40-17.909-40-40 17.909-40 40-40z" fill="white" opacity="0.3"/>
+  <path d="M96 60c-19.882 0-36 16.118-36 36s16.118 36 36 36 36-16.118 36-36-16.118-36-36-36zm-4 52V80l28 16-28 16z" fill="white"/>
+  <text x="96" y="158" text-anchor="middle" font-family="sans-serif" font-size="20" font-weight="bold" fill="white">스포짐</text>
+</svg>

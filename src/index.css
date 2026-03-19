@@ -1,0 +1,78 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* 모바일 기본 스타일 */
+:root {
+  --safe-top: env(safe-area-inset-top);
+  --safe-bottom: env(safe-area-inset-bottom);
+  --tab-height: 64px;
+}
+
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+html {
+  font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  @apply bg-surface-secondary text-content;
+  overscroll-behavior-y: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* 스크롤바 숨김 (모바일) */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Pull to refresh 영역 */
+.pull-to-refresh {
+  overscroll-behavior-y: contain;
+}
+
+/* PWA 설치 배너 애니메이션 */
+@keyframes slideUp {
+  from { transform: translateY(100%); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.slide-up {
+  animation: slideUp 0.3s ease-out;
+}
+
+/* 카드 터치 피드백 */
+.touch-card {
+  @apply transition-transform duration-100 active:scale-[0.98];
+}
+
+/* QR 코드 컨테이너 */
+.qr-container {
+  @apply bg-white p-6 rounded-2xl shadow-lg;
+}
+
+/* 탭바 안전 영역 */
+.tab-bar-safe {
+  padding-bottom: calc(8px + var(--safe-bottom));
+}
+
+/* 페이지 하단 탭바 여백 */
+.page-content {
+  padding-bottom: calc(var(--tab-height) + var(--safe-bottom) + 16px);
+}
+
+/* 진행률 바 */
+.progress-bar {
+  @apply h-2 rounded-full bg-line-light overflow-hidden;
+}
+.progress-bar-fill {
+  @apply h-full rounded-full transition-all duration-500 ease-out;
+}

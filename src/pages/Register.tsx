@@ -75,27 +75,43 @@ export default function Register() {
     const cleanPhone = phone.replace(/-/g, '');
     const email = `${cleanPhone}@member.spogym.app`;
 
-    // Supabase Auth 계정 생성
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: { member_id: memberId, phone: cleanPhone },
-      },
-    });
+    // Admin API로 계정 생성 (공개 signUp은 이메일 도메인 검증으로 실패하므로)
+    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+    const serviceRoleKey = import.meta.env.VITE_SUPABASE_SERVICE_ROLE_KEY;
 
-    if (error) {
-      if (error.message.includes('already registered')) {
-        toast.error('이미 가입된 번호입니다. 로그인 해주세요.');
-      } else {
-        toast.error('가입 중 오류가 발생했습니다.');
+    try {
+      const res = await fetch(`${supabaseUrl}/auth/v1/admin/users`, {
+        method: 'POST',
+        headers: {
+          'apikey': serviceRoleKey,
+          'Authorization': `Bearer ${serviceRoleKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email,
+          password,
+          email_confirm: true,
+          user_metadata: { member_id: memberId, phone: cleanPhone },
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        if (data.msg?.includes('already been registered')) {
+          toast.error('이미 가입된 번호입니다. 로그인 해주세요.');
+        } else {
+          toast.error('가입 중 오류가 발생했습니다.');
+        }
+        setLoading(false);
+        return;
       }
-      setLoading(false);
-      return;
-    }
 
-    toast.success('가입 완료! 로그인 해주세요.');
-    navigate('/login', { replace: true });
+      toast.success('가입 완료! 로그인 해주세요.');
+      navigate('/login', { replace: true });
+    } catch {
+      toast.error('네트워크 오류가 발생했습니다.');
+    }
     setLoading(false);
   };
 

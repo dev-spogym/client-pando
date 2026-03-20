@@ -21,7 +21,7 @@ interface TodayClass {
 interface NoticeItem {
   id: number;
   title: string;
-  createdAt: string;
+  created_at: string;
 }
 
 /** 홈 대시보드 */
@@ -84,11 +84,11 @@ export default function Home() {
     // 공지사항 조회
     const { data: noticeData } = await supabase
       .from('notices')
-      .select('id, title, createdAt')
-      .eq('branchId', member.branchId)
-      .eq('isPublished', true)
-      .order('isPinned', { ascending: false })
-      .order('createdAt', { ascending: false })
+      .select('id, title, created_at')
+      .eq('branch_id', member.branchId)
+      .eq('is_published', true)
+      .order('is_pinned', { ascending: false })
+      .order('created_at', { ascending: false })
       .limit(5);
 
     if (noticeData) setNotices(noticeData);

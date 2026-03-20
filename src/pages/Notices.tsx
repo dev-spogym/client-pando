@@ -9,10 +9,10 @@ interface NoticeItem {
   id: number;
   title: string;
   content: string;
-  authorName: string;
-  isPinned: boolean;
-  publishedAt: string | null;
-  createdAt: string;
+  author_name: string;
+  is_pinned: boolean;
+  published_at: string | null;
+  created_at: string;
 }
 
 /** 공지사항 페이지 */
@@ -34,11 +34,11 @@ export default function Notices() {
 
     const { data } = await supabase
       .from('notices')
-      .select('id, title, content, authorName, isPinned, publishedAt, createdAt')
-      .eq('branchId', member.branchId)
-      .eq('isPublished', true)
-      .order('isPinned', { ascending: false })
-      .order('createdAt', { ascending: false })
+      .select('id, title, content, author_name, is_pinned, published_at, created_at')
+      .eq('branch_id', member.branchId)
+      .eq('is_published', true)
+      .order('is_pinned', { ascending: false })
+      .order('created_at', { ascending: false })
       .limit(30);
 
     setNotices(data || []);
@@ -75,18 +75,18 @@ export default function Notices() {
                     onClick={() => setExpandedId(isExpanded ? null : notice.id)}
                     className="w-full px-4 py-3.5 flex items-center gap-3 text-left active:bg-surface-secondary transition-colors"
                   >
-                    {notice.isPinned && (
+                    {notice.is_pinned && (
                       <Pin className="w-4 h-4 text-state-error flex-shrink-0" />
                     )}
                     <div className="flex-1 min-w-0">
                       <h3 className={cn(
                         'text-sm font-medium truncate',
-                        notice.isPinned && 'font-semibold'
+                        notice.is_pinned && 'font-semibold'
                       )}>
                         {notice.title}
                       </h3>
                       <p className="text-xs text-content-tertiary mt-0.5">
-                        {formatDateKo(notice.publishedAt || notice.createdAt)} · {notice.authorName}
+                        {formatDateKo(notice.published_at || notice.created_at)} · {notice.author_name}
                       </p>
                     </div>
                     <ChevronRight className={cn(

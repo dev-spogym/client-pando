@@ -12,8 +12,6 @@ interface ClassInfo {
   staffName: string;
   startTime: string;
   endTime: string;
-  lesson_status: string;
-  signature_url: string | null;
 }
 
 // ─── 서명 캔버스 컴포넌트 ───────────────────────────────────
@@ -127,24 +125,28 @@ export default function LessonSignature() {
   const [saving, setSaving] = useState(false);
   const [done, setDone] = useState(false);
 
+  // localStorage에 저장된 서명 확인
+  const storageKey = classId ? `lesson_signature_${classId}` : null;
+  const savedSignature = storageKey ? localStorage.getItem(storageKey) : null;
+
   // 수업 정보 로드
   useEffect(() => {
     if (!classId) return;
-    const fetch = async () => {
+    const fetchClass = async () => {
       setLoading(true);
       const { data } = await supabase
         .from('classes')
-        .select('*')
+        .select('id, title, staffName, startTime, endTime')
         .eq('id', classId)
         .single();
       if (data) setClassInfo(data as ClassInfo);
       setLoading(false);
     };
-    fetch();
+    fetchClass();
   }, [classId]);
 
-  // 서명 제출
-  const handleSubmit = useCallback(async () => {
+  // 서명 제출 (localStorage에 임시 저장)
+  const handleSubmit = useCallback(() => {
     if (!signatureDataUrl || !classInfo) {
       toast.error('서명을 해주세요.');
       return;
@@ -152,45 +154,21 @@ export default function LessonSignature() {
 
     setSaving(true);
     try {
-      // Supabase Storage에 서명 이미지 업로드
-      const fileName = `signatures/member_${classInfo.id}_${Date.now()}.png`;
-      const blob = await (await fetch(signatureDataUrl)).blob();
-      const { error: uploadError } = await supabase.storage
-        .from('files')
-        .upload(fileName, blob, { contentType: 'image/png', upsert: true });
-
-      let signatureUrl: string | null = null;
-      if (!uploadError) {
-        const { data: urlData } = supabase.storage.from('files').getPublicUrl(fileName);
-        signatureUrl = urlData.publicUrl;
+      if (storageKey) {
+        localStorage.setItem(storageKey, JSON.stringify({
+          classId: classInfo.id,
+          signatureDataUrl,
+          signedAt: new Date().toISOString(),
+        }));
       }
-
-      // DB 업데이트
-      const { error } = await supabase
-        .from('classes')
-        .update({
-          signature_url: signatureUrl ?? signatureDataUrl, // Storage 실패 시 data URL 저장
-          signature_at: new Date().toISOString(),
-          lesson_status: 'completed',
-        })
-        .eq('id', classInfo.id);
-
-      if (error) {
-        toast.error('서명 저장에 실패했습니다.');
-        setSaving(false);
-        return;
-      }
-
       setDone(true);
       toast.success('서명이 완료되었습니다!');
-
-      // 2초 후 이전 화면으로
       setTimeout(() => navigate('/lessons', { replace: true }), 2000);
     } catch {
       toast.error('오류가 발생했습니다.');
     }
     setSaving(false);
-  }, [signatureDataUrl, classInfo, navigate]);
+  }, [signatureDataUrl, classInfo, navigate, storageKey]);
 
   const fmtDateTime = (iso: string) => {
     const d = new Date(iso);
@@ -215,8 +193,8 @@ export default function LessonSignature() {
     );
   }
 
-  // 이미 서명 완료
-  if (classInfo.signature_url) {
+  // 이미 서명 완료 (localStorage 기준)
+  if (savedSignature) {
     return (
       <div>
         <div className="px-4 pt-8 text-center">
@@ -225,9 +203,6 @@ export default function LessonSignature() {
           </div>
           <h2 className="text-[18px] font-bold text-gray-900 mb-2">서명 완료</h2>
           <p className="text-[14px] text-gray-500 mb-6">이 수업의 서명이 이미 완료되었습니다.</p>
-          <div className="border border-gray-200 rounded-xl overflow-hidden mb-6">
-            <img src={classInfo.signature_url} alt="서명" className="w-full h-[120px] object-contain bg-white p-2" />
-          </div>
           <button
             onClick={() => navigate('/lessons', { replace: true })}
             className="w-full py-3 bg-gray-100 text-gray-700 rounded-xl text-[14px] font-semibold"

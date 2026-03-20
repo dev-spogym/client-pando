@@ -4,9 +4,10 @@ import { Toaster } from 'sonner';
 
 import MobileLayout from '@/components/MobileLayout';
 import PrivateRoute from '@/components/PrivateRoute';
+import TrainerRoute from '@/components/TrainerRoute';
 import { useAuthStore } from '@/stores/authStore';
 
-// 페이지
+// 회원 페이지
 import Login from '@/pages/Login';
 import Register from '@/pages/Register';
 import Home from '@/pages/Home';
@@ -24,7 +25,19 @@ import Coupons from '@/pages/Coupons';
 import Notices from '@/pages/Notices';
 import LessonHistory from '@/pages/LessonHistory';
 import LessonSignature from '@/pages/LessonSignature';
+import WorkoutLog from '@/pages/WorkoutLog';
+import WorkoutAnalysis from '@/pages/WorkoutAnalysis';
+import ExerciseGuide from '@/pages/ExerciseGuide';
+import DietLog from '@/pages/DietLog';
+import CenterInfo from '@/pages/CenterInfo';
 import NotFound from '@/pages/NotFound';
+
+// 트레이너 페이지
+import TrainerHome from '@/pages/trainer/TrainerHome';
+import TrainerMembers from '@/pages/trainer/TrainerMembers';
+import TrainerMemberDetail from '@/pages/trainer/TrainerMemberDetail';
+import TrainerSchedule from '@/pages/trainer/TrainerSchedule';
+import TrainerFeedback from '@/pages/trainer/TrainerFeedback';
 
 /** PWA 설치 프롬프트 배너 */
 function InstallBanner() {
@@ -106,7 +119,7 @@ export default function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
 
-          {/* 인증 필요 라우트 */}
+          {/* 회원 인증 필요 라우트 */}
           <Route path="/" element={<PrivateRoute><Home /></PrivateRoute>} />
           <Route path="/qr" element={<PrivateRoute><QrCheckin /></PrivateRoute>} />
           <Route path="/attendance" element={<PrivateRoute><AttendanceHistory /></PrivateRoute>} />
@@ -122,6 +135,18 @@ export default function App() {
           <Route path="/notices" element={<PrivateRoute><Notices /></PrivateRoute>} />
           <Route path="/lessons" element={<PrivateRoute><LessonHistory /></PrivateRoute>} />
           <Route path="/lesson-sign/:classId" element={<PrivateRoute><LessonSignature /></PrivateRoute>} />
+          <Route path="/workout-log" element={<PrivateRoute><WorkoutLog /></PrivateRoute>} />
+          <Route path="/workout-analysis" element={<PrivateRoute><WorkoutAnalysis /></PrivateRoute>} />
+          <Route path="/exercise-guide" element={<PrivateRoute><ExerciseGuide /></PrivateRoute>} />
+          <Route path="/diet" element={<PrivateRoute><DietLog /></PrivateRoute>} />
+          <Route path="/center" element={<PrivateRoute><CenterInfo /></PrivateRoute>} />
+
+          {/* 트레이너 전용 라우트 */}
+          <Route path="/trainer" element={<TrainerRoute><TrainerHome /></TrainerRoute>} />
+          <Route path="/trainer/members" element={<TrainerRoute><TrainerMembers /></TrainerRoute>} />
+          <Route path="/trainer/members/:id" element={<TrainerRoute><TrainerMemberDetail /></TrainerRoute>} />
+          <Route path="/trainer/schedule" element={<TrainerRoute><TrainerSchedule /></TrainerRoute>} />
+          <Route path="/trainer/feedback" element={<TrainerRoute><TrainerFeedback /></TrainerRoute>} />
 
           {/* 404 */}
           <Route path="*" element={<NotFound />} />

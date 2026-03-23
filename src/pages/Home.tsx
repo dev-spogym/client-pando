@@ -31,6 +31,7 @@ export default function Home() {
   const [todayClasses, setTodayClasses] = useState<TodayClass[]>([]);
   const [monthAttendance, setMonthAttendance] = useState(0);
   const [attendanceDays, setAttendanceDays] = useState<Set<number>>(new Set());
+  const [attendanceTypes, setAttendanceTypes] = useState<Map<number, string>>(new Map());
   const [notices, setNotices] = useState<NoticeItem[]>([]);
   const [noticeIndex, setNoticeIndex] = useState(0);
 
@@ -70,7 +71,7 @@ export default function Home() {
     // 이번 달 출석 조회
     const { data: attendance } = await supabase
       .from('attendance')
-      .select('id, checkInAt')
+      .select('id, checkInAt, type')
       .eq('memberId', member.id)
       .gte('checkInAt', monthStart)
       .lte('checkInAt', monthEnd);
@@ -79,6 +80,12 @@ export default function Home() {
       setMonthAttendance(attendance.length);
       const days = new Set(attendance.map((a) => new Date(a.checkInAt).getDate()));
       setAttendanceDays(days);
+      const typeMap = new Map<number, string>();
+      attendance.forEach((a) => {
+        const day = new Date(a.checkInAt).getDate();
+        typeMap.set(day, a.type || 'REGULAR');
+      });
+      setAttendanceTypes(typeMap);
     }
 
     // 공지사항 조회
@@ -310,13 +317,15 @@ export default function Home() {
               const isToday = day === today.getDate();
               const hasAttendance = attendanceDays.has(day);
               const isFuture = day > today.getDate();
+              const aType = attendanceTypes.get(day);
+              const typeBg = aType === 'PT' ? 'bg-primary' : aType === 'GX' ? 'bg-accent' : 'bg-state-success';
 
               return (
                 <div
                   key={day}
                   className={cn(
                     'aspect-square rounded-md flex items-center justify-center text-[11px]',
-                    hasAttendance && 'bg-primary text-white font-bold',
+                    hasAttendance && `${typeBg} text-white font-bold`,
                     isToday && !hasAttendance && 'ring-1 ring-primary text-primary font-bold',
                     !hasAttendance && !isToday && !isFuture && 'text-content-secondary',
                     isFuture && 'text-content-tertiary/40',
@@ -326,6 +335,13 @@ export default function Home() {
                 </div>
               );
             })}
+          </div>
+
+          {/* 범례 */}
+          <div className="mt-3 flex items-center justify-center gap-4 text-[10px] text-content-tertiary">
+            <span className="flex items-center gap-1"><div className="w-2.5 h-2.5 rounded-sm bg-primary" />PT</span>
+            <span className="flex items-center gap-1"><div className="w-2.5 h-2.5 rounded-sm bg-accent" />GX</span>
+            <span className="flex items-center gap-1"><div className="w-2.5 h-2.5 rounded-sm bg-state-success" />일반</span>
           </div>
         </div>
 

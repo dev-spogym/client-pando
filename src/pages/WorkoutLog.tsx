@@ -1,9 +1,11 @@
-import { useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   ArrowLeft, ChevronLeft, ChevronRight, Plus, X, Clock, Flame, Trash2,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { supabase } from '@/lib/supabase';
+import { useAuthStore } from '@/stores/authStore';
 
 /** 운동 부위 카테고리 */
 const CATEGORIES = ['가슴', '등', '어깨', '하체', '팔', '코어'] as const;
@@ -15,44 +17,58 @@ interface WorkoutSet {
 }
 
 interface WorkoutEntry {
-  id: string;
+  id: number;
   category: Category;
   name: string;
   sets: WorkoutSet[];
   duration: number; // 분
 }
 
-interface DayLog {
-  date: string;
-  entries: WorkoutEntry[];
-}
-
-/** localStorage 키 */
-const STORAGE_KEY = 'spogym-workout-logs';
-
 function getDateStr(date: Date): string {
   return date.toISOString().split('T')[0];
 }
 
-function loadLogs(): Record<string, DayLog> {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    return raw ? JSON.parse(raw) : {};
-  } catch {
-    return {};
+/** exercise_logs 행을 WorkoutEntry로 변환 */
+function rowToEntry(row: Record<string, unknown>): WorkoutEntry {
+  let sets: WorkoutSet[] = [];
+  const notes = row.notes as string | null;
+  if (notes) {
+    try {
+      const parsed = JSON.parse(notes);
+      if (parsed.sets) sets = parsed.sets;
+    } catch { /* notes가 JSON이 아닌 경우 무시 */ }
   }
-}
+  if (sets.length === 0) {
+    sets = [{ weight: (row.weight as number) || 0, reps: (row.reps as number) || 0 }];
+  }
 
-function saveLogs(logs: Record<string, DayLog>) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(logs));
+  let category: Category = '가슴';
+  if (notes) {
+    try {
+      const parsed = JSON.parse(notes);
+      if (parsed.category && CATEGORIES.includes(parsed.category)) {
+        category = parsed.category;
+      }
+    } catch { /* 무시 */ }
+  }
+
+  return {
+    id: row.id as number,
+    category,
+    name: (row.exercise_name as string) || '',
+    sets,
+    duration: (row.duration as number) || 0,
+  };
 }
 
 /** 운동일지 페이지 */
 export default function WorkoutLog() {
   const navigate = useNavigate();
+  const { member } = useAuthStore();
   const [currentDate, setCurrentDate] = useState(new Date());
   const [showModal, setShowModal] = useState(false);
-  const [logs, setLogs] = useState<Record<string, DayLog>>(loadLogs);
+  const [entries, setEntries] = useState<WorkoutEntry[]>([]);
+  const [loading, setLoading] = useState(true);
 
   // 모달 폼 상태
   const [formCategory, setFormCategory] = useState<Category>('가슴');
@@ -61,8 +77,30 @@ export default function WorkoutLog() {
   const [formDuration, setFormDuration] = useState(0);
 
   const dateStr = getDateStr(currentDate);
-  const dayLog = logs[dateStr];
-  const entries = dayLog?.entries || [];
+
+  /** DB에서 해당 날짜 운동 기록 조회 */
+  const fetchEntries = useCallback(async () => {
+    if (!member) return;
+    setLoading(true);
+
+    const dayStart = `${dateStr}T00:00:00`;
+    const dayEnd = `${dateStr}T23:59:59`;
+
+    const { data } = await supabase
+      .from('exercise_logs')
+      .select('*')
+      .eq('member_id', member.id)
+      .gte('logged_at', dayStart)
+      .lte('logged_at', dayEnd)
+      .order('logged_at');
+
+    setEntries(data ? data.map(rowToEntry) : []);
+    setLoading(false);
+  }, [member, dateStr]);
+
+  useEffect(() => {
+    fetchEntries();
+  }, [fetchEntries]);
 
   const prevDay = () => {
     const d = new Date(currentDate);
@@ -89,41 +127,40 @@ export default function WorkoutLog() {
     setFormDuration(0);
   };
 
-  const handleAddEntry = () => {
-    if (!formName.trim()) return;
+  const handleAddEntry = async () => {
+    if (!formName.trim() || !member) return;
 
-    const newEntry: WorkoutEntry = {
-      id: `${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
-      category: formCategory,
-      name: formName.trim(),
-      sets: formSets.filter((s) => s.weight > 0 || s.reps > 0),
+    const validSets = formSets.filter((s) => s.weight > 0 || s.reps > 0);
+    const setsToSave = validSets.length > 0 ? validSets : [{ weight: 0, reps: 0 }];
+
+    const now = new Date();
+    const loggedAt = dateStr === getDateStr(now)
+      ? now.toISOString()
+      : `${dateStr}T${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:00`;
+
+    const { error } = await supabase.from('exercise_logs').insert({
+      member_id: member.id,
+      branch_id: member.branchId,
+      exercise_name: formName.trim(),
+      sets: setsToSave.length,
+      reps: setsToSave[0]?.reps || 0,
+      weight: setsToSave[0]?.weight || 0,
       duration: formDuration,
-    };
+      logged_at: loggedAt,
+      notes: JSON.stringify({ category: formCategory, sets: setsToSave }),
+    });
 
-    if (newEntry.sets.length === 0) {
-      newEntry.sets = [{ weight: 0, reps: 0 }];
+    if (!error) {
+      await fetchEntries();
+      setShowModal(false);
+      resetForm();
     }
-
-    const updated = { ...logs };
-    if (!updated[dateStr]) {
-      updated[dateStr] = { date: dateStr, entries: [] };
-    }
-    updated[dateStr].entries.push(newEntry);
-    setLogs(updated);
-    saveLogs(updated);
-    setShowModal(false);
-    resetForm();
   };
 
-  const handleDeleteEntry = (entryId: string) => {
-    const updated = { ...logs };
-    if (updated[dateStr]) {
-      updated[dateStr].entries = updated[dateStr].entries.filter((e) => e.id !== entryId);
-      if (updated[dateStr].entries.length === 0) {
-        delete updated[dateStr];
-      }
-      setLogs(updated);
-      saveLogs(updated);
+  const handleDeleteEntry = async (entryId: number) => {
+    const { error } = await supabase.from('exercise_logs').delete().eq('id', entryId);
+    if (!error) {
+      setEntries((prev) => prev.filter((e) => e.id !== entryId));
     }
   };
 
@@ -203,7 +240,9 @@ export default function WorkoutLog() {
 
       {/* 운동 기록 목록 */}
       <div className="px-4 mt-4 pb-24">
-        {entries.length === 0 ? (
+        {loading ? (
+          <div className="text-center py-12 text-content-tertiary text-sm">불러오는 중...</div>
+        ) : entries.length === 0 ? (
           <div className="text-center py-12">
             <Flame className="w-12 h-12 text-content-tertiary/30 mx-auto mb-3" />
             <p className="text-content-tertiary text-sm">운동 기록이 없습니다</p>

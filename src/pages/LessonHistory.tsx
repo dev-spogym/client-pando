@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { BookOpen, Clock } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useAuthStore } from '../stores/authStore';
-// 레이아웃은 App.tsx의 MobileLayout Outlet으로 자동 적용
 
 // ─── 타입 ───────────────────────────────────────────────────
 interface ClassRecord {
@@ -13,7 +12,7 @@ interface ClassRecord {
   endTime: string;
   room: string | null;
   type: string;
-  attendedAt: string; // attendance.checkInAt
+  lesson_status: string | null;
 }
 
 // ─── 컴포넌트 ───────────────────────────────────────────────
@@ -28,50 +27,37 @@ export default function LessonHistory() {
     const fetchLessons = async () => {
       setLoading(true);
 
-      // 1단계: attendance 테이블에서 회원의 출석 기록 조회
-      const { data: attendanceData } = await supabase
-        .from('attendance')
-        .select('classId, checkInAt')
-        .eq('memberId', member.id)
-        .not('classId', 'is', null)
-        .order('checkInAt', { ascending: false })
+      // 회원에게 배정된 수업 조회 (member_id 기준)
+      const { data: myClasses } = await supabase
+        .from('classes')
+        .select('id, title, staffName, startTime, endTime, room, type, lesson_status')
+        .eq('member_id', member.id)
+        .order('startTime', { ascending: false })
         .limit(50);
 
-      if (!attendanceData || attendanceData.length === 0) {
-        setLessons([]);
-        setLoading(false);
-        return;
-      }
-
-      // 2단계: 해당 class ID들로 classes 조회
-      const classIds = attendanceData.map((a: any) => a.classId);
-      const { data: classesData } = await supabase
+      // 지점 전체 GX 수업도 포함 (예약 가능 수업)
+      const now = new Date().toISOString();
+      const { data: gxClasses } = await supabase
         .from('classes')
-        .select('id, title, staffName, startTime, endTime, room, type')
-        .in('id', classIds);
+        .select('id, title, staffName, startTime, endTime, room, type, lesson_status')
+        .eq('branchId', member.branchId)
+        .neq('type', 'PT')
+        .is('member_id', null)
+        .gte('startTime', now)
+        .order('startTime')
+        .limit(20);
 
-      if (classesData) {
-        // attendance의 checkInAt과 classes 정보를 합쳐서 목록 구성
-        const attendanceMap = new Map(attendanceData.map((a: any) => [a.classId, a.checkInAt]));
-        const combined: ClassRecord[] = classesData.map((c: any) => ({
-          id: c.id,
-          title: c.title,
-          staffName: c.staffName,
-          startTime: c.startTime,
-          endTime: c.endTime,
-          room: c.room,
-          type: c.type,
-          attendedAt: attendanceMap.get(c.id) ?? c.startTime,
-        }));
-        // 최신순 정렬
-        combined.sort((a, b) => new Date(b.attendedAt).getTime() - new Date(a.attendedAt).getTime());
-        setLessons(combined);
-      }
+      const classMap = new Map<number, ClassRecord>();
+      (myClasses || []).forEach(c => classMap.set(c.id, c));
+      (gxClasses || []).forEach(c => { if (!classMap.has(c.id)) classMap.set(c.id, c); });
 
+      const combined = Array.from(classMap.values());
+      combined.sort((a, b) => new Date(b.startTime).getTime() - new Date(a.startTime).getTime());
+      setLessons(combined);
       setLoading(false);
     };
     fetchLessons();
-  }, [member?.id]);
+  }, [member?.id, member?.branchId]);
 
   const now = new Date();
   const upcoming = lessons.filter(l => new Date(l.startTime) >= now);

@@ -23,6 +23,7 @@ import Profile from '@/pages/Profile';
 import BodyComposition from '@/pages/BodyComposition';
 import Coupons from '@/pages/Coupons';
 import Notices from '@/pages/Notices';
+import Notifications from '@/pages/Notifications';
 import LessonHistory from '@/pages/LessonHistory';
 import LessonSignature from '@/pages/LessonSignature';
 import WorkoutLog from '@/pages/WorkoutLog';
@@ -30,7 +31,22 @@ import WorkoutAnalysis from '@/pages/WorkoutAnalysis';
 import ExerciseGuide from '@/pages/ExerciseGuide';
 import DietLog from '@/pages/DietLog';
 import CenterInfo from '@/pages/CenterInfo';
+import Waitlist from '@/pages/Waitlist';
+import InstructorDetail from '@/pages/InstructorDetail';
+import ClassFeedback from '@/pages/ClassFeedback';
+import Onboarding from '@/pages/Onboarding';
+import RenewalPlans from '@/pages/RenewalPlans';
+import Settings from '@/pages/Settings';
+import Shop from '@/pages/Shop';
+import ProductDetail from '@/pages/ProductDetail';
+import Checkout from '@/pages/Checkout';
+import PersonalPayment from '@/pages/PersonalPayment';
+import PaymentReceipt from '@/pages/PaymentReceipt';
+import TermsCenter from '@/pages/TermsCenter';
+import ConsentManagement from '@/pages/ConsentManagement';
+import Withdrawal from '@/pages/Withdrawal';
 import NotFound from '@/pages/NotFound';
+import MemberPublishingGallery from '@/publishing/member';
 
 // 트레이너 페이지
 import TrainerHome from '@/pages/trainer/TrainerHome';
@@ -113,6 +129,8 @@ export default function App() {
   return (
     <BrowserRouter>
       <Routes>
+        <Route path="/publishing/member" element={<MemberPublishingGallery />} />
+
         {/* 레이아웃 적용 라우트 */}
         <Route element={<MobileLayout />}>
           {/* 공개 라우트 */}
@@ -128,13 +146,29 @@ export default function App() {
           <Route path="/golf-bay" element={<PrivateRoute><GolfBayReservation /></PrivateRoute>} />
           <Route path="/membership" element={<PrivateRoute><Membership /></PrivateRoute>} />
           <Route path="/membership/:id" element={<PrivateRoute><MembershipDetail /></PrivateRoute>} />
+          <Route path="/shop" element={<PrivateRoute><Shop /></PrivateRoute>} />
+          <Route path="/shop/:productId" element={<PrivateRoute><ProductDetail /></PrivateRoute>} />
+          <Route path="/checkout/:productId" element={<PrivateRoute><Checkout /></PrivateRoute>} />
+          <Route path="/checkout/manual" element={<PrivateRoute><Checkout /></PrivateRoute>} />
+          <Route path="/payment/personal" element={<PrivateRoute><PersonalPayment /></PrivateRoute>} />
           <Route path="/payments" element={<PrivateRoute><PaymentHistory /></PrivateRoute>} />
+          <Route path="/payments/:paymentId" element={<PrivateRoute><PaymentReceipt /></PrivateRoute>} />
           <Route path="/profile" element={<PrivateRoute><Profile /></PrivateRoute>} />
           <Route path="/body-composition" element={<PrivateRoute><BodyComposition /></PrivateRoute>} />
           <Route path="/coupons" element={<PrivateRoute><Coupons /></PrivateRoute>} />
+          <Route path="/notifications" element={<PrivateRoute><Notifications /></PrivateRoute>} />
           <Route path="/notices" element={<PrivateRoute><Notices /></PrivateRoute>} />
           <Route path="/lessons" element={<PrivateRoute><LessonHistory /></PrivateRoute>} />
           <Route path="/lesson-sign/:classId" element={<PrivateRoute><LessonSignature /></PrivateRoute>} />
+          <Route path="/classes/:id/feedback" element={<PrivateRoute><ClassFeedback /></PrivateRoute>} />
+          <Route path="/waitlist" element={<PrivateRoute><Waitlist /></PrivateRoute>} />
+          <Route path="/instructors/:id" element={<PrivateRoute><InstructorDetail /></PrivateRoute>} />
+          <Route path="/onboarding" element={<PrivateRoute><Onboarding /></PrivateRoute>} />
+          <Route path="/renewal" element={<PrivateRoute><RenewalPlans /></PrivateRoute>} />
+          <Route path="/settings" element={<PrivateRoute><Settings /></PrivateRoute>} />
+          <Route path="/legal" element={<PrivateRoute><TermsCenter /></PrivateRoute>} />
+          <Route path="/consents" element={<PrivateRoute><ConsentManagement /></PrivateRoute>} />
+          <Route path="/withdrawal" element={<PrivateRoute><Withdrawal /></PrivateRoute>} />
           <Route path="/workout-log" element={<PrivateRoute><WorkoutLog /></PrivateRoute>} />
           <Route path="/workout-analysis" element={<PrivateRoute><WorkoutAnalysis /></PrivateRoute>} />
           <Route path="/exercise-guide" element={<PrivateRoute><ExerciseGuide /></PrivateRoute>} />

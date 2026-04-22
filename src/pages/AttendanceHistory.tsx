@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { ArrowLeft, ChevronLeft, ChevronRight, Clock } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '@/stores/authStore';
+import { getPreviewAttendanceRecords, isPreviewMode } from '@/lib/preview';
 import { supabase } from '@/lib/supabase';
 import { cn, formatTime } from '@/lib/utils';
 
@@ -32,6 +33,12 @@ export default function AttendanceHistory() {
   const fetchAttendance = async () => {
     if (!member) return;
     setLoading(true);
+
+    if (isPreviewMode()) {
+      setRecords(getPreviewAttendanceRecords());
+      setLoading(false);
+      return;
+    }
 
     const start = new Date(year, month, 1).toISOString();
     const end = new Date(year, month + 1, 0, 23, 59, 59).toISOString();

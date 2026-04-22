@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { ArrowLeft, Pin, ChevronRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '@/stores/authStore';
+import { getPreviewNotices, isPreviewMode } from '@/lib/preview';
 import { supabase } from '@/lib/supabase';
 import { cn, formatDateKo } from '@/lib/utils';
 
@@ -31,6 +32,12 @@ export default function Notices() {
   const fetchNotices = async () => {
     if (!member) return;
     setLoading(true);
+
+    if (isPreviewMode()) {
+      setNotices(getPreviewNotices());
+      setLoading(false);
+      return;
+    }
 
     const { data } = await supabase
       .from('notices')

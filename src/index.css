@@ -6,7 +6,8 @@
 :root {
   --safe-top: env(safe-area-inset-top);
   --safe-bottom: env(safe-area-inset-bottom);
-  --tab-height: 64px;
+  --tab-height: 88px;
+  --bottom-action-height: 96px;
 }
 
 * {
@@ -17,6 +18,8 @@ html {
   font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  scroll-padding-top: calc(var(--safe-top) + 72px);
+  scroll-padding-bottom: calc(var(--safe-bottom) + var(--tab-height) + 20px);
 }
 
 body {
@@ -66,7 +69,28 @@ body {
 
 /* 페이지 하단 탭바 여백 */
 .page-content {
-  padding-bottom: calc(var(--tab-height) + var(--safe-bottom) + 16px);
+  min-height: 100dvh;
+}
+
+.page-content > * {
+  min-height: 100dvh;
+  padding-bottom: calc(var(--tab-height) + var(--safe-bottom) + 20px);
+}
+
+.page-with-action {
+  padding-bottom: calc(var(--bottom-action-height) + var(--safe-bottom) + 24px);
+}
+
+.page-header-sticky {
+  @apply bg-surface sticky top-0 z-20 border-b border-line;
+}
+
+.bg-surface.sticky.top-0.z-10 {
+  z-index: 20;
+}
+
+.bottom-action-bar {
+  @apply fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-lg z-50 bg-surface border-t border-line p-4 pb-safe-bottom;
 }
 
 /* 진행률 바 */

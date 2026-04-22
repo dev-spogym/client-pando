@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { Check, RotateCcw, AlertTriangle } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase } from '../lib/supabase';
+import { getPreviewClassById, isPreviewMode } from '@/lib/preview';
 // 레이아웃은 App.tsx의 MobileLayout Outlet으로 자동 적용
 
 // ─── 수업 정보 타입 ─────────────────────────────────────────
@@ -134,6 +135,24 @@ export default function LessonSignature() {
     if (!classId) return;
     const fetchClass = async () => {
       setLoading(true);
+
+      if (isPreviewMode()) {
+        const previewClass = getPreviewClassById(Number(classId));
+        setClassInfo(
+          previewClass
+            ? {
+                id: previewClass.id,
+                title: previewClass.title,
+                staffName: previewClass.staffName,
+                startTime: previewClass.startTime,
+                endTime: previewClass.endTime,
+              }
+            : null
+        );
+        setLoading(false);
+        return;
+      }
+
       const { data } = await supabase
         .from('classes')
         .select('id, title, staffName, startTime, endTime')

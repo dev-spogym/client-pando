@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
   ArrowLeft, ChevronLeft, ChevronRight, Plus, X, Flame, Camera, Trash2,
 } from 'lucide-react';
@@ -54,9 +54,13 @@ const mealIcon: Record<MealType, string> = {
 /** 식단 관리 페이지 */
 export default function DietLog() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [currentDate, setCurrentDate] = useState(new Date());
-  const [showModal, setShowModal] = useState(false);
-  const [selectedMeal, setSelectedMeal] = useState<MealType>('아침');
+  const [showModal, setShowModal] = useState(searchParams.get('modal') === 'add');
+  const [selectedMeal, setSelectedMeal] = useState<MealType>(() => {
+    const nextMeal = searchParams.get('meal');
+    return MEAL_TYPES.includes(nextMeal as MealType) ? (nextMeal as MealType) : '아침';
+  });
   const [logs, setLogs] = useState<Record<string, DayDietLog>>(loadLogs);
 
   // 모달 폼 상태
@@ -66,6 +70,14 @@ export default function DietLog() {
 
   const dateStr = getDateStr(currentDate);
   const dayLog = logs[dateStr];
+
+  useEffect(() => {
+    const nextMeal = searchParams.get('meal');
+    if (MEAL_TYPES.includes(nextMeal as MealType)) {
+      setSelectedMeal(nextMeal as MealType);
+    }
+    setShowModal(searchParams.get('modal') === 'add');
+  }, [searchParams]);
 
   const prevDay = () => {
     const d = new Date(currentDate);

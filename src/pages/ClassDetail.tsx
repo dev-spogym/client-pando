@@ -1,10 +1,19 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ArrowLeft, Clock, MapPin, Users, User, Dumbbell, AlertCircle } from 'lucide-react';
-import { useAuthStore } from '@/stores/authStore';
-import { supabase } from '@/lib/supabase';
+import { AlertCircle, ArrowLeft, Clock, Dumbbell, MapPin, User, Users } from 'lucide-react';
 import { toast } from 'sonner';
-import { cn, formatTime, formatDateKo } from '@/lib/utils';
+import { getPreviewClassById, isPreviewMode } from '@/lib/preview';
+import { supabase } from '@/lib/supabase';
+import { useAuthStore } from '@/stores/authStore';
+import {
+  addWaitlistEntry,
+  cancelReservation,
+  getReservation,
+  getWaitlistEntry,
+  upsertReservation,
+  type WaitlistEntry,
+} from '@/lib/memberExperience';
+import { cn, formatDateKo, formatTime } from '@/lib/utils';
 
 interface ClassData {
   id: number;
@@ -27,14 +36,29 @@ export default function ClassDetail() {
   const [classData, setClassData] = useState<ClassData | null>(null);
   const [loading, setLoading] = useState(true);
   const [reserving, setReserving] = useState(false);
+  const [reserved, setReserved] = useState(false);
+  const [waitlistEntry, setWaitlistEntry] = useState<WaitlistEntry | null>(null);
 
   useEffect(() => {
     if (id) fetchClass();
   }, [id]);
 
+  useEffect(() => {
+    if (!member || !classData) return;
+    setReserved(Boolean(getReservation(member.id, classData.id)));
+    setWaitlistEntry(getWaitlistEntry(member.id, classData.id));
+  }, [member, classData]);
+
   const fetchClass = async () => {
     setLoading(true);
-    const { data, error } = await supabase
+
+    if (isPreviewMode()) {
+      setClassData(id ? getPreviewClassById(Number(id)) : null);
+      setLoading(false);
+      return;
+    }
+
+    const { data } = await supabase
       .from('classes')
       .select('*')
       .eq('id', Number(id))
@@ -44,13 +68,33 @@ export default function ClassDetail() {
     setLoading(false);
   };
 
-  /** 예약하기 */
   const handleReserve = async () => {
     if (!member || !classData) return;
+    if (reserved) {
+      toast.info('이미 예약된 수업입니다.');
+      return;
+    }
+
     setReserving(true);
 
+    if (isPreviewMode()) {
+      upsertReservation(member.id, {
+        classId: classData.id,
+        title: classData.title,
+        type: classData.type,
+        staffName: classData.staffName,
+        startTime: classData.startTime,
+        endTime: classData.endTime,
+        room: classData.room,
+      });
+      setReserved(true);
+      setClassData({ ...classData, booked: Math.min(classData.booked + 1, classData.capacity) });
+      setReserving(false);
+      toast.success('예약이 완료되었습니다.');
+      return;
+    }
+
     try {
-      // 예약 수 증가
       const { error } = await supabase
         .from('classes')
         .update({ booked: classData.booked + 1 })
@@ -60,7 +104,6 @@ export default function ClassDetail() {
       if (error) {
         toast.error('예약에 실패했습니다. 정원이 찼을 수 있습니다.');
       } else {
-        // 출석 기록 생성 (예약 타입)
         await supabase.from('attendance').insert({
           memberId: member.id,
           memberName: member.name,
@@ -70,8 +113,19 @@ export default function ClassDetail() {
           branchId: member.branchId,
         });
 
-        toast.success('예약이 완료되었습니다!');
+        upsertReservation(member.id, {
+          classId: classData.id,
+          title: classData.title,
+          type: classData.type,
+          staffName: classData.staffName,
+          startTime: classData.startTime,
+          endTime: classData.endTime,
+          room: classData.room,
+        });
+
+        setReserved(true);
         setClassData({ ...classData, booked: classData.booked + 1 });
+        toast.success('예약이 완료되었습니다.');
       }
     } catch {
       toast.error('예약 중 오류가 발생했습니다.');
@@ -80,15 +134,41 @@ export default function ClassDetail() {
     setReserving(false);
   };
 
-  /** 대기열 등록 */
   const handleWaitlist = () => {
-    toast.info('대기열에 등록되었습니다. 자리가 나면 알려드립니다.');
+    if (!member || !classData) return;
+    if (waitlistEntry) {
+      navigate('/waitlist');
+      return;
+    }
+
+    const entry = addWaitlistEntry(member.id, {
+      classId: classData.id,
+      title: classData.title,
+      type: classData.type,
+      staffId: classData.staffId,
+      staffName: classData.staffName,
+      room: classData.room,
+      startTime: classData.startTime,
+      endTime: classData.endTime,
+      autoPromoted: true,
+    });
+
+    setWaitlistEntry(entry);
+    toast.success(`대기 ${entry.position}번으로 등록되었습니다.`);
   };
 
-  /** 예약 취소 */
   const handleCancel = async () => {
-    if (!classData) return;
+    if (!member || !classData || !reserved) return;
     setReserving(true);
+
+    if (isPreviewMode()) {
+      cancelReservation(member.id, classData.id);
+      setReserved(false);
+      setClassData({ ...classData, booked: Math.max(0, classData.booked - 1) });
+      setReserving(false);
+      toast.success('예약이 취소되었습니다.');
+      return;
+    }
 
     const { error } = await supabase
       .from('classes')
@@ -98,8 +178,10 @@ export default function ClassDetail() {
     if (error) {
       toast.error('취소에 실패했습니다.');
     } else {
+      cancelReservation(member.id, classData.id);
+      setReserved(false);
+      setClassData({ ...classData, booked: Math.max(0, classData.booked - 1) });
       toast.success('예약이 취소되었습니다.');
-      setClassData({ ...classData, booked: classData.booked - 1 });
     }
 
     setReserving(false);
@@ -131,12 +213,8 @@ export default function ClassDetail() {
   const isPast = startDate < new Date();
 
   return (
-    <div className="min-h-screen bg-surface-secondary">
-      {/* 헤더 */}
-      <header className={cn(
-        'px-4 pt-safe-top pb-6',
-        classData.type === 'PT' ? 'bg-primary' : 'bg-accent'
-      )}>
+    <div className="min-h-screen bg-surface-secondary page-with-action">
+      <header className={cn('px-4 pt-safe-top pb-6', classData.type === 'PT' ? 'bg-primary' : 'bg-accent')}>
         <div className="flex items-center h-14">
           <button onClick={() => navigate(-1)}>
             <ArrowLeft className="w-6 h-6 text-white" />
@@ -155,7 +233,6 @@ export default function ClassDetail() {
       </header>
 
       <div className="px-4 -mt-2 space-y-4 pb-32">
-        {/* 수업 정보 카드 */}
         <div className="bg-surface rounded-card p-4 shadow-card">
           <h3 className="font-semibold text-sm mb-3">수업 정보</h3>
           <div className="space-y-3">
@@ -180,7 +257,20 @@ export default function ClassDetail() {
           </div>
         </div>
 
-        {/* 정원 시각화 */}
+        <button
+          onClick={() => navigate(`/instructors/${classData.staffId}`)}
+          className="w-full bg-surface rounded-card p-4 shadow-card text-left"
+        >
+          <p className="text-xs text-content-tertiary">강사 정보 보기</p>
+          <div className="mt-2 flex items-center justify-between">
+            <div>
+              <p className="text-sm font-semibold">{classData.staffName} 강사</p>
+              <p className="text-xs text-content-secondary mt-1">전문 분야, 후기 요약, 예약 가능 시간 확인</p>
+            </div>
+            <span className="text-xs text-primary font-medium">상세 보기</span>
+          </div>
+        </button>
+
         <div className="bg-surface rounded-card p-4 shadow-card">
           <div className="flex items-center justify-between mb-2">
             <span className="text-sm font-medium">예약 현황</span>
@@ -195,27 +285,62 @@ export default function ClassDetail() {
               style={{ width: `${(classData.booked / classData.capacity) * 100}%` }}
             />
           </div>
+          {reserved && (
+            <p className="mt-3 text-xs text-state-success font-medium">내 예약이 확정된 수업입니다.</p>
+          )}
         </div>
+
+        {(isFull || waitlistEntry) && (
+          <div className="bg-surface rounded-card p-4 shadow-card">
+            <div className="flex items-center justify-between mb-2">
+              <h3 className="font-semibold text-sm">대기 예약 상태</h3>
+              {waitlistEntry && (
+                <span className="text-xs px-2 py-1 rounded-full bg-state-warning/10 text-state-warning font-medium">
+                  {waitlistEntry.position}번 대기
+                </span>
+              )}
+            </div>
+            <p className="text-sm text-content-secondary">
+              {waitlistEntry
+                ? '자동 확정 알림이 활성화되어 있습니다. 대기 관리 화면에서 상태를 확인할 수 있습니다.'
+                : '정원이 모두 찼다면 대기 예약으로 전환할 수 있습니다.'}
+            </p>
+          </div>
+        )}
       </div>
 
-      {/* 하단 버튼 */}
       {!isPast && (
-        <div className="fixed bottom-0 left-0 right-0 bg-surface border-t border-line p-4 pb-safe-bottom">
+        <div className="bottom-action-bar">
           <div className="max-w-lg mx-auto flex gap-3">
-            {!isFull ? (
+            <button
+              onClick={() => navigate(`/instructors/${classData.staffId}`)}
+              className="flex-1 py-3.5 rounded-button font-semibold bg-surface-secondary text-content-secondary"
+            >
+              강사 보기
+            </button>
+
+            {reserved ? (
+              <button
+                onClick={handleCancel}
+                disabled={reserving}
+                className="flex-1 py-3.5 rounded-button font-semibold bg-state-error text-white disabled:opacity-50"
+              >
+                {reserving ? '처리 중...' : '예약 취소'}
+              </button>
+            ) : !isFull ? (
               <button
                 onClick={handleReserve}
                 disabled={reserving}
-                className="flex-1 py-3.5 rounded-button font-semibold bg-primary text-white active:bg-primary-dark disabled:opacity-50"
+                className="flex-1 py-3.5 rounded-button font-semibold bg-primary text-white disabled:opacity-50"
               >
                 {reserving ? '처리 중...' : '예약하기'}
               </button>
             ) : (
               <button
                 onClick={handleWaitlist}
-                className="flex-1 py-3.5 rounded-button font-semibold bg-state-warning text-white active:opacity-80"
+                className="flex-1 py-3.5 rounded-button font-semibold bg-state-warning text-white"
               >
-                대기열 등록
+                {waitlistEntry ? '대기 현황 보기' : '대기열 등록'}
               </button>
             )}
           </div>

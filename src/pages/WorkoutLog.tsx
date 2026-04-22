@@ -1,9 +1,10 @@
 import { useEffect, useState, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
   ArrowLeft, ChevronLeft, ChevronRight, Plus, X, Clock, Flame, Trash2,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { getPreviewWorkoutEntries, isPreviewMode } from '@/lib/preview';
 import { supabase } from '@/lib/supabase';
 import { useAuthStore } from '@/stores/authStore';
 
@@ -64,9 +65,10 @@ function rowToEntry(row: Record<string, unknown>): WorkoutEntry {
 /** 운동일지 페이지 */
 export default function WorkoutLog() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { member } = useAuthStore();
   const [currentDate, setCurrentDate] = useState(new Date());
-  const [showModal, setShowModal] = useState(false);
+  const [showModal, setShowModal] = useState(searchParams.get('modal') === 'add');
   const [entries, setEntries] = useState<WorkoutEntry[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -78,10 +80,23 @@ export default function WorkoutLog() {
 
   const dateStr = getDateStr(currentDate);
 
+  useEffect(() => {
+    setShowModal(searchParams.get('modal') === 'add');
+  }, [searchParams]);
+
   /** DB에서 해당 날짜 운동 기록 조회 */
   const fetchEntries = useCallback(async () => {
     if (!member) return;
     setLoading(true);
+
+    if (isPreviewMode()) {
+      setEntries(getPreviewWorkoutEntries(dateStr).map((entry) => ({
+        ...entry,
+        category: entry.category as Category,
+      })));
+      setLoading(false);
+      return;
+    }
 
     const dayStart = `${dateStr}T00:00:00`;
     const dayEnd = `${dateStr}T23:59:59`;
@@ -130,6 +145,21 @@ export default function WorkoutLog() {
   const handleAddEntry = async () => {
     if (!formName.trim() || !member) return;
 
+    if (isPreviewMode()) {
+      const validSets = formSets.filter((s) => s.weight > 0 || s.reps > 0);
+      const nextEntry: WorkoutEntry = {
+        id: Date.now(),
+        category: formCategory,
+        name: formName.trim(),
+        sets: validSets.length > 0 ? validSets : [{ weight: 0, reps: 0 }],
+        duration: formDuration,
+      };
+      setEntries((prev) => [nextEntry, ...prev]);
+      setShowModal(false);
+      resetForm();
+      return;
+    }
+
     const validSets = formSets.filter((s) => s.weight > 0 || s.reps > 0);
     const setsToSave = validSets.length > 0 ? validSets : [{ weight: 0, reps: 0 }];
 
@@ -158,6 +188,11 @@ export default function WorkoutLog() {
   };
 
   const handleDeleteEntry = async (entryId: number) => {
+    if (isPreviewMode()) {
+      setEntries((prev) => prev.filter((e) => e.id !== entryId));
+      return;
+    }
+
     const { error } = await supabase.from('exercise_logs').delete().eq('id', entryId);
     if (!error) {
       setEntries((prev) => prev.filter((e) => e.id !== entryId));

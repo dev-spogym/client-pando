@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { ArrowLeft, Calendar, CreditCard, Pause, History, AlertCircle } from 'lucide-react';
+import { getPreviewContractById, isPreviewMode } from '@/lib/preview';
 import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
 import { cn, calcDday, formatDateKo, formatCurrency, calcPercent } from '@/lib/utils';
@@ -21,6 +22,7 @@ interface ContractDetail {
 export default function MembershipDetail() {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
+  const [searchParams] = useSearchParams();
   const [contract, setContract] = useState<ContractDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [showHolding, setShowHolding] = useState(false);
@@ -31,8 +33,19 @@ export default function MembershipDetail() {
     if (id) fetchContract();
   }, [id]);
 
+  useEffect(() => {
+    setShowHolding(searchParams.get('holding') === '1');
+  }, [searchParams]);
+
   const fetchContract = async () => {
     setLoading(true);
+
+    if (isPreviewMode()) {
+      setContract(id ? getPreviewContractById(Number(id)) : null);
+      setLoading(false);
+      return;
+    }
+
     const { data } = await supabase
       .from('contracts')
       .select('*')

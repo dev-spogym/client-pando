@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { CreditCard, ChevronRight, Calendar, Hash } from 'lucide-react';
 import { useAuthStore } from '@/stores/authStore';
+import { getPreviewContracts, isPreviewMode } from '@/lib/preview';
 import { supabase } from '@/lib/supabase';
 import { cn, calcDday, formatDateKo, calcPercent } from '@/lib/utils';
 
@@ -17,10 +18,17 @@ interface ContractItem {
 /** 이용권 목록 페이지 */
 export default function Membership() {
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const { member } = useAuthStore();
-  const [tab, setTab] = useState<'active' | 'expired'>('active');
+  const [tab, setTab] = useState<'active' | 'expired'>(() =>
+    searchParams.get('tab') === 'expired' ? 'expired' : 'active'
+  );
   const [contracts, setContracts] = useState<ContractItem[]>([]);
   const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    setTab(searchParams.get('tab') === 'expired' ? 'expired' : 'active');
+  }, [searchParams]);
 
   useEffect(() => {
     if (!member) return;
@@ -30,6 +38,12 @@ export default function Membership() {
   const fetchContracts = async () => {
     if (!member) return;
     setLoading(true);
+
+    if (isPreviewMode()) {
+      setContracts(getPreviewContracts());
+      setLoading(false);
+      return;
+    }
 
     const { data } = await supabase
       .from('contracts')
@@ -66,7 +80,13 @@ export default function Membership() {
           ].map((t) => (
             <button
               key={t.key}
-              onClick={() => setTab(t.key)}
+              onClick={() => {
+                setTab(t.key);
+                const next = new URLSearchParams(searchParams);
+                if (t.key === 'active') next.delete('tab');
+                else next.set('tab', t.key);
+                setSearchParams(next, { replace: true });
+              }}
               className={cn(
                 'flex-1 py-3 text-sm font-medium relative',
                 tab === t.key ? 'text-primary' : 'text-content-tertiary'
@@ -83,6 +103,23 @@ export default function Membership() {
 
       {/* 이용권 리스트 */}
       <div className="px-4 py-4">
+        <div className="grid grid-cols-2 gap-3 mb-4">
+          <button
+            onClick={() => navigate('/shop')}
+            className="bg-surface rounded-card p-4 shadow-card text-left"
+          >
+            <p className="text-xs text-content-tertiary">이용권 구매</p>
+            <p className="text-sm font-semibold mt-1">헬스장 / 골프장 / PT 상품</p>
+          </button>
+          <button
+            onClick={() => navigate('/payment/personal')}
+            className="bg-primary text-white rounded-card p-4 shadow-card text-left"
+          >
+            <p className="text-xs text-white/80">개인 결제</p>
+            <p className="text-sm font-semibold mt-1">결제 페이지 바로가기</p>
+          </button>
+        </div>
+
         {loading ? (
           <div className="text-center py-12 text-content-tertiary text-sm">불러오는 중...</div>
         ) : displayList.length === 0 ? (

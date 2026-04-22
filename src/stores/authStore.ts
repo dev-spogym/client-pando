@@ -1,5 +1,10 @@
 import { create } from 'zustand';
 import { supabase } from '@/lib/supabase';
+import {
+  getPreviewMemberProfile,
+  isPreviewMode,
+  seedPreviewMemberExperience,
+} from '@/lib/preview';
 
 /** 회원 정보 타입 */
 export interface MemberProfile {
@@ -208,6 +213,11 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   },
 
   logout: async () => {
+    if (isPreviewMode()) {
+      set({ member: null, trainer: null, userRole: null, loading: false, initialized: true });
+      return;
+    }
+
     await supabase.auth.signOut();
     localStorage.removeItem('member_id');
     localStorage.removeItem('member_phone');
@@ -220,6 +230,19 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   initialize: async () => {
     set({ loading: true });
     try {
+      if (isPreviewMode()) {
+        const previewMember = getPreviewMemberProfile();
+        seedPreviewMemberExperience(previewMember.id);
+        set({
+          member: previewMember,
+          trainer: null,
+          userRole: 'member',
+          loading: false,
+          initialized: true,
+        });
+        return;
+      }
+
       const savedRole = localStorage.getItem('user_role') as UserRole | null;
 
       // 트레이너 자동 로그인
@@ -354,6 +377,8 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   },
 
   refreshProfile: async () => {
+    if (isPreviewMode()) return;
+
     const { member, trainer, userRole } = get();
 
     if (userRole === 'member' && member) {

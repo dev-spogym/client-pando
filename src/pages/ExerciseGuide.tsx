@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { ArrowLeft, X, AlertTriangle, Target, ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -59,8 +59,19 @@ const categoryTagColor: Record<string, string> = {
 /** 운동가이드 페이지 */
 export default function ExerciseGuide() {
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState<Category>('전체');
+  const [searchParams] = useSearchParams();
+  const [activeTab, setActiveTab] = useState<Category>(() => {
+    const nextTab = searchParams.get('category');
+    return TABS.includes(nextTab as Category) ? (nextTab as Category) : '전체';
+  });
   const [selectedExercise, setSelectedExercise] = useState<Exercise | null>(null);
+
+  useEffect(() => {
+    const nextTab = searchParams.get('category');
+    setActiveTab(TABS.includes(nextTab as Category) ? (nextTab as Category) : '전체');
+    const exerciseId = Number(searchParams.get('exercise') || '0');
+    setSelectedExercise(EXERCISES.find((item) => item.id === exerciseId) || null);
+  }, [searchParams]);
 
   const filtered = activeTab === '전체'
     ? EXERCISES

@@ -1,7 +1,8 @@
 import { useEffect, useState, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Dumbbell, Clock, MapPin, Users, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useAuthStore } from '@/stores/authStore';
+import { getPreviewClassesForDate, isPreviewMode } from '@/lib/preview';
 import { supabase } from '@/lib/supabase';
 import { cn, formatTime } from '@/lib/utils';
 
@@ -20,6 +21,7 @@ interface ClassItem {
 /** 수업 목록 / 예약 페이지 */
 export default function ClassList() {
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const { member } = useAuthStore();
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -27,6 +29,13 @@ export default function ClassList() {
   const [filter, setFilter] = useState<'ALL' | 'PT' | 'GX'>('ALL');
   const [classes, setClasses] = useState<ClassItem[]>([]);
   const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const initialType = searchParams.get('type');
+    if (initialType === 'PT' || initialType === 'GX' || initialType === 'ALL') {
+      setFilter(initialType);
+    }
+  }, [searchParams]);
 
   // 주간 날짜 목록 생성 (오늘 기준 -1일 ~ +6일)
   const weekDates = Array.from({ length: 8 }, (_, i) => {
@@ -47,6 +56,13 @@ export default function ClassList() {
     setLoading(true);
 
     const dateStr = selectedDate.toISOString().split('T')[0];
+
+    if (isPreviewMode()) {
+      setClasses(getPreviewClassesForDate(dateStr, filter));
+      setLoading(false);
+      return;
+    }
+
     let query = supabase
       .from('classes')
       .select('id, title, type, staffName, room, startTime, endTime, capacity, booked')
@@ -70,6 +86,14 @@ export default function ClassList() {
     a.getDate() === b.getDate();
 
   const isToday = (d: Date) => isSameDay(d, new Date());
+
+  const handleFilterChange = (nextFilter: 'ALL' | 'PT' | 'GX') => {
+    setFilter(nextFilter);
+    const nextParams = new URLSearchParams(searchParams);
+    if (nextFilter === 'ALL') nextParams.delete('type');
+    else nextParams.set('type', nextFilter);
+    setSearchParams(nextParams, { replace: true });
+  };
 
   return (
     <div className="min-h-screen bg-surface-secondary">
@@ -113,7 +137,7 @@ export default function ClassList() {
           {(['ALL', 'PT', 'GX'] as const).map((f) => (
             <button
               key={f}
-              onClick={() => setFilter(f)}
+              onClick={() => handleFilterChange(f)}
               className={cn(
                 'px-4 py-1.5 rounded-full text-sm font-medium transition-colors',
                 filter === f

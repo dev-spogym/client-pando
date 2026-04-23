@@ -1,3 +1,3 @@
 'use client';
 
-export { default } from '@/pages/DietLog';
+export { default } from '@/screens/DietLog';

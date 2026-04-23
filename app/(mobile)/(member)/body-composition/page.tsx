@@ -1,3 +1,3 @@
 'use client';
 
-export { default } from '@/pages/BodyComposition';
+export { default } from '@/screens/BodyComposition';

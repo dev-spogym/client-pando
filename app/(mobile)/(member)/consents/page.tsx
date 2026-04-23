@@ -1,3 +1,3 @@
 'use client';
 
-export { default } from '@/pages/ConsentManagement';
+export { default } from '@/screens/ConsentManagement';

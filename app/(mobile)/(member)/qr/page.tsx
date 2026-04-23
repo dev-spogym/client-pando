@@ -1,3 +1,3 @@
 'use client';
 
-export { default } from '@/pages/QrCheckin';
+export { default } from '@/screens/QrCheckin';

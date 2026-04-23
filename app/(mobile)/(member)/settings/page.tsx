@@ -1,3 +1,3 @@
 'use client';
 
-export { default } from '@/pages/Settings';
+export { default } from '@/screens/Settings';

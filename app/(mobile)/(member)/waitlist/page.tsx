@@ -1,3 +1,3 @@
 'use client';
 
-export { default } from '@/pages/Waitlist';
+export { default } from '@/screens/Waitlist';

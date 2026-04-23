@@ -1,3 +1,3 @@
 'use client';
 
-export { default } from '@/pages/RenewalPlans';
+export { default } from '@/screens/RenewalPlans';

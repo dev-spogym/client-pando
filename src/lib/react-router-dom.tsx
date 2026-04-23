@@ -131,7 +131,7 @@ export function useNavigate() {
 }
 
 export function useParams<T extends Record<string, string | string[] | undefined> = Record<string, string>>() {
-  return useNextParams<T>();
+  return useNextParams() as T;
 }
 
 export function useSearchParams(): [

@@ -1,3 +1,3 @@
 'use client';
 
-export { default } from '@/pages/LessonSignature';
+export { default } from '@/screens/LessonSignature';

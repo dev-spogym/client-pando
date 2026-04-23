@@ -1,3 +1,3 @@
 'use client';
 
-export { default } from '@/pages/MembershipDetail';
+export { default } from '@/screens/MembershipDetail';

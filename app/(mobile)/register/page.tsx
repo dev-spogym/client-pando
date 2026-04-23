@@ -1,3 +1,3 @@
 'use client';
 
-export { default } from '@/pages/Register';
+export { default } from '@/screens/Register';

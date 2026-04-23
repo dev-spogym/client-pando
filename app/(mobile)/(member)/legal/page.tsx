@@ -1,3 +1,3 @@
 'use client';
 
-export { default } from '@/pages/TermsCenter';
+export { default } from '@/screens/TermsCenter';

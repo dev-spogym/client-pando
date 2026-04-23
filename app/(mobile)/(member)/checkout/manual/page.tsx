@@ -1,3 +1,3 @@
 'use client';
 
-export { default } from '@/pages/Checkout';
+export { default } from '@/screens/Checkout';

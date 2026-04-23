@@ -1,7 +1,7 @@
 'use client';
 
 import MobileLayout from '@/components/MobileLayout';
-import NotFoundPage from '@/pages/NotFound';
+import NotFoundPage from '@/screens/NotFound';
 
 export default function NotFound() {
   return (

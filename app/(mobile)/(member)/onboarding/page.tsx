@@ -1,3 +1,3 @@
 'use client';
 
-export { default } from '@/pages/Onboarding';
+export { default } from '@/screens/Onboarding';

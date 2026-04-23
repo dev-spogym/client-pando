@@ -1,3 +1,3 @@
 'use client';
 
-export { default } from '@/pages/trainer/TrainerMembers';
+export { default } from '@/screens/trainer/TrainerMembers';

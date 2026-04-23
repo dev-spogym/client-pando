@@ -1,3 +1,3 @@
 'use client';
 
-export { default } from '@/pages/CenterInfo';
+export { default } from '@/screens/CenterInfo';

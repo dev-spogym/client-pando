@@ -1,3 +1,3 @@
 'use client';
 
-export { default } from '@/pages/GolfBayReservation';
+export { default } from '@/screens/GolfBayReservation';

@@ -1,3 +1,3 @@
 'use client';
 
-export { default } from '@/pages/PaymentHistory';
+export { default } from '@/screens/PaymentHistory';

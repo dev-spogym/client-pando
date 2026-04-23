@@ -1,3 +1,3 @@
 'use client';
 
-export { default } from '@/pages/WorkoutAnalysis';
+export { default } from '@/screens/WorkoutAnalysis';

@@ -1,3 +1,3 @@
 'use client';
 
-export { default } from '@/pages/WorkoutLog';
+export { default } from '@/screens/WorkoutLog';

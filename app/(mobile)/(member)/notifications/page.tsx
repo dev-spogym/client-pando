@@ -1,3 +1,3 @@
 'use client';
 
-export { default } from '@/pages/Notifications';
+export { default } from '@/screens/Notifications';

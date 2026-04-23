@@ -1,3 +1,3 @@
 'use client';
 
-export { default } from '@/pages/ExerciseGuide';
+export { default } from '@/screens/ExerciseGuide';

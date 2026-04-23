@@ -1,3 +1,3 @@
 'use client';
 
-export { default } from '@/pages/ClassFeedback';
+export { default } from '@/screens/ClassFeedback';

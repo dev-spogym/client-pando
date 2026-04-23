@@ -1,3 +1,3 @@
 'use client';
 
-export { default } from '@/pages/PersonalPayment';
+export { default } from '@/screens/PersonalPayment';

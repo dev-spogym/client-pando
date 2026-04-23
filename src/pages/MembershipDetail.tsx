@@ -173,7 +173,7 @@ export default function MembershipDetail() {
       {/* 홀딩 신청 모달 */}
       {showHolding && (
         <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40">
-          <div className="w-full max-w-lg bg-surface rounded-t-2xl p-6 pb-safe-bottom slide-up">
+          <div className="mobile-bottom-sheet bg-surface rounded-t-2xl p-6 pb-safe-bottom slide-up">
             <h3 className="text-lg font-bold mb-4">홀딩 신청</h3>
             <div className="space-y-4">
               <div>

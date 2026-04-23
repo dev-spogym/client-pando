@@ -40,8 +40,8 @@ export default function MemberPublishingGallery() {
   const tabCount = memberPublishingScreens.filter((screen) => screen.state === '탭').length;
 
   return (
-    <div className="min-h-screen bg-[radial-gradient(circle_at_top_left,#dbeafe_0%,#f8fafc_28%,#fff7ed_62%,#ffffff_100%)]">
-      <div className="mx-auto max-w-[1600px] px-4 py-6 sm:px-6 lg:px-8">
+    <div className="h-[100dvh] overflow-y-auto overscroll-y-contain bg-[radial-gradient(circle_at_top_left,#dbeafe_0%,#f8fafc_28%,#fff7ed_62%,#ffffff_100%)]">
+      <div className="mx-auto max-w-[1600px] px-4 py-6 pb-10 sm:px-6 lg:px-8">
         <header className="rounded-[36px] border border-white/80 bg-white/80 p-6 shadow-[0_28px_80px_-40px_rgba(15,23,42,0.32)] backdrop-blur">
           <div className="flex flex-col gap-6 xl:flex-row xl:items-end xl:justify-between">
             <div>

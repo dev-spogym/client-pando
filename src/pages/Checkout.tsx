@@ -48,12 +48,6 @@ export default function Checkout() {
     };
   }, [presetProduct, searchParams]);
 
-  if (!member || !order.productName) return null;
-
-  const methods = getPaymentMethodOptions();
-  const maxMileage = Math.min(member.mileage, Math.floor(order.price / 1000) * 1000);
-  const totalPrice = Math.max(0, order.price - mileageUsed);
-
   useEffect(() => {
     const method = searchParams.get('method');
     if (method === 'CARD' || method === 'TRANSFER' || method === 'NAVERPAY' || method === 'KAKAOPAY') {
@@ -62,15 +56,24 @@ export default function Checkout() {
       setPaymentMethod('CARD');
     }
 
+    const mileageLimit = member
+      ? Math.min(member.mileage, Math.floor(order.price / 1000) * 1000)
+      : 0;
     const nextMileage = Number(searchParams.get('mileage') || '0');
     if (!Number.isNaN(nextMileage)) {
-      setMileageUsed(Math.min(maxMileage, Math.max(0, nextMileage)));
+      setMileageUsed(Math.min(mileageLimit, Math.max(0, nextMileage)));
     } else {
       setMileageUsed(0);
     }
 
     setAgree(searchParams.get('agree') === '1');
-  }, [maxMileage, searchParams]);
+  }, [member, order.price, searchParams]);
+
+  if (!member || !order.productName) return null;
+
+  const methods = getPaymentMethodOptions();
+  const maxMileage = Math.min(member.mileage, Math.floor(order.price / 1000) * 1000);
+  const totalPrice = Math.max(0, order.price - mileageUsed);
 
   const handlePay = () => {
     if (!agree) {

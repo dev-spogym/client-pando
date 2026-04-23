@@ -75,15 +75,10 @@ export default function Register() {
     const cleanPhone = phone.replace(/-/g, '');
     const email = `${cleanPhone}@member.spogym.app`;
 
-    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-    const serviceRoleKey = import.meta.env.VITE_SUPABASE_SERVICE_ROLE_KEY;
-
     try {
-      const response = await fetch(`${supabaseUrl}/auth/v1/admin/users`, {
+      const response = await fetch('/api/register-member', {
         method: 'POST',
         headers: {
-          apikey: serviceRoleKey,
-          Authorization: `Bearer ${serviceRoleKey}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({

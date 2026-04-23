@@ -28,31 +28,33 @@ export default function Shop() {
           <div className="w-6" />
         </div>
 
-        <div className="px-4 pb-3 flex gap-2 overflow-x-auto no-scrollbar">
-          {[
-            { key: 'all' as const, label: '전체' },
-            { key: 'gym' as const, label: '헬스장' },
-            { key: 'golf' as const, label: '골프장' },
-            { key: 'pt' as const, label: 'PT' },
-            { key: 'golf_lesson' as const, label: '골프 레슨' },
-          ].map((item) => (
-            <button
-              key={item.key}
-              onClick={() => {
-                setCategory(item.key);
-                const next = new URLSearchParams(searchParams);
-                if (item.key === 'all') next.delete('category');
-                else next.set('category', item.key);
-                setSearchParams(next, { replace: true });
-              }}
-              className={cn(
-                'px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap',
-                category === item.key ? 'bg-primary text-white' : 'bg-surface-tertiary text-content-secondary'
-              )}
-            >
-              {item.label}
-            </button>
-          ))}
+        <div className="overflow-x-auto no-scrollbar pb-3 snap-x snap-proximity">
+          <div className="flex w-max min-w-full gap-2 px-4">
+            {[
+              { key: 'all' as const, label: '전체' },
+              { key: 'gym' as const, label: '헬스장' },
+              { key: 'golf' as const, label: '골프장' },
+              { key: 'pt' as const, label: 'PT' },
+              { key: 'golf_lesson' as const, label: '골프 레슨' },
+            ].map((item) => (
+              <button
+                key={item.key}
+                onClick={() => {
+                  setCategory(item.key);
+                  const next = new URLSearchParams(searchParams);
+                  if (item.key === 'all') next.delete('category');
+                  else next.set('category', item.key);
+                  setSearchParams(next, { replace: true });
+                }}
+                className={cn(
+                  'snap-start px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap',
+                  category === item.key ? 'bg-primary text-white' : 'bg-surface-tertiary text-content-secondary'
+                )}
+              >
+                {item.label}
+              </button>
+            ))}
+          </div>
         </div>
       </header>
 

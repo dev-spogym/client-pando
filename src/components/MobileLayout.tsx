@@ -31,9 +31,9 @@ export default function MobileLayout() {
   const showTrainerTab = isTrainerView && (isTrainerPath || location.pathname === '/profile');
 
   return (
-    <div className="min-h-screen flex justify-center bg-gray-100">
-      <div className="w-full max-w-lg min-h-screen bg-surface relative shadow-xl">
-        <main className={hideTab ? '' : 'page-content'}>
+    <div className="mobile-shell flex justify-center bg-surface-secondary md:bg-gray-100">
+      <div className="mobile-frame relative flex flex-col bg-surface shadow-none md:shadow-xl">
+        <main className={hideTab ? 'mobile-main' : 'mobile-main page-content'}>
           <Outlet />
         </main>
         {!hideTab && (showTrainerTab ? <TrainerTabBar /> : <BottomTabBar />)}

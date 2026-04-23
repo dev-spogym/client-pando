@@ -69,8 +69,7 @@ export function PhoneFrame({ children }: { children: ReactNode }) {
   return (
     <div className="mx-auto w-full max-w-[360px] rounded-[36px] bg-slate-950 p-3 shadow-[0_32px_80px_-42px_rgba(15,23,42,0.85)]">
       <div className="relative overflow-hidden rounded-[28px] border border-slate-800 bg-surface">
-        <div className="absolute left-1/2 top-2 z-20 h-6 w-28 -translate-x-1/2 rounded-full bg-slate-950" />
-        <div className="h-[720px] overflow-y-auto bg-surface-secondary">{children}</div>
+        <div className="h-[720px] overflow-hidden bg-surface-secondary">{children}</div>
       </div>
     </div>
   );

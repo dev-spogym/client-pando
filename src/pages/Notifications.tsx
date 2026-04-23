@@ -97,16 +97,16 @@ export default function Notifications() {
                   </div>
 
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-center justify-between gap-2">
-                      <div className="flex items-center gap-2">
-                        <h3 className="text-sm font-semibold truncate">{item.title}</h3>
+                    <div className="flex flex-col gap-1 sm:flex-row sm:items-start sm:justify-between">
+                      <div className="min-w-0 flex items-start gap-2">
+                        <h3 className="min-w-0 text-sm font-semibold leading-5 break-keep">{item.title}</h3>
                         {!item.read && <span className="w-2 h-2 bg-state-error rounded-full flex-shrink-0" />}
                       </div>
-                      <span className="text-[11px] text-content-tertiary flex-shrink-0">
+                      <span className="text-[11px] leading-none text-content-tertiary flex-shrink-0 whitespace-nowrap">
                         {formatDateKo(item.createdAt)}
                       </span>
                     </div>
-                    <p className="text-sm text-content-secondary mt-1 leading-relaxed">{item.body}</p>
+                    <p className="text-sm text-content-secondary mt-1 leading-relaxed break-keep">{item.body}</p>
                     <div className="mt-3 flex items-center justify-between text-xs text-primary font-medium">
                       <span>{item.actionLabel}</span>
                       <ChevronRight className="w-4 h-4" />

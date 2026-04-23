@@ -93,7 +93,7 @@ function InstallBanner() {
   if (!showBanner) return null;
 
   return (
-    <div className="fixed bottom-20 left-4 right-4 z-50 max-w-lg mx-auto slide-up">
+    <div className="mobile-floating-banner fixed z-50 slide-up">
       <div className="bg-surface rounded-xl shadow-lg border border-line p-4 flex items-center gap-3">
         <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center flex-shrink-0">
           <span className="text-white font-bold text-sm">스포</span>

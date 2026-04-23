@@ -286,7 +286,7 @@ export default function GolfBayReservation() {
 
       {selectedSlot && (
         <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40">
-          <div className="w-full max-w-lg bg-surface rounded-t-2xl p-6 pb-safe-bottom slide-up">
+          <div className="mobile-bottom-sheet bg-surface rounded-t-2xl p-6 pb-safe-bottom slide-up">
             <h3 className="text-lg font-bold mb-4">골프 강사 예약 확인</h3>
             <div className="space-y-3 bg-surface-secondary rounded-xl p-4">
               <p className="text-sm font-semibold">{selectedSlot.lessonName}</p>
@@ -320,7 +320,7 @@ export default function GolfBayReservation() {
 
       {selectedBay && (
         <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40">
-          <div className="w-full max-w-lg bg-surface rounded-t-2xl p-6 pb-safe-bottom slide-up">
+          <div className="mobile-bottom-sheet bg-surface rounded-t-2xl p-6 pb-safe-bottom slide-up">
             <h3 className="text-lg font-bold mb-4">타석 예약 확인</h3>
             <div className="bg-surface-secondary rounded-xl p-4 mb-4">
               <p className="text-sm text-content-secondary">선택한 타석</p>

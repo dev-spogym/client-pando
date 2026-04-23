@@ -23,7 +23,7 @@ export default function BottomTabBar() {
   };
 
   return (
-    <nav className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-lg z-40 bg-surface border-t border-line">
+    <nav className="mobile-fixed-width fixed bottom-0 z-40 bg-surface border-t border-line">
       <div className="flex items-end justify-around tab-bar-safe">
         {tabs.map((tab) => {
           const active = isActive(tab.path);

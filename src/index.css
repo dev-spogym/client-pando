@@ -6,12 +6,23 @@
 :root {
   --safe-top: env(safe-area-inset-top);
   --safe-bottom: env(safe-area-inset-bottom);
+  --safe-left: env(safe-area-inset-left);
+  --safe-right: env(safe-area-inset-right);
   --tab-height: 88px;
   --bottom-action-height: 96px;
+  --content-max-width: 32rem;
 }
 
 * {
   -webkit-tap-highlight-color: transparent;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  min-height: 100%;
+  width: 100%;
 }
 
 html {
@@ -20,21 +31,105 @@ html {
   -moz-osx-font-smoothing: grayscale;
   scroll-padding-top: calc(var(--safe-top) + 72px);
   scroll-padding-bottom: calc(var(--safe-bottom) + var(--tab-height) + 20px);
+  overflow-x: hidden;
 }
 
 body {
   @apply bg-surface-secondary text-content;
+  min-height: 100svh;
+  min-height: 100dvh;
   overscroll-behavior-y: contain;
   -webkit-overflow-scrolling: touch;
+  overflow-y: hidden;
+  overflow-x: hidden;
 }
 
-/* 스크롤바 숨김 (모바일) */
+#root {
+  isolation: isolate;
+}
+
+.mobile-shell {
+  height: 100svh;
+  height: 100dvh;
+  min-height: 100svh;
+  min-height: 100dvh;
+  padding-left: var(--safe-left);
+  padding-right: var(--safe-right);
+  overflow: hidden;
+}
+
+.mobile-frame {
+  width: 100%;
+  max-width: var(--content-max-width);
+  height: 100%;
+  min-height: 100%;
+  overflow: hidden;
+}
+
+.mobile-main {
+  flex: 1 1 auto;
+  width: 100%;
+  min-height: 0;
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;
+  touch-action: pan-y;
+}
+
+.mobile-fixed-width {
+  left: 50%;
+  width: min(var(--content-max-width), calc(100vw - var(--safe-left) - var(--safe-right)));
+  max-width: calc(100vw - var(--safe-left) - var(--safe-right));
+  transform: translateX(-50%);
+}
+
+.mobile-bottom-sheet {
+  width: min(var(--content-max-width), calc(100vw - var(--safe-left) - var(--safe-right)));
+  max-width: calc(100vw - var(--safe-left) - var(--safe-right));
+}
+
+.mobile-fab {
+  right: max(1.5rem, calc(var(--safe-right) + 1rem));
+  bottom: calc(var(--tab-height) + var(--safe-bottom) + 8px);
+}
+
+.mobile-floating-banner {
+  bottom: calc(var(--tab-height) + var(--safe-bottom) + 16px);
+  left: 50%;
+  width: min(calc(100vw - var(--safe-left) - var(--safe-right) - 2rem), var(--content-max-width));
+  max-width: calc(100vw - var(--safe-left) - var(--safe-right) - 2rem);
+  transform: translateX(-50%);
+}
+
+/* 스크롤바 숨김 유틸 */
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }
 .no-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;
+}
+
+/* 모바일에서는 스크롤은 유지하고 스크롤바만 숨김 */
+@media (hover: none) and (pointer: coarse), (max-width: 768px) {
+  html,
+  body,
+  .mobile-main,
+  .mobile-bottom-sheet {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  html::-webkit-scrollbar,
+  body::-webkit-scrollbar,
+  .mobile-main::-webkit-scrollbar,
+  .mobile-bottom-sheet::-webkit-scrollbar {
+    display: none;
+    width: 0;
+    height: 0;
+  }
 }
 
 /* Pull to refresh 영역 */
@@ -69,11 +164,14 @@ body {
 
 /* 페이지 하단 탭바 여백 */
 .page-content {
-  min-height: 100dvh;
+  width: 100%;
+  flex: 1 1 auto;
+  min-height: 0;
 }
 
 .page-content > * {
-  min-height: 100dvh;
+  width: 100%;
+  min-height: 100%;
   padding-bottom: calc(var(--tab-height) + var(--safe-bottom) + 20px);
 }
 
@@ -90,7 +188,12 @@ body {
 }
 
 .bottom-action-bar {
-  @apply fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-lg z-50 bg-surface border-t border-line p-4 pb-safe-bottom;
+  @apply fixed bottom-0 z-50 bg-surface border-t border-line p-4;
+  left: 50%;
+  width: min(var(--content-max-width), calc(100vw - var(--safe-left) - var(--safe-right)));
+  max-width: calc(100vw - var(--safe-left) - var(--safe-right));
+  transform: translateX(-50%);
+  padding-bottom: calc(16px + var(--safe-bottom));
 }
 
 /* 진행률 바 */

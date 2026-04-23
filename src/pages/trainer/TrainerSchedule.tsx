@@ -232,7 +232,7 @@ export default function TrainerSchedule() {
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-end justify-center">
           <div className="absolute inset-0 bg-black/40" onClick={() => setShowModal(false)} />
-          <div className="relative w-full max-w-lg bg-surface rounded-t-2xl p-5 pb-10 space-y-4 animate-slide-up">
+          <div className="mobile-bottom-sheet relative bg-surface rounded-t-2xl p-5 pb-10 space-y-4 animate-slide-up">
             <div className="flex items-center justify-between">
               <h2 className="text-lg font-bold">수업 추가</h2>
               <button onClick={() => setShowModal(false)} className="text-content-tertiary">

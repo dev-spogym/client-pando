@@ -59,7 +59,7 @@ const categoryTagColor: Record<string, string> = {
 /** 운동가이드 페이지 */
 export default function ExerciseGuide() {
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [activeTab, setActiveTab] = useState<Category>(() => {
     const nextTab = searchParams.get('category');
     return TABS.includes(nextTab as Category) ? (nextTab as Category) : '전체';
@@ -91,14 +91,20 @@ export default function ExerciseGuide() {
       </header>
 
       {/* 카테고리 탭 */}
-      <div className="bg-surface px-4 py-3 overflow-x-auto no-scrollbar">
-        <div className="flex gap-2">
+      <div className="bg-surface overflow-x-auto no-scrollbar py-3 snap-x snap-proximity">
+        <div className="flex w-max min-w-full gap-2 px-4">
           {TABS.map((tab) => (
             <button
               key={tab}
-              onClick={() => setActiveTab(tab)}
+              onClick={() => {
+                setActiveTab(tab);
+                const next = new URLSearchParams(searchParams);
+                if (tab === '전체') next.delete('category');
+                else next.set('category', tab);
+                setSearchParams(next, { replace: true });
+              }}
               className={cn(
-                'px-4 py-1.5 rounded-full text-sm font-medium transition-colors whitespace-nowrap',
+                'snap-start px-4 py-1.5 rounded-full text-sm font-medium transition-colors whitespace-nowrap',
                 activeTab === tab
                   ? 'bg-primary text-white'
                   : 'bg-surface-tertiary text-content-secondary',
@@ -146,7 +152,7 @@ export default function ExerciseGuide() {
       {selectedExercise && (
         <div className="fixed inset-0 z-50 flex items-end justify-center">
           <div className="absolute inset-0 bg-black/40" onClick={() => setSelectedExercise(null)} />
-          <div className="relative bg-surface w-full max-w-lg rounded-t-2xl max-h-[85vh] overflow-y-auto">
+          <div className="mobile-bottom-sheet relative bg-surface rounded-t-2xl max-h-[85vh] overflow-y-auto">
             <div className="sticky top-0 bg-surface px-5 pt-5 pb-3 border-b border-line flex items-center justify-between">
               <h2 className="font-bold text-lg">{selectedExercise.name}</h2>
               <button onClick={() => setSelectedExercise(null)}>

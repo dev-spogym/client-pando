@@ -60,25 +60,27 @@ export default function TermsCenter() {
           <div className="w-6" />
         </div>
 
-        <div className="px-4 pb-3 flex gap-2 overflow-x-auto no-scrollbar">
-          {DOCUMENTS.map((item) => (
-            <button
-              key={item.id}
-              onClick={() => {
-                setTab(item.id);
-                const next = new URLSearchParams(searchParams);
-                if (item.id === 'service') next.delete('tab');
-                else next.set('tab', item.id);
-                setSearchParams(next, { replace: true });
-              }}
-              className={cn(
-                'px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap',
-                tab === item.id ? 'bg-primary text-white' : 'bg-surface-tertiary text-content-secondary'
-              )}
-            >
-              {item.title}
-            </button>
-          ))}
+        <div className="overflow-x-auto no-scrollbar pb-3 snap-x snap-proximity">
+          <div className="flex w-max min-w-full gap-2 px-4">
+            {DOCUMENTS.map((item) => (
+              <button
+                key={item.id}
+                onClick={() => {
+                  setTab(item.id);
+                  const next = new URLSearchParams(searchParams);
+                  if (item.id === 'service') next.delete('tab');
+                  else next.set('tab', item.id);
+                  setSearchParams(next, { replace: true });
+                }}
+                className={cn(
+                  'snap-start px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap',
+                  tab === item.id ? 'bg-primary text-white' : 'bg-surface-tertiary text-content-secondary'
+                )}
+              >
+                {item.title}
+              </button>
+            ))}
+          </div>
         </div>
       </header>
 

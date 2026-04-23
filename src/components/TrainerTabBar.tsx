@@ -8,7 +8,7 @@ const tabs = [
   { path: '/trainer/members', label: '회원', icon: Users },
   { path: '/trainer/schedule', label: '일정', icon: CalendarDays },
   { path: '/trainer/feedback', label: '피드백', icon: MessageSquare },
-  { path: '/profile', label: 'MY', icon: User },
+  { path: '/trainer/profile', label: 'MY', icon: User },
 ];
 
 /** 트레이너 하단 탭바 컴포넌트 */

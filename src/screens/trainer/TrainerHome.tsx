@@ -12,6 +12,7 @@ import {
 } from '@/lib/preview';
 import { supabase } from '@/lib/supabase';
 import { cn, formatTime } from '@/lib/utils';
+import LoadingSpinner from '@/components/LoadingSpinner';
 
 interface TodaySummary {
   totalClasses: number;
@@ -84,7 +85,13 @@ export default function TrainerHome() {
     });
   };
 
-  if (!trainer) return null;
+  if (!trainer) {
+    return (
+      <div className="min-h-screen bg-surface-secondary">
+        <LoadingSpinner fullScreen text="트레이너 홈 로딩 중..." />
+      </div>
+    );
+  }
 
   const quickMenus = [
     { icon: <Users className="w-6 h-6 text-teal-600" />, label: '회원관리', path: '/trainer/members' },

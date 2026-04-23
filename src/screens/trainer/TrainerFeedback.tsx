@@ -210,7 +210,13 @@ export default function TrainerFeedback() {
     setSubmitting(false);
   };
 
-  if (!trainer) return null;
+  if (!trainer) {
+    return (
+      <div className="min-h-screen bg-surface-secondary">
+        <LoadingSpinner fullScreen text="피드백 화면 로딩 중..." />
+      </div>
+    );
+  }
 
   return (
     <div className="pull-to-refresh">

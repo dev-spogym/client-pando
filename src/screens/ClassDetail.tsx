@@ -2,7 +2,14 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { AlertCircle, ArrowLeft, Clock, Dumbbell, MapPin, User, Users } from 'lucide-react';
 import { toast } from 'sonner';
-import { getPreviewClassById, isPreviewMode } from '@/lib/preview';
+import { getPreviewClassById, isPreviewMode, updatePreviewTrainerClass } from '@/lib/preview';
+import {
+  createLessonBookingRequest,
+  getMemberLessonBookingRequests,
+  getPendingLessonRequestForClass,
+  updateLessonBookingRequestStatus,
+  type LessonBookingRequestEntry,
+} from '@/lib/lessonPlanning';
 import { supabase } from '@/lib/supabase';
 import { useAuthStore } from '@/stores/authStore';
 import {
@@ -19,13 +26,14 @@ interface ClassData {
   id: number;
   title: string;
   type: string;
-  staffId: number;
+  staffId: number | null;
   staffName: string;
   room: string | null;
   startTime: string;
   endTime: string;
   capacity: number;
   booked: number;
+  member_id?: number | null;
 }
 
 /** 수업 상세 / 예약 / 취소 페이지 */
@@ -38,6 +46,7 @@ export default function ClassDetail() {
   const [reserving, setReserving] = useState(false);
   const [reserved, setReserved] = useState(false);
   const [waitlistEntry, setWaitlistEntry] = useState<WaitlistEntry | null>(null);
+  const [pendingRequest, setPendingRequest] = useState<LessonBookingRequestEntry | null>(null);
 
   useEffect(() => {
     if (id) fetchClass();
@@ -47,6 +56,7 @@ export default function ClassDetail() {
     if (!member || !classData) return;
     setReserved(Boolean(getReservation(member.id, classData.id)));
     setWaitlistEntry(getWaitlistEntry(member.id, classData.id));
+    setPendingRequest(getPendingLessonRequestForClass(member.id, classData.id));
   }, [member, classData]);
 
   const fetchClass = async () => {
@@ -74,14 +84,41 @@ export default function ClassDetail() {
       toast.info('이미 예약된 수업입니다.');
       return;
     }
+    if (pendingRequest) {
+      toast.info('이미 승인 대기 중인 예약 요청입니다.');
+      return;
+    }
 
     setReserving(true);
+
+    if (classData.type === 'PT') {
+      const request = createLessonBookingRequest({
+        classId: classData.id,
+        memberId: member.id,
+        memberName: member.name,
+        trainerId: classData.staffId ?? 0,
+        trainerName: classData.staffName,
+        title: classData.title,
+        type: classData.type,
+        startTime: classData.startTime,
+        endTime: classData.endTime,
+        room: classData.room,
+        source: 'member_request',
+        note: '회원이 PT 수업 상세에서 예약 요청함',
+      });
+
+      setPendingRequest(request);
+      setReserving(false);
+      toast.success('예약 요청이 접수되었습니다. 트레이너 승인 후 확정됩니다.');
+      return;
+    }
 
     if (isPreviewMode()) {
       upsertReservation(member.id, {
         classId: classData.id,
         title: classData.title,
         type: classData.type,
+        staffId: classData.staffId,
         staffName: classData.staffName,
         startTime: classData.startTime,
         endTime: classData.endTime,
@@ -117,6 +154,7 @@ export default function ClassDetail() {
           classId: classData.id,
           title: classData.title,
           type: classData.type,
+          staffId: classData.staffId,
           staffName: classData.staffName,
           startTime: classData.startTime,
           endTime: classData.endTime,
@@ -145,7 +183,7 @@ export default function ClassDetail() {
       classId: classData.id,
       title: classData.title,
       type: classData.type,
-      staffId: classData.staffId,
+      staffId: classData.staffId ?? 0,
       staffName: classData.staffName,
       room: classData.room,
       startTime: classData.startTime,
@@ -158,11 +196,31 @@ export default function ClassDetail() {
   };
 
   const handleCancel = async () => {
-    if (!member || !classData || !reserved) return;
+    if (!member || !classData) return;
+
+    if (pendingRequest && !reserved) {
+      updateLessonBookingRequestStatus(pendingRequest.id, 'cancelled', '회원이 예약 요청을 취소함');
+      setPendingRequest(null);
+      toast.success('예약 요청이 취소되었습니다.');
+      return;
+    }
+
+    if (!reserved) return;
     setReserving(true);
 
     if (isPreviewMode()) {
       cancelReservation(member.id, classData.id);
+      if (isApprovalRequired) {
+        updatePreviewTrainerClass(classData.id, {
+          booked: Math.max(0, classData.booked - 1),
+          memberId: null,
+          memberName: null,
+        });
+      }
+      const approvedRequest = getMemberLessonBookingRequests(member.id, ['approved']).find((item) => item.classId === classData.id);
+      if (approvedRequest) {
+        updateLessonBookingRequestStatus(approvedRequest.id, 'cancelled', '회원이 확정 예약을 취소함');
+      }
       setReserved(false);
       setClassData({ ...classData, booked: Math.max(0, classData.booked - 1) });
       setReserving(false);
@@ -172,13 +230,20 @@ export default function ClassDetail() {
 
     const { error } = await supabase
       .from('classes')
-      .update({ booked: Math.max(0, classData.booked - 1) })
+      .update({
+        booked: Math.max(0, classData.booked - 1),
+        ...(isApprovalRequired ? { member_id: null } : {}),
+      })
       .eq('id', classData.id);
 
     if (error) {
       toast.error('취소에 실패했습니다.');
     } else {
       cancelReservation(member.id, classData.id);
+      const approvedRequest = getMemberLessonBookingRequests(member.id, ['approved']).find((item) => item.classId === classData.id);
+      if (approvedRequest) {
+        updateLessonBookingRequestStatus(approvedRequest.id, 'cancelled', '회원이 확정 예약을 취소함');
+      }
       setReserved(false);
       setClassData({ ...classData, booked: Math.max(0, classData.booked - 1) });
       toast.success('예약이 취소되었습니다.');
@@ -211,6 +276,7 @@ export default function ClassDetail() {
   const remaining = classData.capacity - classData.booked;
   const startDate = new Date(classData.startTime);
   const isPast = startDate < new Date();
+  const isApprovalRequired = classData.type === 'PT';
 
   return (
     <div className="min-h-screen bg-surface-secondary page-with-action">
@@ -258,7 +324,7 @@ export default function ClassDetail() {
         </div>
 
         <button
-          onClick={() => navigate(`/instructors/${classData.staffId}`)}
+          onClick={() => classData.staffId && navigate(`/instructors/${classData.staffId}`)}
           className="w-full bg-surface rounded-card p-4 shadow-card text-left"
         >
           <p className="text-xs text-content-tertiary">강사 정보 보기</p>
@@ -286,11 +352,30 @@ export default function ClassDetail() {
             />
           </div>
           {reserved && (
-            <p className="mt-3 text-xs text-state-success font-medium">내 예약이 확정된 수업입니다.</p>
+            <p className="mt-3 text-xs text-state-success font-medium">
+              {isApprovalRequired ? '트레이너 승인이 완료된 수업입니다.' : '내 예약이 확정된 수업입니다.'}
+            </p>
+          )}
+          {pendingRequest && !reserved && (
+            <p className="mt-3 text-xs text-state-warning font-medium">현재 트레이너 승인 대기 중입니다.</p>
           )}
         </div>
 
-        {(isFull || waitlistEntry) && (
+        {pendingRequest && !reserved && (
+          <div className="bg-surface rounded-card p-4 shadow-card">
+            <div className="flex items-center justify-between mb-2">
+              <h3 className="font-semibold text-sm">예약 요청 상태</h3>
+              <span className="text-xs px-2 py-1 rounded-full bg-state-warning/10 text-state-warning font-medium">
+                승인 대기
+              </span>
+            </div>
+            <p className="text-sm text-content-secondary">
+              트레이너가 스케줄을 확인한 뒤 승인하면 예약이 확정됩니다.
+            </p>
+          </div>
+        )}
+
+        {(isFull || waitlistEntry) && !isApprovalRequired && (
           <div className="bg-surface rounded-card p-4 shadow-card">
             <div className="flex items-center justify-between mb-2">
               <h3 className="font-semibold text-sm">대기 예약 상태</h3>
@@ -313,7 +398,7 @@ export default function ClassDetail() {
         <div className="bottom-action-bar">
           <div className="max-w-lg mx-auto flex gap-3">
             <button
-              onClick={() => navigate(`/instructors/${classData.staffId}`)}
+              onClick={() => classData.staffId && navigate(`/instructors/${classData.staffId}`)}
               className="flex-1 py-3.5 rounded-button font-semibold bg-surface-secondary text-content-secondary"
             >
               강사 보기
@@ -327,13 +412,27 @@ export default function ClassDetail() {
               >
                 {reserving ? '처리 중...' : '예약 취소'}
               </button>
+            ) : pendingRequest ? (
+              <button
+                onClick={handleCancel}
+                className="flex-1 py-3.5 rounded-button font-semibold bg-state-warning text-white"
+              >
+                요청 취소
+              </button>
             ) : !isFull ? (
               <button
                 onClick={handleReserve}
                 disabled={reserving}
                 className="flex-1 py-3.5 rounded-button font-semibold bg-primary text-white disabled:opacity-50"
               >
-                {reserving ? '처리 중...' : '예약하기'}
+                {reserving ? '처리 중...' : isApprovalRequired ? '예약 요청하기' : '예약하기'}
+              </button>
+            ) : isApprovalRequired ? (
+              <button
+                disabled
+                className="flex-1 py-3.5 rounded-button font-semibold bg-surface-tertiary text-content-tertiary"
+              >
+                마감된 시간입니다
               </button>
             ) : (
               <button

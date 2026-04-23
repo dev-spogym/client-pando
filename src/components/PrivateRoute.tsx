@@ -1,4 +1,5 @@
 import { Navigate } from 'react-router-dom';
+import { getRoleHomePath, isEmployeeRole } from '@/lib/auth';
 import { useAuthStore } from '@/stores/authStore';
 import LoadingSpinner from './LoadingSpinner';
 
@@ -20,9 +21,9 @@ export default function PrivateRoute({ children }: PrivateRouteProps) {
     return <Navigate to="/login" replace />;
   }
 
-  // 트레이너가 회원 페이지에 접근하면 트레이너 홈으로 리다이렉트
-  if ((userRole === 'trainer' || userRole === 'admin') && !member) {
-    return <Navigate to="/trainer" replace />;
+  // 직원이 회원 페이지에 접근하면 역할별 홈으로 리다이렉트
+  if (isEmployeeRole(userRole) && !member) {
+    return <Navigate to={getRoleHomePath(userRole)} replace />;
   }
 
   return <>{children}</>;

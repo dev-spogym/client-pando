@@ -255,7 +255,7 @@ export default function Home() {
           </div>
           <div className="grid grid-cols-4 gap-3">
             {[
-              { icon: <Dumbbell className="w-6 h-6 text-primary" />, label: 'PT 예약', path: '/classes?type=PT' },
+              { icon: <Dumbbell className="w-6 h-6 text-primary" />, label: 'PT 요청', path: '/classes?type=PT' },
               { icon: <CalendarCheck className="w-6 h-6 text-accent" />, label: 'GX 일정', path: '/classes?type=GX' },
               { icon: <MapPin className="w-6 h-6 text-state-info" />, label: 'Golf 예약', path: '/golf-bay' },
               { icon: <Coins className="w-6 h-6 text-state-warning" />, label: '리워드', path: '/coupons?tab=badge' },

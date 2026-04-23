@@ -7,6 +7,7 @@ import { supabase } from '@/lib/supabase';
 import { useAuthStore } from '@/stores/authStore';
 import { getFeedbackByClass, saveFeedback } from '@/lib/memberExperience';
 import { cn } from '@/lib/utils';
+import LoadingSpinner from '@/components/LoadingSpinner';
 
 const FEEDBACK_TAGS = ['설명이 쉬워요', '난이도가 적절해요', '시설이 쾌적해요', '다음에도 듣고 싶어요'];
 
@@ -49,7 +50,7 @@ export default function ClassFeedback() {
     fetchClass();
   }, [classId]);
 
-  if (!member) return null;
+  if (!member) return <LoadingSpinner fullScreen text="후기 화면을 준비 중..." />;
 
   const existing = getFeedbackByClass(member.id, classId);
 

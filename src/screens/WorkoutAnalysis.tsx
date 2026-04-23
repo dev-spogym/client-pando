@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   ArrowLeft, BarChart3, Calendar, Flame, TrendingUp,
@@ -53,7 +53,11 @@ function loadLogs(): Record<string, DayLog> {
 export default function WorkoutAnalysis() {
   const navigate = useNavigate();
   const [period, setPeriod] = useState<'week' | 'month'>('week');
-  const logs = useMemo(() => loadLogs(), []);
+  const [logs, setLogs] = useState<Record<string, DayLog> | null>(null);
+
+  useEffect(() => {
+    setLogs(loadLogs());
+  }, []);
 
   const today = new Date();
   const rangeStart = new Date(today);
@@ -66,6 +70,10 @@ export default function WorkoutAnalysis() {
 
   // 기간 내 로그 필터
   const filteredDays = useMemo(() => {
+    if (!logs) {
+      return [];
+    }
+
     const result: DayLog[] = [];
     Object.values(logs).forEach((day) => {
       const d = new Date(day.date);
@@ -156,6 +164,12 @@ export default function WorkoutAnalysis() {
       </div>
 
       <div className="px-4 mt-3 space-y-4 pb-4">
+        {logs === null ? (
+          <div className="rounded-card bg-surface p-8 text-center text-sm text-content-tertiary shadow-card">
+            불러오는 중...
+          </div>
+        ) : (
+          <>
         {/* 운동 일수 */}
         <div className="bg-surface rounded-card p-4 shadow-card flex items-center gap-4">
           <div className="w-12 h-12 bg-primary-light rounded-xl flex items-center justify-center">
@@ -261,6 +275,8 @@ export default function WorkoutAnalysis() {
             </div>
           )}
         </div>
+          </>
+        )}
       </div>
     </div>
   );

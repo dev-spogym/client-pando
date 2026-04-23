@@ -10,7 +10,7 @@ import {
   type GolfCoachBooking,
   type GolfInstructorSlot,
 } from '@/lib/memberExperience';
-import { cn, formatCurrency } from '@/lib/utils';
+import { cn, formatCurrency, formatDateKo } from '@/lib/utils';
 
 interface Bay {
   id: number;
@@ -111,6 +111,7 @@ export default function GolfBayReservation() {
 
   const availableCount = bays.filter((bay) => bay.status === 'available').length;
   const instructorSlots = getGolfInstructorSlots();
+  const nextCoachBooking = coachBookings[0] || null;
 
   return (
     <div className="min-h-screen bg-surface-secondary">
@@ -157,8 +158,27 @@ export default function GolfBayReservation() {
             </section>
 
             {coachBookings.length > 0 && (
-              <section className="bg-surface rounded-card p-5 shadow-card">
-                <h3 className="text-sm font-semibold mb-3">내 골프 레슨 예약</h3>
+              <section className="bg-surface rounded-card p-5 shadow-card space-y-4">
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <h3 className="text-sm font-semibold">내 골프 레슨 스케줄</h3>
+                    <p className="text-xs text-content-secondary mt-1">예약한 레슨 시간과 타석을 한 번에 확인할 수 있습니다.</p>
+                  </div>
+                  <span className="rounded-full bg-primary-light px-2 py-1 text-[11px] font-semibold text-primary">
+                    {coachBookings.length}건
+                  </span>
+                </div>
+
+                {nextCoachBooking && (
+                  <div className="rounded-2xl bg-primary/8 border border-primary/10 p-4">
+                    <p className="text-xs font-semibold text-primary">다음 예약</p>
+                    <p className="mt-1 text-sm font-semibold">{nextCoachBooking.lessonName}</p>
+                    <p className="mt-1 text-xs text-content-secondary">
+                      {nextCoachBooking.dateLabel} · {nextCoachBooking.timeLabel} · {nextCoachBooking.bayLabel}
+                    </p>
+                  </div>
+                )}
+
                 <div className="space-y-2">
                   {coachBookings.map((booking) => (
                     <div key={booking.id} className="bg-surface-secondary rounded-xl p-4">
@@ -172,6 +192,9 @@ export default function GolfBayReservation() {
                         </span>
                       </div>
                       <p className="text-xs text-content-tertiary mt-2">{booking.dateLabel} / {booking.timeLabel}</p>
+                      <p className="text-[11px] text-content-tertiary mt-1">
+                        예약 접수일 {formatDateKo(booking.createdAt)}
+                      </p>
                     </div>
                   ))}
                 </div>

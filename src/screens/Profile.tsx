@@ -43,8 +43,14 @@ export default function Profile() {
     const trainerMenus = [
       { icon: Users, label: '회원 관리', path: '/trainer/members', color: 'text-primary' },
       { icon: CalendarDays, label: '일정 관리', path: '/trainer/schedule', color: 'text-state-info' },
+      { icon: Activity, label: '수업 목록', path: '/trainer/classes', color: 'text-teal-600' },
+      { icon: Bell, label: '노쇼 / 페널티', path: '/trainer/penalties', color: 'text-state-error' },
       { icon: MessageSquare, label: '운동 피드백', path: '/trainer/feedback', color: 'text-state-success' },
-      { icon: FileText, label: '공지사항', path: '/notices', color: 'text-content-secondary' },
+      { icon: ShoppingBag, label: '수업 템플릿', path: '/trainer/templates', color: 'text-content-secondary' },
+      { icon: Sparkles, label: '성과 / KPI', path: '/trainer/kpi', color: 'text-state-warning' },
+      { icon: FileText, label: '확인서', path: '/trainer/certificates', color: 'text-content-secondary' },
+      { icon: Bell, label: '알림', path: '/trainer/notifications', color: 'text-content-secondary' },
+      { icon: User, label: '설정', path: '/trainer/settings', color: 'text-content-secondary' },
     ];
 
     return (

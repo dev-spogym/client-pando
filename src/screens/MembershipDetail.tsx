@@ -1,7 +1,15 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { ArrowLeft, Calendar, CreditCard, Pause, History, AlertCircle } from 'lucide-react';
+import { useAuthStore } from '@/stores/authStore';
 import { getPreviewContractById, isPreviewMode } from '@/lib/preview';
+import {
+  getLocalLessonCountHistories,
+  getLocalLessonCounts,
+  type LessonCountHistoryEntry,
+  type LessonCountSummary,
+} from '@/lib/lessonPlanning';
+import { getReservations } from '@/lib/memberExperience';
 import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
 import { cn, calcDday, formatDateKo, formatCurrency, calcPercent } from '@/lib/utils';
@@ -23,7 +31,11 @@ export default function MembershipDetail() {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
   const [searchParams] = useSearchParams();
+  const { member } = useAuthStore();
   const [contract, setContract] = useState<ContractDetail | null>(null);
+  const [lessonCounts, setLessonCounts] = useState<LessonCountSummary[]>([]);
+  const [lessonHistories, setLessonHistories] = useState<LessonCountHistoryEntry[]>([]);
+  const [nextLessonDate, setNextLessonDate] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [showHolding, setShowHolding] = useState(false);
   const [holdingDays, setHoldingDays] = useState(7);
@@ -32,6 +44,11 @@ export default function MembershipDetail() {
   useEffect(() => {
     if (id) fetchContract();
   }, [id]);
+
+  useEffect(() => {
+    if (!member?.id) return;
+    fetchLessonUsage();
+  }, [member?.id]);
 
   useEffect(() => {
     setShowHolding(searchParams.get('holding') === '1');
@@ -59,6 +76,74 @@ export default function MembershipDetail() {
   const handleHolding = () => {
     toast.success(`홀딩 ${holdingDays}일 신청이 완료되었습니다. 관리자 승인 후 적용됩니다.`);
     setShowHolding(false);
+  };
+
+  const fetchLessonUsage = async () => {
+    if (!member) return;
+
+    const localNextLesson = getReservations(member.id)
+      .filter((item) => new Date(item.startTime) >= new Date())
+      .sort((a, b) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime())[0] || null;
+
+    if (isPreviewMode()) {
+      setLessonCounts(getLocalLessonCounts(member.id));
+      setLessonHistories(getLocalLessonCountHistories(member.id));
+      setNextLessonDate(localNextLesson?.startTime ?? null);
+      return;
+    }
+
+    try {
+      const [{ data: countsData }, { data: historyData }, { data: nextClassData }] = await Promise.all([
+        supabase
+          .from('lesson_counts')
+          .select('id, memberId, productName, totalCount, usedCount, startDate, endDate')
+          .eq('memberId', member.id)
+          .order('endDate'),
+        supabase
+          .from('lesson_count_histories')
+          .select('id, lessonCountId, memberId, scheduleId, deductedAt, memo')
+          .eq('memberId', member.id)
+          .order('deductedAt', { ascending: false })
+          .limit(10),
+        supabase
+          .from('classes')
+          .select('startTime')
+          .eq('member_id', member.id)
+          .gte('startTime', new Date().toISOString())
+          .order('startTime')
+          .limit(1),
+      ]);
+
+      const mappedCounts: LessonCountSummary[] = (countsData || []).map((item) => ({
+        id: String(item.id),
+        memberId: item.memberId,
+        productName: item.productName,
+        totalCount: item.totalCount,
+        usedCount: item.usedCount,
+        startDate: item.startDate,
+        endDate: item.endDate,
+        note: null,
+      }));
+
+      const mappedHistories: LessonCountHistoryEntry[] = (historyData || []).map((item) => ({
+        id: String(item.id),
+        memberId: item.memberId,
+        lessonCountId: String(item.lessonCountId),
+        classId: item.scheduleId ?? null,
+        title: 'PT 사용',
+        trainerName: null,
+        deductedAt: item.deductedAt,
+        note: item.memo ?? null,
+      }));
+
+      setLessonCounts(mappedCounts.length > 0 ? mappedCounts : getLocalLessonCounts(member.id));
+      setLessonHistories(mappedHistories.length > 0 ? mappedHistories : getLocalLessonCountHistories(member.id));
+      setNextLessonDate(nextClassData?.[0]?.startTime ?? localNextLesson?.startTime ?? null);
+    } catch {
+      setLessonCounts(getLocalLessonCounts(member.id));
+      setLessonHistories(getLocalLessonCountHistories(member.id));
+      setNextLessonDate(localNextLesson?.startTime ?? null);
+    }
   };
 
   if (loading) {
@@ -94,6 +179,12 @@ export default function MembershipDetail() {
     ? Math.ceil((new Date(contract.endDate).getTime() - new Date(contract.startDate).getTime()) / (1000 * 60 * 60 * 24))
     : 0;
   const remainDays = dday !== null && dday > 0 ? dday : 0;
+  const relevantLessonCount = lessonCounts.find((item) =>
+    contract.productName ? item.productName.includes(contract.productName.replace(/\s+/g, ' ').trim().split(' ')[0]) : true
+  ) || lessonCounts[0] || null;
+  const relevantHistories = relevantLessonCount
+    ? lessonHistories.filter((item) => item.lessonCountId === relevantLessonCount.id).slice(0, 5)
+    : [];
 
   return (
     <div className="min-h-screen bg-surface-secondary">
@@ -152,6 +243,67 @@ export default function MembershipDetail() {
           {contract.endDate && <DetailRow label="종료일" value={formatDateKo(contract.endDate)} />}
           {contract.signedAt && <DetailRow label="계약일" value={formatDateKo(contract.signedAt)} />}
         </div>
+
+        {relevantLessonCount && (
+          <div className="bg-surface rounded-card p-4 shadow-card space-y-4">
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <p className="text-xs text-content-tertiary">PT / 레슨 이용 현황</p>
+                <p className="mt-1 text-sm font-semibold">{relevantLessonCount.productName}</p>
+              </div>
+              <div className="rounded-xl bg-primary-light px-3 py-2 text-right">
+                <p className="text-[11px] text-primary">잔여 회차</p>
+                <p className="text-lg font-bold text-primary">
+                  {Math.max(relevantLessonCount.totalCount - relevantLessonCount.usedCount, 0)}회
+                </p>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div className="rounded-xl bg-surface-secondary px-3 py-3">
+                <p className="text-[11px] text-content-tertiary">사용 회차</p>
+                <p className="mt-1 text-sm font-semibold">
+                  {relevantLessonCount.usedCount}/{relevantLessonCount.totalCount}
+                </p>
+              </div>
+              <div className="rounded-xl bg-surface-secondary px-3 py-3">
+                <p className="text-[11px] text-content-tertiary">사용 기간</p>
+                <p className="mt-1 text-sm font-semibold">
+                  {formatDateKo(relevantLessonCount.startDate)} ~ {formatDateKo(relevantLessonCount.endDate)}
+                </p>
+              </div>
+            </div>
+
+            {nextLessonDate && (
+              <div className="rounded-xl bg-surface-secondary px-3 py-3">
+                <p className="text-[11px] text-content-tertiary">다음 예약 예정</p>
+                <p className="mt-1 text-sm font-semibold">{formatDateKo(nextLessonDate)}</p>
+              </div>
+            )}
+
+            <div>
+              <div className="mb-2 flex items-center gap-2">
+                <History className="w-4 h-4 text-content-secondary" />
+                <p className="text-sm font-semibold">차감 이력</p>
+              </div>
+              {relevantHistories.length === 0 ? (
+                <p className="text-sm text-content-tertiary">아직 차감된 이력이 없습니다.</p>
+              ) : (
+                <div className="space-y-2">
+                  {relevantHistories.map((item) => (
+                    <div key={item.id} className="rounded-xl bg-surface-secondary px-3 py-3">
+                      <div className="flex items-center justify-between gap-3">
+                        <p className="text-sm font-medium">{item.title}</p>
+                        <span className="text-xs text-content-tertiary">{formatDateKo(item.deductedAt)}</span>
+                      </div>
+                      {item.note && <p className="mt-1 text-xs text-content-secondary">{item.note}</p>}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
 
         {/* 홀딩 신청 버튼 */}
         {!isExpired && contract.status === '서명완료' && (

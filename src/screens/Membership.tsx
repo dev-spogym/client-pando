@@ -3,6 +3,13 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { CreditCard, ChevronRight, Calendar, Hash } from 'lucide-react';
 import { useAuthStore } from '@/stores/authStore';
 import { getPreviewContracts, isPreviewMode } from '@/lib/preview';
+import {
+  getLocalLessonCountHistories,
+  getLocalLessonCounts,
+  type LessonCountHistoryEntry,
+  type LessonCountSummary,
+} from '@/lib/lessonPlanning';
+import { getReservations } from '@/lib/memberExperience';
 import { supabase } from '@/lib/supabase';
 import { cn, calcDday, formatDateKo, calcPercent } from '@/lib/utils';
 
@@ -24,6 +31,9 @@ export default function Membership() {
     searchParams.get('tab') === 'expired' ? 'expired' : 'active'
   );
   const [contracts, setContracts] = useState<ContractItem[]>([]);
+  const [lessonCounts, setLessonCounts] = useState<LessonCountSummary[]>([]);
+  const [lessonHistories, setLessonHistories] = useState<LessonCountHistoryEntry[]>([]);
+  const [nextLessonDate, setNextLessonDate] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -33,6 +43,7 @@ export default function Membership() {
   useEffect(() => {
     if (!member) return;
     fetchContracts();
+    fetchLessonSummary();
   }, [member]);
 
   const fetchContracts = async () => {
@@ -55,6 +66,74 @@ export default function Membership() {
     setLoading(false);
   };
 
+  const fetchLessonSummary = async () => {
+    if (!member) return;
+
+    const localNextLesson = getReservations(member.id)
+      .filter((item) => new Date(item.startTime) >= new Date())
+      .sort((a, b) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime())[0] || null;
+
+    if (isPreviewMode()) {
+      setLessonCounts(getLocalLessonCounts(member.id));
+      setLessonHistories(getLocalLessonCountHistories(member.id));
+      setNextLessonDate(localNextLesson?.startTime ?? null);
+      return;
+    }
+
+    try {
+      const [{ data: countsData }, { data: historyData }, { data: nextClassData }] = await Promise.all([
+        supabase
+          .from('lesson_counts')
+          .select('id, memberId, productName, totalCount, usedCount, startDate, endDate')
+          .eq('memberId', member.id)
+          .order('endDate'),
+        supabase
+          .from('lesson_count_histories')
+          .select('id, lessonCountId, memberId, scheduleId, deductedAt, memo')
+          .eq('memberId', member.id)
+          .order('deductedAt', { ascending: false })
+          .limit(5),
+        supabase
+          .from('classes')
+          .select('startTime')
+          .eq('member_id', member.id)
+          .gte('startTime', new Date().toISOString())
+          .order('startTime')
+          .limit(1),
+      ]);
+
+      const mappedCounts: LessonCountSummary[] = (countsData || []).map((item) => ({
+        id: String(item.id),
+        memberId: item.memberId,
+        productName: item.productName,
+        totalCount: item.totalCount,
+        usedCount: item.usedCount,
+        startDate: item.startDate,
+        endDate: item.endDate,
+        note: null,
+      }));
+
+      const mappedHistories: LessonCountHistoryEntry[] = (historyData || []).map((item) => ({
+        id: String(item.id),
+        memberId: item.memberId,
+        lessonCountId: String(item.lessonCountId),
+        classId: item.scheduleId ?? null,
+        title: 'PT 사용',
+        trainerName: null,
+        deductedAt: item.deductedAt,
+        note: item.memo ?? null,
+      }));
+
+      setLessonCounts(mappedCounts.length > 0 ? mappedCounts : getLocalLessonCounts(member.id));
+      setLessonHistories(mappedHistories.length > 0 ? mappedHistories : getLocalLessonCountHistories(member.id));
+      setNextLessonDate(nextClassData?.[0]?.startTime ?? localNextLesson?.startTime ?? null);
+    } catch {
+      setLessonCounts(getLocalLessonCounts(member.id));
+      setLessonHistories(getLocalLessonCountHistories(member.id));
+      setNextLessonDate(localNextLesson?.startTime ?? null);
+    }
+  };
+
   const activeContracts = contracts.filter(
     (c) => c.status === '서명완료' || c.status === '대기'
   );
@@ -63,6 +142,8 @@ export default function Membership() {
   );
 
   const displayList = tab === 'active' ? activeContracts : expiredContracts;
+  const activeLessonCount = lessonCounts.find((item) => item.usedCount < item.totalCount) || lessonCounts[0] || null;
+  const latestLessonHistory = lessonHistories[0] || null;
 
   return (
     <div className="min-h-screen bg-surface-secondary">
@@ -119,6 +200,31 @@ export default function Membership() {
             <p className="text-sm font-semibold mt-1">결제 페이지 바로가기</p>
           </button>
         </div>
+
+        {activeLessonCount && (
+          <div className="bg-surface rounded-card p-4 shadow-card mb-4">
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <p className="text-xs text-content-tertiary">수강권 / 잔여 회차</p>
+                <p className="mt-1 text-sm font-semibold">{activeLessonCount.productName}</p>
+                <p className="mt-2 text-2xl font-bold text-primary">
+                  {Math.max(activeLessonCount.totalCount - activeLessonCount.usedCount, 0)}회
+                </p>
+              </div>
+              <div className="rounded-xl bg-primary-light px-3 py-2 text-right">
+                <p className="text-[11px] text-primary">사용</p>
+                <p className="text-sm font-semibold text-primary">
+                  {activeLessonCount.usedCount}/{activeLessonCount.totalCount}
+                </p>
+              </div>
+            </div>
+            <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-xs text-content-secondary">
+              <span>사용기간: {formatDateKo(activeLessonCount.startDate)} ~ {formatDateKo(activeLessonCount.endDate)}</span>
+              {latestLessonHistory && <span>최근 차감: {formatDateKo(latestLessonHistory.deductedAt)}</span>}
+              {nextLessonDate && <span>다음 예약: {formatDateKo(nextLessonDate)}</span>}
+            </div>
+          </div>
+        )}
 
         {loading ? (
           <div className="text-center py-12 text-content-tertiary text-sm">불러오는 중...</div>

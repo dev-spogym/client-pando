@@ -1,7 +1,10 @@
 import { useLocation } from 'react-router-dom';
+import { isTrainerRole } from '@/lib/auth';
 import { useAuthStore } from '@/stores/authStore';
 import BottomTabBar from './BottomTabBar';
 import TrainerTabBar from './TrainerTabBar';
+import FcTabBar from './FcTabBar';
+import StaffTabBar from './StaffTabBar';
 
 /** 탭바를 숨길 경로 목록 */
 const HIDE_TAB_PATHS = ['/login', '/register', '/lesson-sign', '/onboarding', '/checkout', '/renewal', '/withdrawal'];
@@ -11,24 +14,34 @@ const HIDE_TAB_PREFIXES = ['/classes/', '/shop/'];
 
 /** 트레이너 탭바를 숨길 경로 */
 const HIDE_TRAINER_TAB_PATHS = ['/login', '/register'];
+const HIDE_TRAINER_TAB_PREFIXES = ['/trainer/members/', '/trainer/classes/', '/trainer/certificates/'];
+const HIDE_FC_TAB_PREFIXES = ['/fc/leads/new', '/fc/leads/', '/fc/members/', '/fc/renewals/new', '/fc/notifications'];
+const HIDE_STAFF_TAB_PREFIXES = ['/staff/members/', '/staff/notifications'];
 
 /** 모바일 레이아웃 (헤더 + 탭바) */
 export default function MobileLayout({ children }: { children: React.ReactNode }) {
   const location = useLocation();
   const { userRole } = useAuthStore();
 
-  const isTrainerView = userRole === 'trainer' || userRole === 'admin';
+  const isTrainerView = isTrainerRole(userRole);
   const isTrainerPath = location.pathname.startsWith('/trainer');
+  const isFcPath = location.pathname.startsWith('/fc');
+  const isStaffPath = location.pathname.startsWith('/staff');
+  const showTrainerTab = isTrainerPath || (isTrainerView && location.pathname === '/profile');
+  const hideTrainerTab = HIDE_TRAINER_TAB_PATHS.some((p) => location.pathname.startsWith(p))
+    || HIDE_TRAINER_TAB_PREFIXES.some((p) => location.pathname.startsWith(p));
+  const hideFcTab = HIDE_FC_TAB_PREFIXES.some((p) => location.pathname.startsWith(p));
+  const hideStaffTab = HIDE_STAFF_TAB_PREFIXES.some((p) => location.pathname.startsWith(p));
+  const hideMemberTab = HIDE_TAB_PATHS.some((p) => location.pathname.startsWith(p))
+    || HIDE_TAB_PREFIXES.some((p) => location.pathname.startsWith(p));
 
-  // 탭바 숨김 여부
-  const hideTab = isTrainerView
-    ? HIDE_TRAINER_TAB_PATHS.some((p) => location.pathname.startsWith(p))
-      || (location.pathname.startsWith('/trainer/members/') && location.pathname.split('/').length > 3)
-    : HIDE_TAB_PATHS.some((p) => location.pathname.startsWith(p))
-      || HIDE_TAB_PREFIXES.some((p) => location.pathname.startsWith(p));
-
-  // 트레이너 경로이거나 트레이너 역할이면 트레이너 탭바
-  const showTrainerTab = isTrainerView && (isTrainerPath || location.pathname === '/profile');
+  const hideTab = isFcPath
+    ? hideFcTab
+    : isStaffPath
+      ? hideStaffTab
+      : showTrainerTab
+        ? hideTrainerTab
+        : hideMemberTab;
 
   return (
     <div className="mobile-shell flex justify-center bg-surface-secondary md:bg-gray-100">
@@ -36,7 +49,15 @@ export default function MobileLayout({ children }: { children: React.ReactNode }
         <main className={hideTab ? 'mobile-main' : 'mobile-main page-content'}>
           {children}
         </main>
-        {!hideTab && (showTrainerTab ? <TrainerTabBar /> : <BottomTabBar />)}
+        {!hideTab && (
+          isFcPath
+            ? <FcTabBar />
+            : isStaffPath
+              ? <StaffTabBar />
+              : showTrainerTab
+                ? <TrainerTabBar />
+                : <BottomTabBar />
+        )}
       </div>
     </div>
   );

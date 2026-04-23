@@ -1,4 +1,5 @@
 import { Navigate } from 'react-router-dom';
+import { getRoleHomePath, isTrainerRole } from '@/lib/auth';
 import { useAuthStore } from '@/stores/authStore';
 import LoadingSpinner from './LoadingSpinner';
 
@@ -15,9 +16,13 @@ export default function TrainerRoute({ children }: TrainerRouteProps) {
     return <LoadingSpinner fullScreen text="로딩 중..." />;
   }
 
-  // 트레이너/어드민이 아니면 로그인으로 리다이렉트
-  if (!trainer || (userRole !== 'trainer' && userRole !== 'admin')) {
+  if (!userRole) {
     return <Navigate to="/login" replace />;
+  }
+
+  // 트레이너 계열이 아니면 역할별 홈으로 리다이렉트
+  if (!trainer || !isTrainerRole(userRole)) {
+    return <Navigate to={getRoleHomePath(userRole)} replace />;
   }
 
   return <>{children}</>;

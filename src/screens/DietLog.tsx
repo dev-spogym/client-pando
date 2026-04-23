@@ -3,7 +3,6 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
   ArrowLeft, ChevronLeft, ChevronRight, Plus, X, Flame, Camera, Trash2,
 } from 'lucide-react';
-import { cn } from '@/lib/utils';
 
 type MealType = '아침' | '점심' | '저녁' | '간식';
 
@@ -69,7 +68,7 @@ export default function DietLog() {
     const nextMeal = searchParams.get('meal');
     return MEAL_TYPES.includes(nextMeal as MealType) ? (nextMeal as MealType) : '아침';
   });
-  const [logs, setLogs] = useState<Record<string, DayDietLog>>(loadLogs);
+  const [logs, setLogs] = useState<Record<string, DayDietLog> | null>(null);
 
   // 모달 폼 상태
   const [formName, setFormName] = useState('');
@@ -77,7 +76,11 @@ export default function DietLog() {
   const [formMemo, setFormMemo] = useState('');
 
   const dateStr = getDateStr(currentDate);
-  const dayLog = logs[dateStr];
+  const dayLog = logs?.[dateStr];
+
+  useEffect(() => {
+    setLogs(loadLogs());
+  }, []);
 
   useEffect(() => {
     const nextMeal = searchParams.get('meal');
@@ -111,7 +114,7 @@ export default function DietLog() {
   };
 
   const handleAddFood = () => {
-    if (!formName.trim()) return;
+    if (!formName.trim() || !logs) return;
 
     const newEntry: FoodEntry = {
       id: `${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
@@ -135,6 +138,8 @@ export default function DietLog() {
   };
 
   const handleDeleteFood = (meal: MealType, entryId: string) => {
+    if (!logs) return;
+
     const updated = { ...logs };
     if (updated[dateStr]?.meals[meal]) {
       updated[dateStr].meals[meal] = updated[dateStr].meals[meal].filter((e) => e.id !== entryId);
@@ -206,53 +211,59 @@ export default function DietLog() {
 
       {/* 끼니별 섹션 */}
       <div className="px-4 mt-4 pb-4 space-y-4">
-        {MEAL_TYPES.map((meal) => {
-          const entries = dayLog?.meals[meal] || [];
-          const mealCalories = entries.reduce((s, e) => s + e.calories, 0);
+        {logs === null ? (
+          <div className="bg-surface rounded-card p-8 text-center text-sm text-content-tertiary shadow-card">
+            불러오는 중...
+          </div>
+        ) : (
+          MEAL_TYPES.map((meal) => {
+            const entries = dayLog?.meals[meal] || [];
+            const mealCalories = entries.reduce((s, e) => s + e.calories, 0);
 
-          return (
-            <div key={meal} className="bg-surface rounded-card p-4 shadow-card">
-              <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center gap-2">
-                  <span className="text-lg">{mealIcon[meal]}</span>
-                  <h3 className="font-semibold text-sm">{meal}</h3>
-                  {mealCalories > 0 && (
-                    <span className="text-xs text-content-tertiary">{mealCalories}kcal</span>
-                  )}
+            return (
+              <div key={meal} className="bg-surface rounded-card p-4 shadow-card">
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-2">
+                    <span className="text-lg">{mealIcon[meal]}</span>
+                    <h3 className="font-semibold text-sm">{meal}</h3>
+                    {mealCalories > 0 && (
+                      <span className="text-xs text-content-tertiary">{mealCalories}kcal</span>
+                    )}
+                  </div>
+                  <button
+                    onClick={() => openAddModal(meal)}
+                    className="p-1.5 bg-primary-light rounded-lg active:bg-primary/20 transition-colors"
+                  >
+                    <Plus className="w-4 h-4 text-primary" />
+                  </button>
                 </div>
-                <button
-                  onClick={() => openAddModal(meal)}
-                  className="p-1.5 bg-primary-light rounded-lg active:bg-primary/20 transition-colors"
-                >
-                  <Plus className="w-4 h-4 text-primary" />
-                </button>
-              </div>
 
-              {entries.length === 0 ? (
-                <p className="text-sm text-content-tertiary text-center py-3">
-                  음식을 추가해주세요
-                </p>
-              ) : (
-                <div className="space-y-2">
-                  {entries.map((entry) => (
-                    <div key={entry.id} className="flex items-center gap-3 p-3 bg-surface-secondary rounded-lg">
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium truncate">{entry.name}</p>
-                        <div className="flex items-center gap-2 text-xs text-content-tertiary">
-                          <span>{entry.calories}kcal</span>
-                          {entry.memo && <span>· {entry.memo}</span>}
+                {entries.length === 0 ? (
+                  <p className="text-sm text-content-tertiary text-center py-3">
+                    음식을 추가해주세요
+                  </p>
+                ) : (
+                  <div className="space-y-2">
+                    {entries.map((entry) => (
+                      <div key={entry.id} className="flex items-center gap-3 p-3 bg-surface-secondary rounded-lg">
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium truncate">{entry.name}</p>
+                          <div className="flex items-center gap-2 text-xs text-content-tertiary">
+                            <span>{entry.calories}kcal</span>
+                            {entry.memo && <span>· {entry.memo}</span>}
+                          </div>
                         </div>
+                        <button onClick={() => handleDeleteFood(meal, entry.id)} className="p-1">
+                          <Trash2 className="w-4 h-4 text-content-tertiary" />
+                        </button>
                       </div>
-                      <button onClick={() => handleDeleteFood(meal, entry.id)} className="p-1">
-                        <Trash2 className="w-4 h-4 text-content-tertiary" />
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          );
-        })}
+                    ))}
+                  </div>
+                )}
+              </div>
+            );
+          })
+        )}
       </div>
 
       {/* 음식 추가 모달 */}

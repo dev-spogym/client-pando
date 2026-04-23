@@ -32,12 +32,15 @@ export interface ReservationEntry {
   classId: number;
   title: string;
   type: string;
+  staffId?: number | null;
   staffName: string;
   startTime: string;
   endTime: string;
   room: string | null;
-  status: 'reserved' | 'cancelled';
+  status: 'reserved' | 'completed' | 'cancelled';
+  source?: 'class' | 'trainer_request' | 'trainer_assignment';
   createdAt: string;
+  completedAt?: string | null;
 }
 
 export interface LessonFeedbackEntry {
@@ -529,7 +532,15 @@ export function buildRoutineSuggestion(draft: OnboardingDraft) {
 }
 
 export function getReservations(memberId: number) {
-  return readArray<ReservationEntry>(reservationKey(memberId)).filter((entry) => entry.status === 'reserved');
+  return readArray<ReservationEntry>(reservationKey(memberId))
+    .filter((entry) => entry.status === 'reserved')
+    .sort((a, b) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime());
+}
+
+export function getAllReservations(memberId: number) {
+  return readArray<ReservationEntry>(reservationKey(memberId)).sort(
+    (a, b) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime()
+  );
 }
 
 export function getReservation(memberId: number, classId: number) {
@@ -542,13 +553,26 @@ export function upsertReservation(memberId: number, entry: Omit<ReservationEntry
     ...entry,
     createdAt: new Date().toISOString(),
     status: 'reserved',
+    completedAt: null,
   });
+  writeJson(reservationKey(memberId), list);
+}
+
+export function markReservationCompleted(memberId: number, classId: number, completedAt?: string) {
+  const nextCompletedAt = completedAt ?? new Date().toISOString();
+  const list = readArray<ReservationEntry>(reservationKey(memberId)).map((entry) =>
+    entry.classId === classId
+      ? { ...entry, status: 'completed' as const, completedAt: nextCompletedAt }
+      : entry
+  );
   writeJson(reservationKey(memberId), list);
 }
 
 export function cancelReservation(memberId: number, classId: number) {
   const list = readArray<ReservationEntry>(reservationKey(memberId)).map((entry) =>
-    entry.classId === classId ? { ...entry, status: 'cancelled' as const } : entry
+    entry.classId === classId && entry.status !== 'completed'
+      ? { ...entry, status: 'cancelled' as const }
+      : entry
   );
   writeJson(reservationKey(memberId), list);
 }
@@ -771,6 +795,12 @@ export function getInstructorProfile(id: number, fallbackName?: string): Instruc
     reviewCount: 32,
     focusAreas: ['루틴 적응', '운동 습관 형성'],
   };
+}
+
+export function getInstructorProfiles(program?: string) {
+  const list = Object.values(INSTRUCTOR_PROFILES);
+  if (!program) return list;
+  return list.filter((item) => item.availablePrograms.includes(program));
 }
 
 export function buildRenewalPlans(member: MemberProfile): RenewalPlan[] {

@@ -1,7 +1,12 @@
 'use client';
 
 import NextLink, { type LinkProps as NextLinkProps } from 'next/link';
-import { useParams as useNextParams, usePathname, useRouter } from 'next/navigation';
+import {
+  useParams as useNextParams,
+  usePathname,
+  useRouter,
+  useSearchParams as useNextSearchParams,
+} from 'next/navigation';
 import {
   forwardRef,
   useCallback,
@@ -26,8 +31,6 @@ type LocationShape = {
   state: null;
 };
 
-const LOCATION_CHANGE_EVENT = 'spogym:location-change';
-
 function createSearchParams(init?: SearchParamsInit) {
   if (!init) return new URLSearchParams();
   if (init instanceof URLSearchParams) return new URLSearchParams(init);
@@ -41,23 +44,33 @@ function createSearchParams(init?: SearchParamsInit) {
   return params;
 }
 
-function readBrowserLocation() {
+function readBrowserHash() {
   if (typeof window === 'undefined') {
-    return { hash: '', search: '' };
+    return '';
   }
 
-  return {
-    hash: window.location.hash,
-    search: window.location.search,
-  };
+  return window.location.hash;
 }
 
-function notifyLocationChange() {
-  if (typeof window === 'undefined') return;
+function preservePreviewQuery(
+  to: string,
+  currentSearchParams?: Pick<URLSearchParams, 'get'> | null
+) {
+  if (currentSearchParams?.get('preview') !== '1') {
+    return to;
+  }
 
-  window.setTimeout(() => {
-    window.dispatchEvent(new Event(LOCATION_CHANGE_EVENT));
-  }, 0);
+  const nextUrl = new URL(to, 'http://local.preview');
+  if (!nextUrl.searchParams.has('preview')) {
+    nextUrl.searchParams.set('preview', '1');
+  }
+
+  const role = currentSearchParams.get('role');
+  if (role && !nextUrl.searchParams.has('role')) {
+    nextUrl.searchParams.set('role', role);
+  }
+
+  return `${nextUrl.pathname}${nextUrl.search}${nextUrl.hash}`;
 }
 
 export function Navigate({ to, replace = false }: { to: string; replace?: boolean }) {
@@ -72,36 +85,41 @@ export function Navigate({ to, replace = false }: { to: string; replace?: boolea
 
 export function useLocation(): LocationShape {
   const pathname = usePathname() || '/';
-  const [browserLocation, setBrowserLocation] = useState(readBrowserLocation);
+  const nextSearchParams = useNextSearchParams();
+  const [hash, setHash] = useState('');
+
+  const search = useMemo(() => {
+    const serialized = nextSearchParams?.toString() || '';
+    return serialized ? `?${serialized}` : '';
+  }, [nextSearchParams]);
 
   useEffect(() => {
-    const syncLocation = () => {
-      setBrowserLocation(readBrowserLocation());
+    const syncHash = () => {
+      setHash(readBrowserHash());
     };
 
-    syncLocation();
-    window.addEventListener('popstate', syncLocation);
-    window.addEventListener('hashchange', syncLocation);
-    window.addEventListener(LOCATION_CHANGE_EVENT, syncLocation);
+    syncHash();
+    window.addEventListener('popstate', syncHash);
+    window.addEventListener('hashchange', syncHash);
 
     return () => {
-      window.removeEventListener('popstate', syncLocation);
-      window.removeEventListener('hashchange', syncLocation);
-      window.removeEventListener(LOCATION_CHANGE_EVENT, syncLocation);
+      window.removeEventListener('popstate', syncHash);
+      window.removeEventListener('hashchange', syncHash);
     };
-  }, [pathname]);
+  }, []);
 
   return {
-    hash: browserLocation.hash,
-    key: `${pathname}${browserLocation.search}${browserLocation.hash}`,
+    hash,
+    key: `${pathname}${search}${hash}`,
     pathname,
-    search: browserLocation.search,
+    search,
     state: null,
   };
 }
 
 export function useNavigate() {
   const router = useRouter();
+  const nextSearchParams = useNextSearchParams();
 
   return useCallback(
     (to: number | string, options?: NavigateOptions) => {
@@ -118,15 +136,13 @@ export function useNavigate() {
       }
 
       if (options?.replace) {
-        router.replace(to);
-        notifyLocationChange();
+        router.replace(preservePreviewQuery(to, nextSearchParams));
         return;
       }
 
-      router.push(to);
-      notifyLocationChange();
+      router.push(preservePreviewQuery(to, nextSearchParams));
     },
-    [router]
+    [nextSearchParams, router]
   );
 }
 
@@ -167,8 +183,10 @@ export const Link = forwardRef<HTMLAnchorElement, CompatLinkProps>(function Comp
   { to, children, ...rest },
   ref
 ) {
+  const nextSearchParams = useNextSearchParams();
+
   return (
-    <NextLink href={to} ref={ref} {...rest}>
+    <NextLink href={preservePreviewQuery(to, nextSearchParams)} ref={ref} {...rest}>
       {children}
     </NextLink>
   );

@@ -1,20 +1,31 @@
 'use client';
 
-import { useEffect } from 'react';
+import { Suspense, useEffect } from 'react';
+import { usePathname, useSearchParams } from 'next/navigation';
 import { Toaster } from 'sonner';
 import PwaInstallBanner from '@/components/PwaInstallBanner';
 import { useAuthStore } from '@/stores/authStore';
 
-export default function Providers({ children }: { children: React.ReactNode }) {
+function AuthBootstrap() {
   const initialize = useAuthStore((state) => state.initialize);
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const searchKey = searchParams?.toString() || '';
 
   useEffect(() => {
     void initialize();
-  }, [initialize]);
+  }, [initialize, pathname, searchKey]);
 
+  return null;
+}
+
+export default function Providers({ children }: { children: React.ReactNode }) {
   return (
     <>
-      {children}
+      <Suspense fallback={null}>
+        <AuthBootstrap />
+        {children}
+      </Suspense>
       <PwaInstallBanner />
       <Toaster
         position="top-center"

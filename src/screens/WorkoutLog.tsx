@@ -7,6 +7,7 @@ import { cn } from '@/lib/utils';
 import { getPreviewWorkoutEntries, isPreviewMode } from '@/lib/preview';
 import { supabase } from '@/lib/supabase';
 import { useAuthStore } from '@/stores/authStore';
+import LoadingSpinner from '@/components/LoadingSpinner';
 
 /** 운동 부위 카테고리 */
 const CATEGORIES = ['가슴', '등', '어깨', '하체', '팔', '코어'] as const;
@@ -221,6 +222,10 @@ export default function WorkoutLog() {
     '팔': 'bg-purple-100 text-purple-600',
     '코어': 'bg-yellow-100 text-yellow-700',
   };
+
+  if (!member) {
+    return <LoadingSpinner fullScreen text="운동일지를 불러오는 중..." />;
+  }
 
   return (
     <div className="min-h-screen bg-surface-secondary">

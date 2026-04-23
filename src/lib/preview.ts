@@ -1,8 +1,18 @@
 import type { MockPaymentRecord, OnboardingDraft } from '@/lib/memberExperience';
+import {
+  seedLessonPlanningStorage,
+  type LessonBookingRequestEntry,
+  type LessonCountHistoryEntry,
+  type LessonCountSummary,
+} from '@/lib/lessonPlanning';
 import type { MemberProfile, TrainerProfile } from '@/stores/authStore';
 
 export const PREVIEW_MEMBER_ID = 9001;
 export const PREVIEW_TRAINER_ID = 9101;
+export type PreviewRole = 'member' | 'trainer' | 'fc' | 'staff' | 'golf_trainer';
+type SearchParamReader = Pick<URLSearchParams, 'get'> | null | undefined;
+
+const PREVIEW_ROLES: PreviewRole[] = ['member', 'trainer', 'fc', 'staff', 'golf_trainer'];
 
 export const PREVIEW_CLASS_IDS = {
   reserved: 101,
@@ -58,20 +68,27 @@ function dateKey(days: number) {
 
 export function isPreviewMode() {
   if (!isBrowser()) return false;
-  const params = new URLSearchParams(window.location.search);
-  return params.get('preview') === '1';
+  return readPreviewMode(new URLSearchParams(window.location.search));
 }
 
-export function getPreviewRole() {
+export function getPreviewRole(): PreviewRole {
   if (!isBrowser()) return 'member';
-  const params = new URLSearchParams(window.location.search);
-  return params.get('role') === 'trainer' ? 'trainer' : 'member';
+  return readPreviewRole(new URLSearchParams(window.location.search));
 }
 
 export function getPreviewSearchParam(name: string) {
   if (!isBrowser()) return null;
   const params = new URLSearchParams(window.location.search);
   return params.get(name);
+}
+
+export function readPreviewMode(params: SearchParamReader) {
+  return params?.get('preview') === '1';
+}
+
+export function readPreviewRole(params: SearchParamReader): PreviewRole {
+  const role = params?.get('role');
+  return PREVIEW_ROLES.includes(role as PreviewRole) ? (role as PreviewRole) : 'member';
 }
 
 export function getPreviewMemberProfile(): MemberProfile {
@@ -101,11 +118,52 @@ export function getPreviewTrainerProfile(): TrainerProfile {
     role: 'TRAINER',
     branchId: 1,
     isActive: true,
-    staffId: 301,
+    staffId: 1,
     staffName: '박서연',
     staffPhone: '010-5555-1234',
     staffColor: '#0f766e',
   };
+}
+
+function getPreviewLessonRequestSeeds(): LessonBookingRequestEntry[] {
+  return [
+    {
+      id: 'preview-request-member-pt-pending',
+      classId: 2106,
+      memberId: PREVIEW_MEMBER_ID,
+      memberName: '김회원',
+      trainerId: 1,
+      trainerName: '박서연',
+      title: '오전 자세 교정 PT 오픈 슬롯',
+      type: 'PT',
+      startTime: toIso(2, 9, 0),
+      endTime: toIso(2, 9, 50),
+      room: 'PT룸 1',
+      status: 'pending',
+      source: 'member_request',
+      requestedAt: toIso(-1, 13, 30),
+      resolvedAt: null,
+      note: '허리 통증 보완 세션 요청',
+    },
+    {
+      id: 'preview-request-trainer-pt-pending',
+      classId: 2103,
+      memberId: 1203,
+      memberName: '최민아',
+      trainerId: 1,
+      trainerName: '박서연',
+      title: '하체 밸런스 PT 오픈 슬롯',
+      type: 'PT',
+      startTime: toIso(1, 14, 0),
+      endTime: toIso(1, 14, 50),
+      room: 'PT룸 2',
+      status: 'pending',
+      source: 'member_request',
+      requestedAt: toIso(-1, 16, 10),
+      resolvedAt: null,
+      note: '회원 예약 요청 대기',
+    },
+  ];
 }
 
 export function getPreviewClasses() {
@@ -179,11 +237,46 @@ export function getPreviewClasses() {
 }
 
 export function getPreviewClassById(id: number) {
-  return getPreviewClasses().find((item) => item.id === id) || null;
+  const baseClass = getPreviewClasses().find((item) => item.id === id);
+  if (baseClass) return baseClass;
+
+  const trainerClass = getPreviewTrainerClasses().find((item) => item.id === id);
+  if (!trainerClass) return null;
+
+  return {
+    id: trainerClass.id,
+    title: trainerClass.title,
+    type: trainerClass.type,
+    staffId: trainerClass.staffId,
+    staffName: trainerClass.staffName,
+    room: trainerClass.room,
+    startTime: trainerClass.startTime,
+    endTime: trainerClass.endTime,
+    capacity: trainerClass.capacity,
+    booked: trainerClass.booked,
+    lesson_status: trainerClass.lessonStatus ?? (trainerClass.memberId ? 'reserved' : null),
+  };
 }
 
 export function getPreviewClassesForDate(date: string, filter: 'ALL' | 'PT' | 'GX') {
-  return getPreviewClasses().filter((item) => {
+  const mergedClasses = [
+    ...getPreviewClasses(),
+    ...getPreviewTrainerClasses().map((item) => ({
+      id: item.id,
+      title: item.title,
+      type: item.type,
+      staffId: item.staffId,
+      staffName: item.staffName,
+      room: item.room,
+      startTime: item.startTime,
+      endTime: item.endTime,
+      capacity: item.capacity,
+      booked: item.booked,
+      lesson_status: item.lessonStatus ?? (item.memberId ? 'reserved' : null),
+    })),
+  ];
+
+  return mergedClasses.filter((item) => {
     const sameDate = item.startTime.startsWith(date);
     const sameFilter = filter === 'ALL' || item.type === filter;
     return sameDate && sameFilter;
@@ -577,6 +670,42 @@ export function seedPreviewMemberExperience(memberId: number) {
     },
   };
 
+  const lessonCounts: LessonCountSummary[] = [
+    {
+      id: 'preview-lesson-count-pt-10',
+      memberId,
+      productName: 'PT 10회 패키지',
+      totalCount: 10,
+      usedCount: 4,
+      startDate: toIso(-18, 12),
+      endDate: toIso(42, 12),
+      note: '체형 교정 집중 패키지',
+    },
+  ];
+
+  const lessonCountHistories: LessonCountHistoryEntry[] = [
+    {
+      id: 'preview-lesson-history-1',
+      memberId,
+      lessonCountId: 'preview-lesson-count-pt-10',
+      classId: PREVIEW_CLASS_IDS.feedbackDone,
+      title: '체형 교정 PT',
+      trainerName: '박서연',
+      deductedAt: toIso(-2, 18),
+      note: '수업 완료 차감',
+    },
+    {
+      id: 'preview-lesson-history-2',
+      memberId,
+      lessonCountId: 'preview-lesson-count-pt-10',
+      classId: PREVIEW_CLASS_IDS.reserved,
+      title: 'PT 코어 리셋',
+      trainerName: '박서연',
+      deductedAt: toIso(-7, 10),
+      note: '수업 완료 차감',
+    },
+  ];
+
   writeJson(`spogym-onboarding-${memberId}`, onboarding);
   writeJson(`spogym-reservations-${memberId}`, reservations);
   writeJson(`spogym-waitlist-${memberId}`, waitlist);
@@ -593,6 +722,12 @@ export function seedPreviewMemberExperience(memberId: number) {
   writeJson(`spogym-golf-bookings-${memberId}`, golfBookings);
   writeJson('spogym-workout-logs', workoutLogs);
   writeJson('spogym-diet-logs', dietLogs);
+  seedLessonPlanningStorage({
+    memberId,
+    counts: lessonCounts,
+    histories: lessonCountHistories,
+    requests: getPreviewLessonRequestSeeds(),
+  });
 }
 
 type PreviewTrainerMember = {
@@ -619,6 +754,9 @@ type PreviewTrainerClass = {
   branchId: number;
   staffId: number | null;
   staffName: string;
+  memberId?: number | null;
+  memberName?: string | null;
+  lessonStatus?: string | null;
 };
 
 type PreviewTrainerExerciseLog = {
@@ -725,6 +863,9 @@ function getBasePreviewTrainerClasses(): PreviewTrainerClass[] {
       branchId: trainer.branchId,
       staffId: trainer.staffId,
       staffName: trainer.staffName || trainer.name,
+      memberId: 1201,
+      memberName: '김지은',
+      lessonStatus: 'reserved',
     },
     {
       id: 2102,
@@ -738,16 +879,31 @@ function getBasePreviewTrainerClasses(): PreviewTrainerClass[] {
       branchId: trainer.branchId,
       staffId: trainer.staffId,
       staffName: trainer.staffName || trainer.name,
+      lessonStatus: null,
     },
     {
       id: 2103,
-      title: '하체 밸런스 PT',
+      title: '하체 밸런스 PT 오픈 슬롯',
       type: 'PT',
       startTime: toIso(1, 14, 0),
       endTime: toIso(1, 14, 50),
       room: 'PT룸 2',
       capacity: 1,
-      booked: 1,
+      booked: 0,
+      branchId: trainer.branchId,
+      staffId: trainer.staffId,
+      staffName: trainer.staffName || trainer.name,
+      lessonStatus: null,
+    },
+    {
+      id: 2106,
+      title: '오전 자세 교정 PT 오픈 슬롯',
+      type: 'PT',
+      startTime: toIso(2, 9, 0),
+      endTime: toIso(2, 9, 50),
+      room: 'PT룸 1',
+      capacity: 1,
+      booked: 0,
       branchId: trainer.branchId,
       staffId: trainer.staffId,
       staffName: trainer.staffName || trainer.name,
@@ -777,6 +933,7 @@ function getBasePreviewTrainerClasses(): PreviewTrainerClass[] {
       branchId: trainer.branchId,
       staffId: trainer.staffId,
       staffName: trainer.staffName || trainer.name,
+      lessonStatus: 'completed',
     },
   ];
 }
@@ -789,7 +946,6 @@ function getBasePreviewTrainerAttendanceByClass(): Record<number, PreviewTrainer
       { memberId: members[1].id, memberName: members[1].name },
       { memberId: members[2].id, memberName: members[2].name },
     ],
-    2103: [{ memberId: members[0].id, memberName: members[0].name }],
     2104: [{ memberId: members[2].id, memberName: members[2].name }],
     2105: [
       { memberId: members[0].id, memberName: members[0].name },
@@ -942,6 +1098,73 @@ export function seedPreviewTrainerExperience(_trainerId: number) {
   if (!window.localStorage.getItem(PREVIEW_TRAINER_STORAGE.memos)) {
     writeJson(PREVIEW_TRAINER_STORAGE.memos, []);
   }
+
+  seedLessonPlanningStorage({
+    memberId: 1201,
+    counts: [
+      {
+        id: 'preview-trainer-member-1201-pt',
+        memberId: 1201,
+        productName: 'PT 10회',
+        totalCount: 10,
+        usedCount: 5,
+        startDate: toIso(-21, 12),
+        endDate: toIso(30, 12),
+        note: '하체 안정화 패키지',
+      },
+    ],
+    histories: [
+      {
+        id: 'preview-trainer-member-1201-history-1',
+        memberId: 1201,
+        lessonCountId: 'preview-trainer-member-1201-pt',
+        classId: 2101,
+        title: 'PT 코어 리셋',
+        trainerName: '박서연',
+        deductedAt: toIso(-1, 10),
+        note: '수업 완료 차감',
+      },
+      {
+        id: 'preview-trainer-member-1201-history-2',
+        memberId: 1201,
+        lessonCountId: 'preview-trainer-member-1201-pt',
+        classId: 2103,
+        title: '하체 밸런스 PT',
+        trainerName: '박서연',
+        deductedAt: toIso(-6, 14),
+        note: '수업 완료 차감',
+      },
+    ],
+    requests: getPreviewLessonRequestSeeds(),
+  });
+
+  seedLessonPlanningStorage({
+    memberId: 1203,
+    counts: [
+      {
+        id: 'preview-trainer-member-1203-golf',
+        memberId: 1203,
+        productName: '골프 레슨 8회',
+        totalCount: 8,
+        usedCount: 3,
+        startDate: toIso(-14, 12),
+        endDate: toIso(26, 12),
+        note: '스윙 교정 레슨',
+      },
+    ],
+    histories: [
+      {
+        id: 'preview-trainer-member-1203-history-1',
+        memberId: 1203,
+        lessonCountId: 'preview-trainer-member-1203-golf',
+        classId: null,
+        title: '골프 스윙 밸런스 레슨',
+        trainerName: '박서연',
+        deductedAt: toIso(-4, 11),
+        note: '수업 완료 차감',
+      },
+    ],
+  });
 }
 
 export function getPreviewTrainerMembers() {
@@ -954,7 +1177,11 @@ export function getPreviewTrainerMemberById(memberId: number) {
 
 export function getPreviewTrainerClasses() {
   const savedClasses = readJson<PreviewTrainerClass[]>(PREVIEW_TRAINER_STORAGE.classes, []);
-  return [...getBasePreviewTrainerClasses(), ...savedClasses].sort(
+  const merged = new Map<number, PreviewTrainerClass>();
+  getBasePreviewTrainerClasses().forEach((item) => merged.set(item.id, item));
+  savedClasses.forEach((item) => merged.set(item.id, item));
+
+  return Array.from(merged.values()).sort(
     (a, b) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime()
   );
 }
@@ -980,11 +1207,30 @@ export function appendPreviewTrainerClass(input: Omit<PreviewTrainerClass, 'id'>
   return nextClass;
 }
 
+export function updatePreviewTrainerClass(classId: number, patch: Partial<PreviewTrainerClass>) {
+  const existing = getPreviewTrainerClasses().find((item) => item.id === classId);
+  if (!existing) return null;
+
+  const savedClasses = readJson<PreviewTrainerClass[]>(PREVIEW_TRAINER_STORAGE.classes, []);
+  const nextClass: PreviewTrainerClass = {
+    ...existing,
+    ...patch,
+  };
+
+  const nextSaved = savedClasses.filter((item) => item.id !== classId);
+  writeJson(PREVIEW_TRAINER_STORAGE.classes, [...nextSaved, nextClass]);
+  return nextClass;
+}
+
 export function getPreviewTrainerTodayAttendanceIds() {
   return [1201, 1202];
 }
 
 export function getPreviewTrainerAttendanceMembersByClassId(classId: number) {
+  const previewClass = getPreviewTrainerClasses().find((item) => item.id === classId);
+  if (previewClass?.memberId && previewClass.memberName) {
+    return [{ memberId: previewClass.memberId, memberName: previewClass.memberName }];
+  }
   return getBasePreviewTrainerAttendanceByClass()[classId] || [];
 }
 

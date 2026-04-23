@@ -1,13 +1,14 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
-  ArrowLeft, Dumbbell, Activity, Star, StickyNote,
+  ArrowLeft, Dumbbell, Activity, Star, StickyNote, CalendarClock,
   Plus, Send,
 } from 'lucide-react';
 import { useAuthStore } from '@/stores/authStore';
 import {
   appendPreviewTrainerEvaluation,
   appendPreviewTrainerMemo,
+  getPreviewTrainerClasses,
   getPreviewSearchParam,
   getPreviewTrainerBodyComps,
   getPreviewTrainerEvaluations,
@@ -16,6 +17,12 @@ import {
   getPreviewTrainerMemos,
   isPreviewMode,
 } from '@/lib/preview';
+import {
+  getLocalLessonCountHistories,
+  getLocalLessonCounts,
+  type LessonCountHistoryEntry,
+  type LessonCountSummary,
+} from '@/lib/lessonPlanning';
 import { supabase } from '@/lib/supabase';
 import { cn, formatPhone, formatDateKo } from '@/lib/utils';
 import LoadingSpinner from '@/components/LoadingSpinner';
@@ -67,7 +74,18 @@ interface Memo {
   createdAt: string;
 }
 
-type TabKey = 'exercise' | 'body' | 'evaluation' | 'memo';
+interface LessonSchedule {
+  id: number;
+  title: string;
+  type: string;
+  startTime: string;
+  endTime: string;
+  room: string | null;
+  staffName: string;
+  lessonStatus: string | null;
+}
+
+type TabKey = 'exercise' | 'body' | 'lesson' | 'evaluation' | 'memo';
 
 /** 트레이너 - 회원 상세 */
 export default function TrainerMemberDetail() {
@@ -81,6 +99,9 @@ export default function TrainerMemberDetail() {
 
   const [exerciseLogs, setExerciseLogs] = useState<ExerciseLog[]>([]);
   const [bodyComps, setBodyComps] = useState<BodyComp[]>([]);
+  const [lessonSchedules, setLessonSchedules] = useState<LessonSchedule[]>([]);
+  const [lessonCounts, setLessonCounts] = useState<LessonCountSummary[]>([]);
+  const [lessonCountHistories, setLessonCountHistories] = useState<LessonCountHistoryEntry[]>([]);
   const [evaluations, setEvaluations] = useState<Evaluation[]>([]);
   const [memos, setMemos] = useState<Memo[]>([]);
 
@@ -102,7 +123,7 @@ export default function TrainerMemberDetail() {
   useEffect(() => {
     if (!isPreviewMode()) return;
     const previewTab = getPreviewSearchParam('tab');
-    if (previewTab === 'body' || previewTab === 'evaluation' || previewTab === 'memo') {
+    if (previewTab === 'body' || previewTab === 'lesson' || previewTab === 'evaluation' || previewTab === 'memo') {
       setTab(previewTab);
     }
   }, []);
@@ -111,6 +132,7 @@ export default function TrainerMemberDetail() {
     if (!id || !memberInfo) return;
     if (tab === 'exercise') fetchExerciseLogs();
     if (tab === 'body') fetchBodyComps();
+    if (tab === 'lesson') fetchLessonOverview();
     if (tab === 'evaluation') fetchEvaluations();
     if (tab === 'memo') fetchMemos();
   }, [tab, id, memberInfo]);
@@ -177,6 +199,90 @@ export default function TrainerMemberDetail() {
       .order('createdAt', { ascending: false })
       .limit(20);
     if (data) setEvaluations(data);
+  };
+
+  const fetchLessonOverview = async () => {
+    if (isPreviewMode()) {
+      setLessonSchedules(
+        getPreviewTrainerClasses()
+          .filter((item) => item.memberId === Number(id))
+          .map((item) => ({
+            id: item.id,
+            title: item.title,
+            type: item.type,
+            startTime: item.startTime,
+            endTime: item.endTime,
+            room: item.room,
+            staffName: item.staffName,
+            lessonStatus: item.lessonStatus ?? (item.memberId ? 'reserved' : null),
+          }))
+          .sort((a, b) => new Date(b.startTime).getTime() - new Date(a.startTime).getTime())
+      );
+      setLessonCounts(getLocalLessonCounts(Number(id)));
+      setLessonCountHistories(getLocalLessonCountHistories(Number(id)));
+      return;
+    }
+
+    const [{ data: classData }, { data: countsData }, { data: historyData }] = await Promise.all([
+      supabase
+        .from('classes')
+        .select('id, title, type, startTime, endTime, room, staffName, lesson_status')
+        .eq('member_id', Number(id))
+        .order('startTime', { ascending: false })
+        .limit(20),
+      supabase
+        .from('lesson_counts')
+        .select('id, memberId, productName, totalCount, usedCount, startDate, endDate')
+        .eq('memberId', Number(id))
+        .order('endDate'),
+      supabase
+        .from('lesson_count_histories')
+        .select('id, lessonCountId, memberId, scheduleId, deductedAt, memo')
+        .eq('memberId', Number(id))
+        .order('deductedAt', { ascending: false })
+        .limit(10),
+    ]);
+
+    setLessonSchedules(
+      ((classData || []) as Array<Omit<LessonSchedule, 'lessonStatus'> & { lesson_status?: string | null }>).map((item) => ({
+        id: item.id,
+        title: item.title,
+        type: item.type,
+        startTime: item.startTime,
+        endTime: item.endTime,
+        room: item.room,
+        staffName: item.staffName,
+        lessonStatus: item.lesson_status ?? 'reserved',
+      }))
+    );
+    setLessonCounts(
+      (countsData || []).length > 0
+        ? (countsData || []).map((item) => ({
+            id: String(item.id),
+            memberId: item.memberId,
+            productName: item.productName,
+            totalCount: item.totalCount,
+            usedCount: item.usedCount,
+            startDate: item.startDate,
+            endDate: item.endDate,
+            note: null,
+          }))
+        : getLocalLessonCounts(Number(id))
+    );
+    setLessonCountHistories(
+      (historyData || []).length > 0
+        ? (historyData || []).map((item) => ({
+            id: String(item.id),
+            memberId: item.memberId,
+            lessonCountId: String(item.lessonCountId),
+            classId: item.scheduleId ?? null,
+            title: '수업 차감',
+            trainerName: null,
+            deductedAt: item.deductedAt,
+            note: item.memo ?? null,
+          }))
+        : getLocalLessonCountHistories(Number(id))
+    );
   };
 
   const fetchMemos = async () => {
@@ -278,9 +384,16 @@ export default function TrainerMemberDetail() {
   const tabs: { key: TabKey; label: string; icon: React.ReactNode }[] = [
     { key: 'exercise', label: '운동기록', icon: <Dumbbell className="w-4 h-4" /> },
     { key: 'body', label: '체성분', icon: <Activity className="w-4 h-4" /> },
+    { key: 'lesson', label: '수업이력', icon: <CalendarClock className="w-4 h-4" /> },
     { key: 'evaluation', label: '평가', icon: <Star className="w-4 h-4" /> },
     { key: 'memo', label: '메모', icon: <StickyNote className="w-4 h-4" /> },
   ];
+
+  const activeLessonCount = lessonCounts.find((item) => item.usedCount < item.totalCount) || lessonCounts[0] || null;
+  const nextLessonSchedule = lessonSchedules
+    .filter((item) => item.lessonStatus !== 'completed' && new Date(item.startTime) >= new Date())
+    .sort((a, b) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime())[0] || null;
+  const latestLessonHistory = lessonCountHistories[0] || null;
 
   return (
     <div className="pull-to-refresh">
@@ -399,6 +512,107 @@ export default function TrainerMemberDetail() {
               </div>
             ))
           )
+        )}
+
+        {tab === 'lesson' && (
+          <>
+            {activeLessonCount && (
+              <div className="bg-surface rounded-card p-4 shadow-card space-y-3">
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <p className="text-xs text-content-tertiary">수강권 잔여 현황</p>
+                    <p className="mt-1 text-sm font-semibold">{activeLessonCount.productName}</p>
+                  </div>
+                  <div className="rounded-xl bg-teal-50 px-3 py-2 text-right">
+                    <p className="text-[11px] text-teal-600">잔여 회차</p>
+                    <p className="text-lg font-bold text-teal-600">
+                      {Math.max(activeLessonCount.totalCount - activeLessonCount.usedCount, 0)}회
+                    </p>
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                  <div className="rounded-xl bg-surface-secondary px-3 py-3">
+                    <p className="text-[11px] text-content-tertiary">사용 회차</p>
+                    <p className="mt-1 text-sm font-semibold">
+                      {activeLessonCount.usedCount}/{activeLessonCount.totalCount}
+                    </p>
+                  </div>
+                  <div className="rounded-xl bg-surface-secondary px-3 py-3">
+                    <p className="text-[11px] text-content-tertiary">사용 기간</p>
+                    <p className="mt-1 text-sm font-semibold">
+                      {formatDateKo(activeLessonCount.startDate)} ~ {formatDateKo(activeLessonCount.endDate)}
+                    </p>
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                  <div className="rounded-xl bg-surface-secondary px-3 py-3">
+                    <p className="text-[11px] text-content-tertiary">최근 차감</p>
+                    <p className="mt-1 text-sm font-semibold">
+                      {latestLessonHistory ? formatDateKo(latestLessonHistory.deductedAt) : '없음'}
+                    </p>
+                  </div>
+                  <div className="rounded-xl bg-surface-secondary px-3 py-3">
+                    <p className="text-[11px] text-content-tertiary">다음 예약 예정</p>
+                    <p className="mt-1 text-sm font-semibold">
+                      {nextLessonSchedule ? formatDateKo(nextLessonSchedule.startTime) : '없음'}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            <div className="bg-surface rounded-card p-4 shadow-card space-y-3">
+              <p className="font-semibold text-sm">수업 일정 / 이력</p>
+              {lessonSchedules.length === 0 ? (
+                <p className="text-sm text-content-tertiary">등록된 수업 이력이 없습니다</p>
+              ) : (
+                lessonSchedules.map((lesson) => (
+                  <div key={lesson.id} className="rounded-xl bg-surface-secondary px-3 py-3">
+                    <div className="flex items-center justify-between gap-3">
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <p className="text-sm font-semibold">{lesson.title}</p>
+                          <span
+                            className={cn(
+                              'rounded-full px-2 py-0.5 text-[10px] font-semibold',
+                              lesson.lessonStatus === 'completed'
+                                ? 'bg-state-info/10 text-state-info'
+                                : 'bg-state-success/10 text-state-success'
+                            )}
+                          >
+                            {lesson.lessonStatus === 'completed' ? '완료' : '예정'}
+                          </span>
+                        </div>
+                        <p className="mt-1 text-xs text-content-secondary">
+                          {formatDateKo(lesson.startTime)} · {lesson.type}{lesson.room ? ` · ${lesson.room}` : ''}
+                        </p>
+                      </div>
+                      <span className="text-xs text-content-tertiary">
+                        {formatDateKo(lesson.startTime)}
+                      </span>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+
+            <div className="bg-surface rounded-card p-4 shadow-card space-y-3">
+              <p className="font-semibold text-sm">차감 이력</p>
+              {lessonCountHistories.length === 0 ? (
+                <p className="text-sm text-content-tertiary">차감 이력이 없습니다</p>
+              ) : (
+                lessonCountHistories.map((history) => (
+                  <div key={history.id} className="rounded-xl bg-surface-secondary px-3 py-3">
+                    <div className="flex items-center justify-between gap-3">
+                      <p className="text-sm font-medium">{history.title}</p>
+                      <span className="text-xs text-content-tertiary">{formatDateKo(history.deductedAt)}</span>
+                    </div>
+                    {history.note && <p className="mt-1 text-xs text-content-secondary">{history.note}</p>}
+                  </div>
+                ))
+              )}
+            </div>
+          </>
         )}
 
         {/* 평가 탭 */}

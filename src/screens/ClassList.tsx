@@ -1,6 +1,7 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { Dumbbell, Clock, MapPin, Users, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Dumbbell, Clock, MapPin, Sparkles, Users } from 'lucide-react';
+import { getInstructorProfiles } from '@/lib/memberExperience';
 import { useAuthStore } from '@/stores/authStore';
 import { getPreviewClassesForDate, isPreviewMode } from '@/lib/preview';
 import { supabase } from '@/lib/supabase';
@@ -18,6 +19,8 @@ interface ClassItem {
   booked: number;
 }
 
+type ClassFilter = 'ALL' | 'PT' | 'GX';
+
 /** 수업 목록 / 예약 페이지 */
 export default function ClassList() {
   const navigate = useNavigate();
@@ -26,16 +29,14 @@ export default function ClassList() {
   const scrollRef = useRef<HTMLDivElement>(null);
 
   const [selectedDate, setSelectedDate] = useState(new Date());
-  const [filter, setFilter] = useState<'ALL' | 'PT' | 'GX'>('ALL');
   const [classes, setClasses] = useState<ClassItem[]>([]);
   const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const initialType = searchParams.get('type');
-    if (initialType === 'PT' || initialType === 'GX' || initialType === 'ALL') {
-      setFilter(initialType);
-    }
-  }, [searchParams]);
+  const filterOptions: readonly ClassFilter[] = ['ALL', 'PT', 'GX'];
+  const searchType = searchParams.get('type')?.toUpperCase();
+  const filter = filterOptions.includes(searchType as ClassFilter)
+    ? (searchType as ClassFilter)
+    : 'ALL';
+  const ptInstructors = useMemo(() => getInstructorProfiles('PT'), []);
 
   // 주간 날짜 목록 생성 (오늘 기준 -1일 ~ +6일)
   const weekDates = Array.from({ length: 8 }, (_, i) => {
@@ -48,7 +49,7 @@ export default function ClassList() {
 
   useEffect(() => {
     if (!member) return;
-    fetchClasses();
+    void fetchClasses();
   }, [member, selectedDate, filter]);
 
   const fetchClasses = async () => {
@@ -87,8 +88,7 @@ export default function ClassList() {
 
   const isToday = (d: Date) => isSameDay(d, new Date());
 
-  const handleFilterChange = (nextFilter: 'ALL' | 'PT' | 'GX') => {
-    setFilter(nextFilter);
+  const handleFilterChange = (nextFilter: ClassFilter) => {
     const nextParams = new URLSearchParams(searchParams);
     if (nextFilter === 'ALL') nextParams.delete('type');
     else nextParams.set('type', nextFilter);
@@ -134,7 +134,7 @@ export default function ClassList() {
 
         {/* 필터 탭 */}
         <div className="flex gap-2 px-4 pb-3">
-          {(['ALL', 'PT', 'GX'] as const).map((f) => (
+          {filterOptions.map((f) => (
             <button
               key={f}
               onClick={() => handleFilterChange(f)}
@@ -150,6 +150,41 @@ export default function ClassList() {
           ))}
         </div>
       </header>
+
+      {filter === 'PT' && (
+        <div className="px-4 pt-4">
+          <div className="rounded-card border border-primary/15 bg-primary/8 p-4 text-left shadow-card">
+            <div className="flex items-center gap-2 text-primary">
+              <Sparkles className="w-4 h-4" />
+              <p className="text-sm font-semibold">트레이너 빈 시간으로 직접 요청</p>
+            </div>
+            <p className="mt-1 text-sm text-content-secondary">
+              트레이너 일정에서 수업이 없는 시간을 자동 체크해 회원이 원하는 시간대로 PT를 요청할 수 있습니다.
+            </p>
+            <div className="mt-3 grid gap-2">
+              {ptInstructors.map((instructor) => (
+                <button
+                  key={instructor.id}
+                  onClick={() => navigate(`/instructors/${instructor.id}`)}
+                  className="w-full rounded-xl bg-surface px-3 py-3 text-left"
+                >
+                  <div className="flex items-center justify-between gap-3">
+                    <div className="min-w-0">
+                      <p className="text-sm font-semibold">{instructor.name} 트레이너</p>
+                      <p className="mt-1 text-xs text-content-secondary truncate">
+                        {instructor.specialties.join(' · ')}
+                      </p>
+                    </div>
+                    <span className="shrink-0 rounded-full bg-primary-light px-2 py-1 text-xs font-semibold text-primary">
+                      요청하기
+                    </span>
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* 수업 리스트 */}
       <div className="px-4 pb-4 mt-2">
@@ -217,7 +252,7 @@ export default function ClassList() {
                     <div className="flex items-center gap-1">
                       {!isFull && (
                         <span className="text-xs text-state-success font-medium">
-                          잔여 {remaining}석
+                          {cls.type === 'PT' ? '승인형 예약 가능' : `잔여 ${remaining}석`}
                         </span>
                       )}
                       {isFull && (
@@ -236,7 +271,7 @@ export default function ClassList() {
                         navigate(`/classes/${cls.id}`);
                       }}
                     >
-                      {isFull ? '대기 등록' : '예약하기'}
+                      {isFull ? (cls.type === 'PT' ? '마감' : '대기 등록') : (cls.type === 'PT' ? '요청하기' : '예약하기')}
                     </button>
                   </div>
                 </div>

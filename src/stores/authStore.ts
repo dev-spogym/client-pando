@@ -6,6 +6,9 @@ import {
   seedPreviewMemberExperience,
 } from '@/lib/preview';
 
+const AUTH_INIT_TIMEOUT_MS = 3000;
+let initializePromise: Promise<void> | null = null;
+
 /** 회원 정보 타입 */
 export interface MemberProfile {
   id: number;
@@ -228,152 +231,135 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   },
 
   initialize: async () => {
-    set({ loading: true });
-    try {
-      if (isPreviewMode()) {
-        const previewMember = getPreviewMemberProfile();
-        seedPreviewMemberExperience(previewMember.id);
-        set({
-          member: previewMember,
-          trainer: null,
-          userRole: 'member',
-          loading: false,
-          initialized: true,
-        });
-        return;
-      }
+    if (get().initialized) return;
+    if (initializePromise) return initializePromise;
 
-      const savedRole = localStorage.getItem('user_role') as UserRole | null;
+    initializePromise = (async () => {
+      set({ loading: true });
 
-      // 트레이너 자동 로그인
-      if (savedRole === 'trainer' || savedRole === 'admin') {
-        const trainerId = localStorage.getItem('trainer_id');
-        if (trainerId) {
-          const { data: user } = await supabase
-            .from('users')
-            .select('*')
-            .eq('id', Number(trainerId))
-            .single();
-
-          if (user) {
-            const { data: staff } = await supabase
-              .from('staff')
-              .select('*')
-              .eq('branchId', user.branchId)
-              .eq('name', user.name)
-              .eq('isActive', true)
-              .limit(1)
-              .single();
-
-            set({
-              trainer: {
-                id: user.id,
-                username: user.username,
-                name: user.name,
-                role: user.role,
-                branchId: user.branchId,
-                isActive: user.isActive,
-                staffId: staff?.id || null,
-                staffName: staff?.name || user.name,
-                staffPhone: staff?.phone || null,
-                staffColor: staff?.color || null,
-              },
-              userRole: savedRole,
-              loading: false,
-              initialized: true,
-            });
-            return;
-          }
-        }
-      }
-
-      // 회원 자동 로그인 (저장된 회원 ID)
-      const memberId = localStorage.getItem('member_id');
-      if (memberId) {
-        const { data: member } = await supabase
-          .from('members')
-          .select('*')
-          .eq('id', Number(memberId))
-          .single();
-
-        if (member) {
-          set({ member: mapMemberProfile(member), userRole: 'member', loading: false, initialized: true });
+      try {
+        if (isPreviewMode()) {
+          const previewMember = getPreviewMemberProfile();
+          seedPreviewMemberExperience(previewMember.id);
+          set({
+            member: previewMember,
+            trainer: null,
+            userRole: 'member',
+            loading: false,
+            initialized: true,
+          });
           return;
         }
-      }
 
-      // Supabase 세션 확인
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session?.user) {
-        const userEmail = session.user.email || '';
+        const savedRole = localStorage.getItem('user_role') as UserRole | null;
 
-        // 트레이너 세션인 경우
-        if (userEmail.endsWith('@spogym.local')) {
-          const username = userEmail.split('@')[0];
-          const { data: user } = await supabase
-            .from('users')
-            .select('*')
-            .eq('username', username)
-            .single();
+        // 트레이너 자동 로그인
+        if (savedRole === 'trainer' || savedRole === 'admin') {
+          const trainerId = localStorage.getItem('trainer_id');
+          if (trainerId) {
+            const user = await getTrainerById(Number(trainerId));
+            if (user) {
+              const staff = await getStaffProfile(user.branchId, user.name);
+              set({
+                trainer: {
+                  id: user.id,
+                  username: user.username,
+                  name: user.name,
+                  role: user.role,
+                  branchId: user.branchId,
+                  isActive: user.isActive,
+                  staffId: staff?.id || null,
+                  staffName: staff?.name || user.name,
+                  staffPhone: staff?.phone || null,
+                  staffColor: staff?.color || null,
+                },
+                userRole: savedRole,
+                loading: false,
+                initialized: true,
+              });
+              return;
+            }
+          }
+        }
 
-          if (user) {
-            const { data: staff } = await supabase
-              .from('staff')
-              .select('*')
-              .eq('branchId', user.branchId)
-              .eq('name', user.name)
-              .eq('isActive', true)
-              .limit(1)
-              .single();
-
-            const role: UserRole = (user.role === 'ADMIN' || user.role === 'OWNER') ? 'admin' : 'trainer';
+        // 회원 자동 로그인 (저장된 회원 ID)
+        const memberId = localStorage.getItem('member_id');
+        if (memberId) {
+          const member = await getMemberById(Number(memberId));
+          if (member) {
             set({
-              trainer: {
-                id: user.id,
-                username: user.username,
-                name: user.name,
-                role: user.role,
-                branchId: user.branchId,
-                isActive: user.isActive,
-                staffId: staff?.id || null,
-                staffName: staff?.name || user.name,
-                staffPhone: staff?.phone || null,
-                staffColor: staff?.color || null,
-              },
-              userRole: role,
+              member: mapMemberProfile(member),
+              userRole: 'member',
               loading: false,
               initialized: true,
             });
-            localStorage.setItem('trainer_id', String(user.id));
-            localStorage.setItem('trainer_username', username);
-            localStorage.setItem('user_role', role);
             return;
           }
         }
 
-        // 회원 세션인 경우
-        if (userEmail.endsWith('@member.spogym.app')) {
-          const phone = userEmail.split('@')[0];
-          const { data: member } = await supabase
-            .from('members')
-            .select('*')
-            .or(`phone.eq.${phone},phone.ilike.%${phone.slice(-8)}%`)
-            .limit(1)
-            .single();
+        // Supabase 세션 확인
+        const sessionResult = await withTimeout(supabase.auth.getSession());
+        const session = sessionResult?.data.session ?? null;
 
-          if (member) {
-            set({ member: mapMemberProfile(member), userRole: 'member', loading: false, initialized: true });
-            localStorage.setItem('member_id', String(member.id));
-            localStorage.setItem('user_role', 'member');
-            return;
+        if (session?.user) {
+          const userEmail = session.user.email || '';
+
+          if (userEmail.endsWith('@spogym.local')) {
+            const username = userEmail.split('@')[0];
+            const user = await getTrainerByUsername(username);
+            if (user) {
+              const staff = await getStaffProfile(user.branchId, user.name);
+              const role: UserRole = (user.role === 'ADMIN' || user.role === 'OWNER') ? 'admin' : 'trainer';
+              set({
+                trainer: {
+                  id: user.id,
+                  username: user.username,
+                  name: user.name,
+                  role: user.role,
+                  branchId: user.branchId,
+                  isActive: user.isActive,
+                  staffId: staff?.id || null,
+                  staffName: staff?.name || user.name,
+                  staffPhone: staff?.phone || null,
+                  staffColor: staff?.color || null,
+                },
+                userRole: role,
+                loading: false,
+                initialized: true,
+              });
+              localStorage.setItem('trainer_id', String(user.id));
+              localStorage.setItem('trainer_username', username);
+              localStorage.setItem('user_role', role);
+              return;
+            }
+          }
+
+          if (userEmail.endsWith('@member.spogym.app')) {
+            const phone = userEmail.split('@')[0];
+            const member = await getMemberByPhone(phone);
+            if (member) {
+              set({
+                member: mapMemberProfile(member),
+                userRole: 'member',
+                loading: false,
+                initialized: true,
+              });
+              localStorage.setItem('member_id', String(member.id));
+              localStorage.setItem('user_role', 'member');
+              return;
+            }
           }
         }
+
+        set({ member: null, trainer: null, userRole: null, loading: false, initialized: true });
+      } catch {
+        set({ member: null, trainer: null, userRole: null, loading: false, initialized: true });
+      } finally {
+        initializePromise = null;
       }
+    })();
 
-      set({ member: null, trainer: null, userRole: null, loading: false, initialized: true });
-    } catch {
-      set({ member: null, trainer: null, userRole: null, loading: false, initialized: true });
-    }
+    return initializePromise;
   },
 
   refreshProfile: async () => {
@@ -444,4 +430,80 @@ function mapMemberProfile(row: Record<string, unknown>): MemberProfile {
     membershipExpiry: row.membershipExpiry ? String(row.membershipExpiry) : null,
     registeredAt: row.registeredAt ? String(row.registeredAt) : new Date().toISOString(),
   };
+}
+
+async function withTimeout<T>(promise: PromiseLike<T>, timeoutMs = AUTH_INIT_TIMEOUT_MS): Promise<T | null> {
+  const timeoutPromise = new Promise<null>((resolve) => {
+    setTimeout(() => resolve(null), timeoutMs);
+  });
+
+  try {
+    return await Promise.race([promise, timeoutPromise]);
+  } catch {
+    return null;
+  }
+}
+
+async function getTrainerById(id: number) {
+  const result = await withTimeout(
+    supabase
+      .from('users')
+      .select('*')
+      .eq('id', id)
+      .single()
+  );
+
+  return result?.data ?? null;
+}
+
+async function getTrainerByUsername(username: string) {
+  const result = await withTimeout(
+    supabase
+      .from('users')
+      .select('*')
+      .eq('username', username)
+      .single()
+  );
+
+  return result?.data ?? null;
+}
+
+async function getStaffProfile(branchId: number, name: string) {
+  const result = await withTimeout(
+    supabase
+      .from('staff')
+      .select('*')
+      .eq('branchId', branchId)
+      .eq('name', name)
+      .eq('isActive', true)
+      .limit(1)
+      .single()
+  );
+
+  return result?.data ?? null;
+}
+
+async function getMemberById(id: number) {
+  const result = await withTimeout(
+    supabase
+      .from('members')
+      .select('*')
+      .eq('id', id)
+      .single()
+  );
+
+  return result?.data ?? null;
+}
+
+async function getMemberByPhone(phone: string) {
+  const result = await withTimeout(
+    supabase
+      .from('members')
+      .select('*')
+      .or(`phone.eq.${phone},phone.ilike.%${phone.slice(-8)}%`)
+      .limit(1)
+      .single()
+  );
+
+  return result?.data ?? null;
 }

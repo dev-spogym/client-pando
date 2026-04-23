@@ -4,7 +4,6 @@ import { Check, RotateCcw, AlertTriangle } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase } from '../lib/supabase';
 import { getPreviewClassById, isPreviewMode } from '@/lib/preview';
-// 레이아웃은 App.tsx의 MobileLayout Outlet으로 자동 적용
 
 // ─── 수업 정보 타입 ─────────────────────────────────────────
 interface ClassInfo {
@@ -128,7 +127,16 @@ export default function LessonSignature() {
 
   // localStorage에 저장된 서명 확인
   const storageKey = classId ? `lesson_signature_${classId}` : null;
-  const savedSignature = storageKey ? localStorage.getItem(storageKey) : null;
+  const [savedSignature, setSavedSignature] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!storageKey || typeof window === 'undefined') {
+      setSavedSignature(null);
+      return;
+    }
+
+    setSavedSignature(localStorage.getItem(storageKey));
+  }, [storageKey]);
 
   // 수업 정보 로드
   useEffect(() => {

@@ -1,4 +1,4 @@
-import { Outlet, useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { useAuthStore } from '@/stores/authStore';
 import BottomTabBar from './BottomTabBar';
 import TrainerTabBar from './TrainerTabBar';
@@ -13,7 +13,7 @@ const HIDE_TAB_PREFIXES = ['/classes/', '/shop/'];
 const HIDE_TRAINER_TAB_PATHS = ['/login', '/register'];
 
 /** 모바일 레이아웃 (헤더 + 탭바) */
-export default function MobileLayout() {
+export default function MobileLayout({ children }: { children: React.ReactNode }) {
   const location = useLocation();
   const { userRole } = useAuthStore();
 
@@ -34,7 +34,7 @@ export default function MobileLayout() {
     <div className="mobile-shell flex justify-center bg-surface-secondary md:bg-gray-100">
       <div className="mobile-frame relative flex flex-col bg-surface shadow-none md:shadow-xl">
         <main className={hideTab ? 'mobile-main' : 'mobile-main page-content'}>
-          <Outlet />
+          {children}
         </main>
         {!hideTab && (showTrainerTab ? <TrainerTabBar /> : <BottomTabBar />)}
       </div>

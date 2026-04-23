@@ -1,19 +1,15 @@
+'use client';
+
 import NextLink, { type LinkProps as NextLinkProps } from 'next/link';
-import { useRouter } from 'next/router';
+import { useParams as useNextParams, usePathname, useRouter } from 'next/navigation';
 import {
-  Children,
-  createContext,
   forwardRef,
-  isValidElement,
   useCallback,
-  useContext,
   useEffect,
   useMemo,
+  useState,
   type AnchorHTMLAttributes,
-  type PropsWithChildren,
-  type ReactNode,
 } from 'react';
-import { useInitialUrl } from '@/lib/route-state';
 
 type NavigateOptions = { replace?: boolean };
 type SearchParamsInit =
@@ -21,23 +17,6 @@ type SearchParamsInit =
   | string[][]
   | Record<string, string | number | boolean | null | undefined>
   | URLSearchParams;
-
-type RouteProps = {
-  path?: string;
-  element?: ReactNode;
-  children?: ReactNode;
-};
-
-type RouteConfig = {
-  path?: string;
-  element?: ReactNode;
-  children: RouteConfig[];
-};
-
-type Match = {
-  params: Record<string, string>;
-  route: RouteConfig;
-};
 
 type LocationShape = {
   hash: string;
@@ -47,45 +26,7 @@ type LocationShape = {
   state: null;
 };
 
-const OutletContext = createContext<ReactNode>(null);
-const ParamsContext = createContext<Record<string, string>>({});
-
-function getCurrentPath(asPath: string) {
-  const [pathWithQuery = '/'] = asPath.split('#');
-  const [pathname = '/', query = ''] = pathWithQuery.split('?');
-  return {
-    pathname: pathname || '/',
-    search: query ? `?${query}` : '',
-  };
-}
-
-function getResolvedAsPath(routerAsPath: string | undefined, initialUrl: string) {
-  if (routerAsPath && routerAsPath !== '/[[...slug]]') {
-    return routerAsPath;
-  }
-
-  return initialUrl || '/';
-}
-
-function normalizePath(pathname: string) {
-  if (!pathname) return '/';
-  const trimmed = pathname.replace(/\/+$/, '');
-  return trimmed || '/';
-}
-
-function routeScore(path?: string) {
-  if (!path) return -1;
-  if (path === '*') return -999;
-
-  return path
-    .split('/')
-    .filter(Boolean)
-    .reduce((score, segment) => {
-      if (segment === '*') return score - 100;
-      if (segment.startsWith(':')) return score + 10;
-      return score + 100;
-    }, 0);
-}
+const LOCATION_CHANGE_EVENT = 'spogym:location-change';
 
 function createSearchParams(init?: SearchParamsInit) {
   if (!init) return new URLSearchParams();
@@ -100,112 +41,23 @@ function createSearchParams(init?: SearchParamsInit) {
   return params;
 }
 
-function matchPath(path: string, pathname: string) {
-  if (path === '*') return {};
-
-  const normalizedPattern = normalizePath(path);
-  const normalizedPathname = normalizePath(pathname);
-
-  const patternSegments = normalizedPattern.split('/').filter(Boolean);
-  const pathnameSegments = normalizedPathname.split('/').filter(Boolean);
-
-  if (patternSegments.length !== pathnameSegments.length) return null;
-
-  const params: Record<string, string> = {};
-
-  for (let i = 0; i < patternSegments.length; i += 1) {
-    const patternSegment = patternSegments[i];
-    const pathnameSegment = pathnameSegments[i];
-
-    if (patternSegment.startsWith(':')) {
-      params[patternSegment.slice(1)] = decodeURIComponent(pathnameSegment);
-      continue;
-    }
-
-    if (patternSegment !== pathnameSegment) {
-      return null;
-    }
+function readBrowserLocation() {
+  if (typeof window === 'undefined') {
+    return { hash: '', search: '' };
   }
 
-  return params;
+  return {
+    hash: window.location.hash,
+    search: window.location.search,
+  };
 }
 
-function createRoutesFromChildren(children: ReactNode): RouteConfig[] {
-  const routes: RouteConfig[] = [];
+function notifyLocationChange() {
+  if (typeof window === 'undefined') return;
 
-  Children.forEach(children, (child) => {
-    if (!isValidElement<RouteProps>(child)) return;
-    routes.push({
-      path: child.props.path,
-      element: child.props.element,
-      children: createRoutesFromChildren(child.props.children),
-    });
-  });
-
-  return routes;
-}
-
-function findMatches(routes: RouteConfig[], pathname: string): Match[] | null {
-  const directRoutes = routes
-    .filter((route) => route.path && route.path !== '*')
-    .sort((a, b) => routeScore(b.path) - routeScore(a.path));
-
-  for (const route of directRoutes) {
-    const params = matchPath(route.path!, pathname);
-    if (params) {
-      return [{ route, params }];
-    }
-  }
-
-  for (const route of routes.filter((item) => !item.path)) {
-    const childMatches = findMatches(route.children, pathname);
-    if (childMatches) {
-      return [{ route, params: {} }, ...childMatches];
-    }
-  }
-
-  const wildcard = routes.find((route) => route.path === '*');
-  if (wildcard) {
-    return [{ route: wildcard, params: {} }];
-  }
-
-  return null;
-}
-
-function renderMatches(matches: Match[]) {
-  const params = matches.reduce<Record<string, string>>(
-    (acc, match) => ({ ...acc, ...match.params }),
-    {}
-  );
-
-  const rendered = matches.reduceRight<ReactNode>((outlet, match) => {
-    if (!match.route.element) return outlet;
-    return <OutletContext.Provider value={outlet}>{match.route.element}</OutletContext.Provider>;
-  }, null);
-
-  return <ParamsContext.Provider value={params}>{rendered}</ParamsContext.Provider>;
-}
-
-export function BrowserRouter({ children }: PropsWithChildren) {
-  return <>{children}</>;
-}
-
-export function Routes({ children }: PropsWithChildren) {
-  const router = useRouter();
-  const initialUrl = useInitialUrl();
-  const { pathname } = getCurrentPath(getResolvedAsPath(router.asPath, initialUrl));
-  const routes = useMemo(() => createRoutesFromChildren(children), [children]);
-  const matches = useMemo(() => findMatches(routes, pathname), [pathname, routes]);
-
-  return matches ? <>{renderMatches(matches)}</> : null;
-}
-
-export function Route(_props: RouteProps) {
-  return null;
-}
-
-export function Outlet() {
-  return <>{useContext(OutletContext)}</>;
+  window.setTimeout(() => {
+    window.dispatchEvent(new Event(LOCATION_CHANGE_EVENT));
+  }, 0);
 }
 
 export function Navigate({ to, replace = false }: { to: string; replace?: boolean }) {
@@ -219,17 +71,31 @@ export function Navigate({ to, replace = false }: { to: string; replace?: boolea
 }
 
 export function useLocation(): LocationShape {
-  const router = useRouter();
-  const initialUrl = useInitialUrl();
-  const asPath = getResolvedAsPath(router.asPath, initialUrl);
-  const { pathname, search } = getCurrentPath(asPath);
-  const hash = asPath.includes('#') ? `#${asPath.split('#')[1]}` : '';
+  const pathname = usePathname() || '/';
+  const [browserLocation, setBrowserLocation] = useState(readBrowserLocation);
+
+  useEffect(() => {
+    const syncLocation = () => {
+      setBrowserLocation(readBrowserLocation());
+    };
+
+    syncLocation();
+    window.addEventListener('popstate', syncLocation);
+    window.addEventListener('hashchange', syncLocation);
+    window.addEventListener(LOCATION_CHANGE_EVENT, syncLocation);
+
+    return () => {
+      window.removeEventListener('popstate', syncLocation);
+      window.removeEventListener('hashchange', syncLocation);
+      window.removeEventListener(LOCATION_CHANGE_EVENT, syncLocation);
+    };
+  }, [pathname]);
 
   return {
-    hash,
-    key: asPath || pathname,
+    hash: browserLocation.hash,
+    key: `${pathname}${browserLocation.search}${browserLocation.hash}`,
     pathname,
-    search,
+    search: browserLocation.search,
     state: null,
   };
 }
@@ -252,18 +118,20 @@ export function useNavigate() {
       }
 
       if (options?.replace) {
-        void router.replace(to);
+        router.replace(to);
+        notifyLocationChange();
         return;
       }
 
-      void router.push(to);
+      router.push(to);
+      notifyLocationChange();
     },
     [router]
   );
 }
 
-export function useParams<T extends Record<string, string | undefined> = Record<string, string>>() {
-  return useContext(ParamsContext) as T;
+export function useParams<T extends Record<string, string | string[] | undefined> = Record<string, string>>() {
+  return useNextParams<T>();
 }
 
 export function useSearchParams(): [

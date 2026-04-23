@@ -37,6 +37,10 @@ interface DayLog {
 }
 
 function loadLogs(): Record<string, DayLog> {
+  if (typeof window === 'undefined') {
+    return {};
+  }
+
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     return raw ? JSON.parse(raw) : {};

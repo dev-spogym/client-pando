@@ -32,6 +32,10 @@ function getDateStr(date: Date): string {
 }
 
 function loadLogs(): Record<string, DayDietLog> {
+  if (typeof window === 'undefined') {
+    return {};
+  }
+
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     return raw ? JSON.parse(raw) : {};
@@ -41,6 +45,10 @@ function loadLogs(): Record<string, DayDietLog> {
 }
 
 function saveLogs(logs: Record<string, DayDietLog>) {
+  if (typeof window === 'undefined') {
+    return;
+  }
+
   localStorage.setItem(STORAGE_KEY, JSON.stringify(logs));
 }
 

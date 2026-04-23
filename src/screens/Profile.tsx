@@ -2,11 +2,13 @@ import { useNavigate } from 'react-router-dom';
 import {
   Activity,
   Bell,
+  CalendarDays,
   ChevronRight,
   CreditCard,
   FileText,
   Gift,
   LogOut,
+  MessageSquare,
   Scale,
   Sparkles,
   User,
@@ -27,13 +29,82 @@ import { cn, formatPhone } from '@/lib/utils';
 /** 마이페이지 */
 export default function Profile() {
   const navigate = useNavigate();
-  const { member, logout } = useAuthStore();
+  const { member, trainer, logout } = useAuthStore();
 
   const handleLogout = async () => {
     await logout();
     toast.success('로그아웃 되었습니다.');
     navigate('/login', { replace: true });
   };
+
+  if (!member && !trainer) return null;
+
+  if (!member && trainer) {
+    const trainerMenus = [
+      { icon: Users, label: '회원 관리', path: '/trainer/members', color: 'text-primary' },
+      { icon: CalendarDays, label: '일정 관리', path: '/trainer/schedule', color: 'text-state-info' },
+      { icon: MessageSquare, label: '운동 피드백', path: '/trainer/feedback', color: 'text-state-success' },
+      { icon: FileText, label: '공지사항', path: '/notices', color: 'text-content-secondary' },
+    ];
+
+    return (
+      <div className="min-h-screen bg-surface-secondary">
+        <header className="bg-gradient-to-br from-teal-600 to-emerald-600 px-5 pt-safe-top pb-6">
+          <div className="pt-4">
+            <p className="text-white/80 text-sm">트레이너 마이페이지</p>
+            <h1 className="text-white text-xl font-bold mt-1">{trainer.staffName || trainer.name}</h1>
+            <p className="text-white/70 text-sm mt-1">@{trainer.username}</p>
+          </div>
+
+          <div className="mt-5 rounded-2xl bg-white/15 p-4 text-white">
+            <div className="flex items-center gap-3">
+              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-white/20">
+                <User className="h-6 w-6" />
+              </div>
+              <div className="flex-1">
+                <p className="text-sm font-semibold">{trainer.role}</p>
+                <p className="text-xs text-white/70">지점 ID {trainer.branchId}</p>
+              </div>
+              {trainer.staffPhone ? (
+                <span className="text-xs text-white/80">{trainer.staffPhone}</span>
+              ) : null}
+            </div>
+          </div>
+        </header>
+
+        <div className="px-4 -mt-2 pb-4">
+          <div className="bg-surface rounded-card shadow-card overflow-hidden">
+            {trainerMenus.map((item, index) => {
+              const Icon = item.icon;
+              return (
+                <button
+                  key={item.label}
+                  onClick={() => navigate(item.path)}
+                  className={cn(
+                    'w-full flex items-center gap-3 px-4 py-4',
+                    index > 0 && 'border-t border-line-light',
+                    'active:bg-surface-secondary transition-colors'
+                  )}
+                >
+                  <Icon className={cn('w-5 h-5', item.color)} />
+                  <span className="flex-1 text-left text-sm font-medium">{item.label}</span>
+                  <ChevronRight className="w-4 h-4 text-content-tertiary" />
+                </button>
+              );
+            })}
+          </div>
+
+          <button
+            onClick={handleLogout}
+            className="w-full mt-4 bg-surface rounded-card shadow-card px-4 py-3.5 flex items-center gap-3 active:bg-surface-secondary transition-colors"
+          >
+            <LogOut className="w-5 h-5 text-state-error" />
+            <span className="text-sm font-medium text-state-error">로그아웃</span>
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   if (!member) return null;
 

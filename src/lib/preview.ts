@@ -1,7 +1,8 @@
 import type { MockPaymentRecord, OnboardingDraft } from '@/lib/memberExperience';
-import type { MemberProfile } from '@/stores/authStore';
+import type { MemberProfile, TrainerProfile } from '@/stores/authStore';
 
 export const PREVIEW_MEMBER_ID = 9001;
+export const PREVIEW_TRAINER_ID = 9101;
 
 export const PREVIEW_CLASS_IDS = {
   reserved: 101,
@@ -23,6 +24,16 @@ export const PREVIEW_PAYMENT_IDS = {
 
 function isBrowser() {
   return typeof window !== 'undefined';
+}
+
+function readJson<T>(key: string, fallback: T): T {
+  if (!isBrowser()) return fallback;
+  try {
+    const value = window.localStorage.getItem(key);
+    return value ? JSON.parse(value) as T : fallback;
+  } catch {
+    return fallback;
+  }
 }
 
 function writeJson(key: string, value: unknown) {
@@ -51,6 +62,12 @@ export function isPreviewMode() {
   return params.get('preview') === '1';
 }
 
+export function getPreviewRole() {
+  if (!isBrowser()) return 'member';
+  const params = new URLSearchParams(window.location.search);
+  return params.get('role') === 'trainer' ? 'trainer' : 'member';
+}
+
 export function getPreviewSearchParam(name: string) {
   if (!isBrowser()) return null;
   const params = new URLSearchParams(window.location.search);
@@ -73,6 +90,21 @@ export function getPreviewMemberProfile(): MemberProfile {
     membershipStart: toIso(-28, 12),
     membershipExpiry: toIso(17, 12),
     registeredAt: toIso(-180, 12),
+  };
+}
+
+export function getPreviewTrainerProfile(): TrainerProfile {
+  return {
+    id: PREVIEW_TRAINER_ID,
+    username: 'trainer.preview',
+    name: '박서연',
+    role: 'TRAINER',
+    branchId: 1,
+    isActive: true,
+    staffId: 301,
+    staffName: '박서연',
+    staffPhone: '010-5555-1234',
+    staffColor: '#0f766e',
   };
 }
 
@@ -561,4 +593,447 @@ export function seedPreviewMemberExperience(memberId: number) {
   writeJson(`spogym-golf-bookings-${memberId}`, golfBookings);
   writeJson('spogym-workout-logs', workoutLogs);
   writeJson('spogym-diet-logs', dietLogs);
+}
+
+type PreviewTrainerMember = {
+  id: number;
+  name: string;
+  phone: string;
+  email: string | null;
+  gender: string | null;
+  status: string;
+  membershipType: string | null;
+  membershipExpiry: string | null;
+  isFavorite: boolean;
+};
+
+type PreviewTrainerClass = {
+  id: number;
+  title: string;
+  type: string;
+  startTime: string;
+  endTime: string;
+  room: string | null;
+  capacity: number;
+  booked: number;
+  branchId: number;
+  staffId: number | null;
+  staffName: string;
+};
+
+type PreviewTrainerExerciseLog = {
+  id: number;
+  memberId: number;
+  exerciseName: string;
+  sets: number | null;
+  reps: number | null;
+  weight: number | null;
+  duration: number | null;
+  loggedAt: string;
+};
+
+type PreviewTrainerBodyComp = {
+  id: number;
+  memberId: number;
+  weight: number | null;
+  muscle: number | null;
+  fat: number | null;
+  fatRate: number | null;
+  bmi: number | null;
+  createdAt: string;
+};
+
+type PreviewTrainerEvaluation = {
+  id: number;
+  memberId: number;
+  staffName: string;
+  category: string;
+  score: number;
+  content: string;
+  createdAt: string;
+};
+
+type PreviewTrainerMemo = {
+  id: number;
+  memberId: number;
+  content: string;
+  author: string;
+  createdAt: string;
+};
+
+type PreviewTrainerAttendanceMember = {
+  memberId: number;
+  memberName: string;
+};
+
+const PREVIEW_TRAINER_STORAGE = {
+  classes: 'spogym-preview-trainer-classes',
+  evaluations: 'spogym-preview-trainer-evaluations',
+  memos: 'spogym-preview-trainer-memos',
+} as const;
+
+function getBasePreviewTrainerMembers(): PreviewTrainerMember[] {
+  return [
+    {
+      id: 1201,
+      name: '김지은',
+      phone: '01023451234',
+      email: 'jieun@example.com',
+      gender: 'F',
+      status: 'ACTIVE',
+      membershipType: 'PT 10회',
+      membershipExpiry: toIso(21, 12),
+      isFavorite: true,
+    },
+    {
+      id: 1202,
+      name: '이현우',
+      phone: '01098761234',
+      email: 'hyunwoo@example.com',
+      gender: 'M',
+      status: 'ACTIVE',
+      membershipType: '헬스장 자유이용 3개월',
+      membershipExpiry: toIso(46, 12),
+      isFavorite: false,
+    },
+    {
+      id: 1203,
+      name: '최민아',
+      phone: '01055551234',
+      email: 'mina@example.com',
+      gender: 'F',
+      status: 'HOLDING',
+      membershipType: '골프 레슨 8회',
+      membershipExpiry: toIso(12, 12),
+      isFavorite: true,
+    },
+  ];
+}
+
+function getBasePreviewTrainerClasses(): PreviewTrainerClass[] {
+  const trainer = getPreviewTrainerProfile();
+  return [
+    {
+      id: 2101,
+      title: 'PT 코어 리셋',
+      type: 'PT',
+      startTime: toIso(0, 10, 0),
+      endTime: toIso(0, 10, 50),
+      room: 'PT룸 1',
+      capacity: 1,
+      booked: 1,
+      branchId: trainer.branchId,
+      staffId: trainer.staffId,
+      staffName: trainer.staffName || trainer.name,
+    },
+    {
+      id: 2102,
+      title: '바른자세 GX',
+      type: 'GX',
+      startTime: toIso(0, 18, 0),
+      endTime: toIso(0, 18, 50),
+      room: 'GX룸 A',
+      capacity: 12,
+      booked: 9,
+      branchId: trainer.branchId,
+      staffId: trainer.staffId,
+      staffName: trainer.staffName || trainer.name,
+    },
+    {
+      id: 2103,
+      title: '하체 밸런스 PT',
+      type: 'PT',
+      startTime: toIso(1, 14, 0),
+      endTime: toIso(1, 14, 50),
+      room: 'PT룸 2',
+      capacity: 1,
+      booked: 1,
+      branchId: trainer.branchId,
+      staffId: trainer.staffId,
+      staffName: trainer.staffName || trainer.name,
+    },
+    {
+      id: 2104,
+      title: '회복 스트레칭',
+      type: 'GX',
+      startTime: toIso(2, 19, 0),
+      endTime: toIso(2, 19, 50),
+      room: 'GX룸 B',
+      capacity: 16,
+      booked: 11,
+      branchId: trainer.branchId,
+      staffId: trainer.staffId,
+      staffName: trainer.staffName || trainer.name,
+    },
+    {
+      id: 2105,
+      title: 'TRX 서킷',
+      type: 'GX',
+      startTime: toIso(-1, 17, 0),
+      endTime: toIso(-1, 17, 50),
+      room: 'GX룸 A',
+      capacity: 10,
+      booked: 8,
+      branchId: trainer.branchId,
+      staffId: trainer.staffId,
+      staffName: trainer.staffName || trainer.name,
+    },
+  ];
+}
+
+function getBasePreviewTrainerAttendanceByClass(): Record<number, PreviewTrainerAttendanceMember[]> {
+  const members = getBasePreviewTrainerMembers();
+  return {
+    2101: [{ memberId: members[0].id, memberName: members[0].name }],
+    2102: [
+      { memberId: members[1].id, memberName: members[1].name },
+      { memberId: members[2].id, memberName: members[2].name },
+    ],
+    2103: [{ memberId: members[0].id, memberName: members[0].name }],
+    2104: [{ memberId: members[2].id, memberName: members[2].name }],
+    2105: [
+      { memberId: members[0].id, memberName: members[0].name },
+      { memberId: members[1].id, memberName: members[1].name },
+    ],
+  };
+}
+
+function getBasePreviewTrainerExerciseLogs(): PreviewTrainerExerciseLog[] {
+  return [
+    {
+      id: 3101,
+      memberId: 1201,
+      exerciseName: '스쿼트',
+      sets: 4,
+      reps: 8,
+      weight: 60,
+      duration: 18,
+      loggedAt: toIso(-1, 18, 20),
+    },
+    {
+      id: 3102,
+      memberId: 1201,
+      exerciseName: '런지',
+      sets: 3,
+      reps: 12,
+      weight: 16,
+      duration: 12,
+      loggedAt: toIso(-3, 17, 40),
+    },
+    {
+      id: 3103,
+      memberId: 1202,
+      exerciseName: '랫풀다운',
+      sets: 4,
+      reps: 10,
+      weight: 45,
+      duration: 16,
+      loggedAt: toIso(-2, 19, 10),
+    },
+    {
+      id: 3104,
+      memberId: 1203,
+      exerciseName: '골반 안정화 루틴',
+      sets: 3,
+      reps: 15,
+      weight: null,
+      duration: 20,
+      loggedAt: toIso(-4, 11, 30),
+    },
+  ];
+}
+
+function getBasePreviewTrainerBodyComps(): PreviewTrainerBodyComp[] {
+  return [
+    {
+      id: 4101,
+      memberId: 1201,
+      weight: 58.2,
+      muscle: 23.9,
+      fat: 14.6,
+      fatRate: 25.1,
+      bmi: 21.6,
+      createdAt: toIso(-6, 12),
+    },
+    {
+      id: 4102,
+      memberId: 1201,
+      weight: 59.1,
+      muscle: 23.2,
+      fat: 15.7,
+      fatRate: 26.5,
+      bmi: 21.9,
+      createdAt: toIso(-36, 12),
+    },
+    {
+      id: 4103,
+      memberId: 1202,
+      weight: 76.3,
+      muscle: 33.4,
+      fat: 13.8,
+      fatRate: 18.1,
+      bmi: 24.3,
+      createdAt: toIso(-9, 12),
+    },
+    {
+      id: 4104,
+      memberId: 1203,
+      weight: 54.6,
+      muscle: 21.8,
+      fat: 12.4,
+      fatRate: 22.7,
+      bmi: 20.2,
+      createdAt: toIso(-12, 12),
+    },
+  ];
+}
+
+function getBasePreviewTrainerEvaluations(): PreviewTrainerEvaluation[] {
+  return [
+    {
+      id: 5101,
+      memberId: 1201,
+      staffName: '박서연',
+      category: '하체 안정성',
+      score: 8,
+      content: '스쿼트 가동범위가 좋아졌고 무릎 정렬이 안정적입니다.',
+      createdAt: toIso(-2, 20),
+    },
+    {
+      id: 5102,
+      memberId: 1202,
+      staffName: '박서연',
+      category: '상체 밸런스',
+      score: 7,
+      content: '등 사용 감각은 좋아졌지만 어깨 긴장 완화가 추가로 필요합니다.',
+      createdAt: toIso(-4, 18),
+    },
+  ];
+}
+
+function getBasePreviewTrainerMemos(): PreviewTrainerMemo[] {
+  return [
+    {
+      id: 6101,
+      memberId: 1201,
+      content: '금요일 세션에서는 런지 난도를 한 단계 올려보기.',
+      author: '박서연',
+      createdAt: toIso(-1, 21),
+    },
+    {
+      id: 6102,
+      memberId: 1203,
+      content: '허리 민감도 체크 후 골반 안정화 루틴 반복 예정.',
+      author: '박서연',
+      createdAt: toIso(-3, 14),
+    },
+  ];
+}
+
+export function seedPreviewTrainerExperience(_trainerId: number) {
+  if (!isBrowser()) return;
+
+  if (!window.localStorage.getItem(PREVIEW_TRAINER_STORAGE.classes)) {
+    writeJson(PREVIEW_TRAINER_STORAGE.classes, []);
+  }
+  if (!window.localStorage.getItem(PREVIEW_TRAINER_STORAGE.evaluations)) {
+    writeJson(PREVIEW_TRAINER_STORAGE.evaluations, []);
+  }
+  if (!window.localStorage.getItem(PREVIEW_TRAINER_STORAGE.memos)) {
+    writeJson(PREVIEW_TRAINER_STORAGE.memos, []);
+  }
+}
+
+export function getPreviewTrainerMembers() {
+  return getBasePreviewTrainerMembers();
+}
+
+export function getPreviewTrainerMemberById(memberId: number) {
+  return getPreviewTrainerMembers().find((member) => member.id === memberId) || null;
+}
+
+export function getPreviewTrainerClasses() {
+  const savedClasses = readJson<PreviewTrainerClass[]>(PREVIEW_TRAINER_STORAGE.classes, []);
+  return [...getBasePreviewTrainerClasses(), ...savedClasses].sort(
+    (a, b) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime()
+  );
+}
+
+export function getPreviewTrainerClassesForRange(startIso: string, endIso: string) {
+  const start = new Date(startIso).getTime();
+  const end = new Date(endIso).getTime();
+
+  return getPreviewTrainerClasses().filter((item) => {
+    const timestamp = new Date(item.startTime).getTime();
+    return timestamp >= start && timestamp < end;
+  });
+}
+
+export function appendPreviewTrainerClass(input: Omit<PreviewTrainerClass, 'id'>) {
+  const savedClasses = readJson<PreviewTrainerClass[]>(PREVIEW_TRAINER_STORAGE.classes, []);
+  const nextClass: PreviewTrainerClass = {
+    ...input,
+    id: Date.now(),
+  };
+
+  writeJson(PREVIEW_TRAINER_STORAGE.classes, [...savedClasses, nextClass]);
+  return nextClass;
+}
+
+export function getPreviewTrainerTodayAttendanceIds() {
+  return [1201, 1202];
+}
+
+export function getPreviewTrainerAttendanceMembersByClassId(classId: number) {
+  return getBasePreviewTrainerAttendanceByClass()[classId] || [];
+}
+
+export function getPreviewTrainerExerciseLogs(memberId: number) {
+  return getBasePreviewTrainerExerciseLogs().filter((item) => item.memberId === memberId);
+}
+
+export function getPreviewTrainerBodyComps(memberId: number) {
+  return getBasePreviewTrainerBodyComps().filter((item) => item.memberId === memberId);
+}
+
+export function getPreviewTrainerEvaluations(memberId: number) {
+  const savedEvaluations = readJson<PreviewTrainerEvaluation[]>(PREVIEW_TRAINER_STORAGE.evaluations, []);
+  return [...getBasePreviewTrainerEvaluations(), ...savedEvaluations]
+    .filter((item) => item.memberId === memberId)
+    .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+}
+
+export function appendPreviewTrainerEvaluation(
+  input: Omit<PreviewTrainerEvaluation, 'id' | 'createdAt'> & { createdAt?: string }
+) {
+  const savedEvaluations = readJson<PreviewTrainerEvaluation[]>(PREVIEW_TRAINER_STORAGE.evaluations, []);
+  const nextEvaluation: PreviewTrainerEvaluation = {
+    ...input,
+    id: Date.now(),
+    createdAt: input.createdAt || new Date().toISOString(),
+  };
+
+  writeJson(PREVIEW_TRAINER_STORAGE.evaluations, [...savedEvaluations, nextEvaluation]);
+  return nextEvaluation;
+}
+
+export function getPreviewTrainerMemos(memberId: number) {
+  const savedMemos = readJson<PreviewTrainerMemo[]>(PREVIEW_TRAINER_STORAGE.memos, []);
+  return [...getBasePreviewTrainerMemos(), ...savedMemos]
+    .filter((item) => item.memberId === memberId)
+    .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+}
+
+export function appendPreviewTrainerMemo(
+  input: Omit<PreviewTrainerMemo, 'id' | 'createdAt'> & { createdAt?: string }
+) {
+  const savedMemos = readJson<PreviewTrainerMemo[]>(PREVIEW_TRAINER_STORAGE.memos, []);
+  const nextMemo: PreviewTrainerMemo = {
+    ...input,
+    id: Date.now(),
+    createdAt: input.createdAt || new Date().toISOString(),
+  };
+
+  writeJson(PREVIEW_TRAINER_STORAGE.memos, [...savedMemos, nextMemo]);
+  return nextMemo;
 }

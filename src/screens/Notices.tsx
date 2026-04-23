@@ -19,18 +19,19 @@ interface NoticeItem {
 /** 공지사항 페이지 */
 export default function Notices() {
   const navigate = useNavigate();
-  const { member } = useAuthStore();
+  const { member, trainer } = useAuthStore();
   const [notices, setNotices] = useState<NoticeItem[]>([]);
   const [expandedId, setExpandedId] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!member) return;
+    if (!member && !trainer) return;
     fetchNotices();
-  }, [member]);
+  }, [member, trainer]);
 
   const fetchNotices = async () => {
-    if (!member) return;
+    const branchId = member?.branchId ?? trainer?.branchId;
+    if (!branchId) return;
     setLoading(true);
 
     if (isPreviewMode()) {
@@ -42,7 +43,7 @@ export default function Notices() {
     const { data } = await supabase
       .from('notices')
       .select('id, title, content, author_name, is_pinned, published_at, created_at')
-      .eq('branch_id', member.branchId)
+      .eq('branch_id', branchId)
       .eq('is_published', true)
       .order('is_pinned', { ascending: false })
       .order('created_at', { ascending: false })

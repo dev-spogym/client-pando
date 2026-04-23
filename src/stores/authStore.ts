@@ -2,8 +2,11 @@ import { create } from 'zustand';
 import { supabase } from '@/lib/supabase';
 import {
   getPreviewMemberProfile,
+  getPreviewRole,
+  getPreviewTrainerProfile,
   isPreviewMode,
   seedPreviewMemberExperience,
+  seedPreviewTrainerExperience,
 } from '@/lib/preview';
 
 const AUTH_INIT_TIMEOUT_MS = 3000;
@@ -239,6 +242,19 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
       try {
         if (isPreviewMode()) {
+          if (getPreviewRole() === 'trainer') {
+            const previewTrainer = getPreviewTrainerProfile();
+            seedPreviewTrainerExperience(previewTrainer.id);
+            set({
+              member: null,
+              trainer: previewTrainer,
+              userRole: 'trainer',
+              loading: false,
+              initialized: true,
+            });
+            return;
+          }
+
           const previewMember = getPreviewMemberProfile();
           seedPreviewMemberExperience(previewMember.id);
           set({

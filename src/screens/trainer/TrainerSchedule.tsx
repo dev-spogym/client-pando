@@ -1,6 +1,12 @@
 import { useEffect, useState } from 'react';
 import { Plus, ChevronLeft, ChevronRight, X, Users, Clock, MapPin } from 'lucide-react';
 import { useAuthStore } from '@/stores/authStore';
+import {
+  appendPreviewTrainerClass,
+  getPreviewSearchParam,
+  getPreviewTrainerClassesForRange,
+  isPreviewMode,
+} from '@/lib/preview';
 import { supabase } from '@/lib/supabase';
 import { cn, formatTime } from '@/lib/utils';
 import { toast } from 'sonner';
@@ -44,11 +50,23 @@ export default function TrainerSchedule() {
     fetchClasses();
   }, [trainer, weekStart]);
 
+  useEffect(() => {
+    if (!isPreviewMode()) return;
+    if (getPreviewSearchParam('modal') === 'add') {
+      setShowModal(true);
+    }
+  }, []);
+
   const fetchClasses = async () => {
     if (!trainer) return;
 
     const weekEnd = new Date(weekStart);
     weekEnd.setDate(weekEnd.getDate() + 7);
+
+    if (isPreviewMode()) {
+      setClasses(getPreviewTrainerClassesForRange(weekStart.toISOString(), weekEnd.toISOString()));
+      return;
+    }
 
     const { data } = await supabase
       .from('classes')
@@ -104,6 +122,26 @@ export default function TrainerSchedule() {
 
     const startTime = `${formDate}T${formStartTime}:00`;
     const endTime = `${formDate}T${formEndTime}:00`;
+
+    if (isPreviewMode()) {
+      appendPreviewTrainerClass({
+        title: formTitle,
+        type: formType,
+        startTime,
+        endTime,
+        room: formRoom || null,
+        capacity: formCapacity,
+        booked: 0,
+        branchId: trainer.branchId,
+        staffId: trainer.staffId,
+        staffName: trainer.staffName || trainer.name,
+      });
+      toast.success('수업이 추가되었습니다.');
+      setShowModal(false);
+      setSubmitting(false);
+      fetchClasses();
+      return;
+    }
 
     const { error } = await supabase.from('classes').insert({
       title: formTitle,

@@ -5,6 +5,11 @@ import {
   ChevronRight, Clock, Dumbbell,
 } from 'lucide-react';
 import { useAuthStore } from '@/stores/authStore';
+import {
+  getPreviewTrainerClasses,
+  getPreviewTrainerTodayAttendanceIds,
+  isPreviewMode,
+} from '@/lib/preview';
 import { supabase } from '@/lib/supabase';
 import { cn, formatTime } from '@/lib/utils';
 
@@ -31,6 +36,21 @@ export default function TrainerHome() {
 
   const fetchSummary = async () => {
     if (!trainer) return;
+
+    if (isPreviewMode()) {
+      const previewClasses = getPreviewTrainerClasses();
+      const todayStr = new Date().toISOString().split('T')[0];
+      const now = new Date().toISOString();
+      const todayClasses = previewClasses.filter((item) => item.startTime.startsWith(todayStr));
+      const nextClass = todayClasses.find((item) => item.startTime > now) || null;
+
+      setSummary({
+        totalClasses: todayClasses.length,
+        nextClass: nextClass ? { title: nextClass.title, startTime: nextClass.startTime } : null,
+        todayVisitors: getPreviewTrainerTodayAttendanceIds().length,
+      });
+      return;
+    }
 
     const today = new Date();
     const todayStr = today.toISOString().split('T')[0];

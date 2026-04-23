@@ -5,6 +5,17 @@ import {
   Plus, Send,
 } from 'lucide-react';
 import { useAuthStore } from '@/stores/authStore';
+import {
+  appendPreviewTrainerEvaluation,
+  appendPreviewTrainerMemo,
+  getPreviewSearchParam,
+  getPreviewTrainerBodyComps,
+  getPreviewTrainerEvaluations,
+  getPreviewTrainerExerciseLogs,
+  getPreviewTrainerMemberById,
+  getPreviewTrainerMemos,
+  isPreviewMode,
+} from '@/lib/preview';
 import { supabase } from '@/lib/supabase';
 import { cn, formatPhone, formatDateKo } from '@/lib/utils';
 import LoadingSpinner from '@/components/LoadingSpinner';
@@ -89,6 +100,14 @@ export default function TrainerMemberDetail() {
   }, [id, trainer]);
 
   useEffect(() => {
+    if (!isPreviewMode()) return;
+    const previewTab = getPreviewSearchParam('tab');
+    if (previewTab === 'body' || previewTab === 'evaluation' || previewTab === 'memo') {
+      setTab(previewTab);
+    }
+  }, []);
+
+  useEffect(() => {
     if (!id || !memberInfo) return;
     if (tab === 'exercise') fetchExerciseLogs();
     if (tab === 'body') fetchBodyComps();
@@ -98,6 +117,13 @@ export default function TrainerMemberDetail() {
 
   const fetchMember = async () => {
     setLoading(true);
+
+    if (isPreviewMode()) {
+      setMemberInfo(id ? getPreviewTrainerMemberById(Number(id)) : null);
+      setLoading(false);
+      return;
+    }
+
     const { data } = await supabase
       .from('members')
       .select('id, name, phone, email, gender, status, membershipType, membershipExpiry')
@@ -109,6 +135,11 @@ export default function TrainerMemberDetail() {
   };
 
   const fetchExerciseLogs = async () => {
+    if (isPreviewMode()) {
+      setExerciseLogs(getPreviewTrainerExerciseLogs(Number(id)));
+      return;
+    }
+
     const { data } = await supabase
       .from('exercise_logs')
       .select('id, exerciseName, sets, reps, weight, duration, loggedAt')
@@ -119,6 +150,11 @@ export default function TrainerMemberDetail() {
   };
 
   const fetchBodyComps = async () => {
+    if (isPreviewMode()) {
+      setBodyComps(getPreviewTrainerBodyComps(Number(id)));
+      return;
+    }
+
     const { data } = await supabase
       .from('body_compositions')
       .select('id, weight, muscle, fat, fatRate, bmi, createdAt')
@@ -129,6 +165,11 @@ export default function TrainerMemberDetail() {
   };
 
   const fetchEvaluations = async () => {
+    if (isPreviewMode()) {
+      setEvaluations(getPreviewTrainerEvaluations(Number(id)));
+      return;
+    }
+
     const { data } = await supabase
       .from('member_evaluations')
       .select('id, staffName, category, score, content, createdAt')
@@ -139,6 +180,11 @@ export default function TrainerMemberDetail() {
   };
 
   const fetchMemos = async () => {
+    if (isPreviewMode()) {
+      setMemos(getPreviewTrainerMemos(Number(id)));
+      return;
+    }
+
     const { data } = await supabase
       .from('member_memos')
       .select('id, content, author, createdAt')
@@ -151,6 +197,23 @@ export default function TrainerMemberDetail() {
   const submitEvaluation = async () => {
     if (!trainer || !memberInfo || !evalContent) return;
     setEvalSubmitting(true);
+
+    if (isPreviewMode()) {
+      appendPreviewTrainerEvaluation({
+        memberId: memberInfo.id,
+        staffName: trainer.staffName || trainer.name,
+        category: evalCategory || '종합평가',
+        score: evalScore,
+        content: evalContent,
+      });
+
+      setEvalCategory('');
+      setEvalScore(5);
+      setEvalContent('');
+      setEvalSubmitting(false);
+      fetchEvaluations();
+      return;
+    }
 
     await supabase.from('member_evaluations').insert({
       memberId: memberInfo.id,
@@ -172,6 +235,19 @@ export default function TrainerMemberDetail() {
   const submitMemo = async () => {
     if (!trainer || !memberInfo || !memoContent) return;
     setMemoSubmitting(true);
+
+    if (isPreviewMode()) {
+      appendPreviewTrainerMemo({
+        memberId: memberInfo.id,
+        author: trainer.name,
+        content: memoContent,
+      });
+
+      setMemoContent('');
+      setMemoSubmitting(false);
+      fetchMemos();
+      return;
+    }
 
     await supabase.from('member_memos').insert({
       memberId: memberInfo.id,

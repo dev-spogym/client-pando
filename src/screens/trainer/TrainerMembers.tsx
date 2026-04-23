@@ -2,6 +2,12 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Search, ChevronRight, Phone } from 'lucide-react';
 import { useAuthStore } from '@/stores/authStore';
+import {
+  getPreviewSearchParam,
+  getPreviewTrainerMembers,
+  getPreviewTrainerTodayAttendanceIds,
+  isPreviewMode,
+} from '@/lib/preview';
 import { supabase } from '@/lib/supabase';
 import { cn, formatPhone } from '@/lib/utils';
 import LoadingSpinner from '@/components/LoadingSpinner';
@@ -33,9 +39,23 @@ export default function TrainerMembers() {
     fetchTodayAttendance();
   }, [trainer]);
 
+  useEffect(() => {
+    if (!isPreviewMode()) return;
+    const previewFilter = getPreviewSearchParam('filter');
+    if (previewFilter === 'today' || previewFilter === 'favorite') {
+      setFilter(previewFilter);
+    }
+  }, []);
+
   const fetchMembers = async () => {
     if (!trainer) return;
     setLoading(true);
+
+    if (isPreviewMode()) {
+      setMembers(getPreviewTrainerMembers());
+      setLoading(false);
+      return;
+    }
 
     const { data } = await supabase
       .from('members')
@@ -54,6 +74,12 @@ export default function TrainerMembers() {
 
   const fetchTodayAttendance = async () => {
     if (!trainer) return;
+
+    if (isPreviewMode()) {
+      setTodayMemberIds(new Set(getPreviewTrainerTodayAttendanceIds()));
+      return;
+    }
+
     const todayStr = new Date().toISOString().split('T')[0];
 
     const { data } = await supabase

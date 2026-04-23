@@ -1,6 +1,13 @@
 import { useEffect, useState } from 'react';
 import { ArrowLeft, ChevronRight, Send, Star } from 'lucide-react';
 import { useAuthStore } from '@/stores/authStore';
+import {
+  appendPreviewTrainerEvaluation,
+  getPreviewSearchParam,
+  getPreviewTrainerAttendanceMembersByClassId,
+  getPreviewTrainerClasses,
+  isPreviewMode,
+} from '@/lib/preview';
 import { supabase } from '@/lib/supabase';
 import { cn, formatTime, formatDateKo } from '@/lib/utils';
 import { toast } from 'sonner';
@@ -45,6 +52,19 @@ export default function TrainerFeedback() {
     fetchClasses();
   }, [trainer, filterPeriod]);
 
+  useEffect(() => {
+    if (!isPreviewMode() || selectedClass || classes.length === 0) return;
+
+    const requestedView = getPreviewSearchParam('view');
+    const requestedClassId = Number(getPreviewSearchParam('classId'));
+    if (requestedView !== 'feedback' || Number.isNaN(requestedClassId)) return;
+
+    const previewClass = classes.find((item) => item.id === requestedClassId);
+    if (previewClass) {
+      void selectClass(previewClass);
+    }
+  }, [classes, selectedClass]);
+
   const fetchClasses = async () => {
     if (!trainer) return;
     setLoading(true);
@@ -57,6 +77,15 @@ export default function TrainerFeedback() {
       const weekAgo = new Date(today);
       weekAgo.setDate(weekAgo.getDate() - 7);
       startDate = weekAgo.toISOString();
+    }
+
+    if (isPreviewMode()) {
+      const filteredClasses = getPreviewTrainerClasses().filter((item) => (
+        item.startTime >= startDate && item.startTime <= `${todayStr}T23:59:59`
+      ));
+      setClasses(filteredClasses.sort((a, b) => new Date(b.startTime).getTime() - new Date(a.startTime).getTime()));
+      setLoading(false);
+      return;
     }
 
     const { data } = await supabase
@@ -74,6 +103,24 @@ export default function TrainerFeedback() {
 
   const selectClass = async (cls: ClassItem) => {
     setSelectedClass(cls);
+
+    if (isPreviewMode()) {
+      const previewAttendees = getPreviewTrainerAttendanceMembersByClassId(cls.id);
+      setAttendees(previewAttendees);
+
+      const map = new Map<number, FeedbackForm>();
+      previewAttendees.forEach((attendee) => {
+        map.set(attendee.memberId, {
+          memberId: attendee.memberId,
+          memberName: attendee.memberName,
+          content: '',
+          score: 5,
+        });
+      });
+      setFeedbacks(map);
+      setView('feedback');
+      return;
+    }
 
     // 해당 수업 시간대의 출석 회원 조회
     const { data } = await supabase
@@ -122,6 +169,22 @@ export default function TrainerFeedback() {
     const entries = Array.from(feedbacks.values()).filter((f) => f.content.trim());
     if (entries.length === 0) {
       toast.error('피드백 내용을 1건 이상 입력해주세요.');
+      setSubmitting(false);
+      return;
+    }
+
+    if (isPreviewMode()) {
+      entries.forEach((item) => {
+        appendPreviewTrainerEvaluation({
+          memberId: item.memberId,
+          staffName: trainer.staffName || trainer.name,
+          category: `${selectedClass.title} 피드백`,
+          score: item.score,
+          content: item.content,
+        });
+      });
+      toast.success(`${entries.length}건의 피드백이 저장되었습니다.`);
+      setView('list');
       setSubmitting(false);
       return;
     }

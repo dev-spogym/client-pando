@@ -1,11 +1,84 @@
+# Dependencies
 node_modules/
+.pnp
+.pnp.js
+.yarn/install-state.gz
+
+# Build output
 dist/
-.next/
+build/
 out/
-.DS_Store
-.env
-.codex-run/
-*.local
+.next/
+.turbo/
+.vercel/
+.netlify/
+
+# TypeScript / bundler artifacts
 *.tsbuildinfo
 *.d.ts.map
+next-env.d.ts
 vite.config.d.ts
+
+# Environment variables
+.env
+.env.*
+!.env.example
+!.env.sample
+*.local
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Testing
+coverage/
+.nyc_output/
+*.lcov
+
+# Cache
+.cache/
+.parcel-cache/
+.eslintcache
+.stylelintcache
+
+# OS files
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Editor / IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*.sublime-workspace
+*.sublime-project
+*.code-workspace
+
+# AI assistant / agent tooling
+.claude/
+.codex/
+.codex-run/
+.cursor/
+.gemini/
+.aider*
+.continue/
+.codeium/
+.kiro/
+.omc/
+.omx/
+
+# Temp / misc
+tmp/
+temp/
+*.tmp
+*.pid
+*.seed
+*.pid.lock

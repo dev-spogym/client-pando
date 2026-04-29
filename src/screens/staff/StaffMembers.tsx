@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { getMockMembers } from '@/lib/mockOperations';
+import { Card } from '@/components/ui';
 
 export default function StaffMembers() {
   const navigate = useNavigate();
@@ -19,11 +20,13 @@ export default function StaffMembers() {
           <button
             key={member.id}
             onClick={() => navigate(`/staff/members/${member.id}`)}
-            className="w-full rounded-card bg-surface p-4 text-left shadow-card"
+            className="w-full text-left"
           >
-            <p className="text-sm font-semibold">{member.name}</p>
-            <p className="mt-1 text-xs text-content-secondary">{member.phone} · {member.membershipName}</p>
-            <p className="mt-2 text-xs text-content-tertiary">상태 {member.status}</p>
+            <Card interactive>
+              <p className="text-sm font-semibold">{member.name}</p>
+              <p className="mt-1 text-xs text-content-secondary">{member.phone} · {member.membershipName}</p>
+              <p className="mt-2 text-xs text-content-tertiary">상태 {member.status}</p>
+            </Card>
           </button>
         ))}
       </div>

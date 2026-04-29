@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { toast } from 'sonner';
 import { FilePlus2 } from 'lucide-react';
 import { addTrainerTemplate, getTrainerTemplates } from '@/lib/mockOperations';
+import { PageHeader, Card, Button, Badge } from '@/components/ui';
 
 export default function TrainerTemplates() {
   const [name, setName] = useState('');
@@ -30,7 +31,7 @@ export default function TrainerTemplates() {
 
   return (
     <div className="min-h-screen bg-surface-secondary">
-      <header className="bg-gradient-to-br from-slate-900 to-slate-700 px-5 pt-safe-top pb-5">
+      <header className="bg-gradient-to-br from-teal-600 to-emerald-600 px-5 pt-safe-top pb-5">
         <div className="pt-4">
           <p className="text-white/70 text-sm">MA-214</p>
           <h1 className="text-white text-xl font-bold mt-1">수업 템플릿 관리</h1>
@@ -38,45 +39,47 @@ export default function TrainerTemplates() {
       </header>
 
       <div className="px-5 py-4 pb-24 space-y-4" key={version}>
-        <section className="rounded-card bg-surface p-4 shadow-card space-y-3">
-          <div className="flex items-center gap-2">
-            <FilePlus2 className="w-4 h-4 text-teal-600" />
+        <Card variant="elevated" padding="md">
+          <div className="flex items-center gap-2 mb-3">
+            <FilePlus2 className="w-4 h-4 text-primary" />
             <p className="text-sm font-semibold">새 템플릿</p>
           </div>
-          <input
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="템플릿명"
-            className="w-full rounded-xl border border-line px-3 py-3 text-sm focus:outline-none focus:border-teal-500"
-          />
-          <textarea
-            value={summary}
-            onChange={(e) => setSummary(e.target.value)}
-            placeholder="수업 요약"
-            rows={3}
-            className="w-full rounded-xl border border-line px-3 py-3 text-sm focus:outline-none focus:border-teal-500 resize-none"
-          />
-          <button onClick={submit} className="w-full rounded-xl bg-teal-600 px-4 py-3 text-sm font-semibold text-white">
-            템플릿 추가
-          </button>
-        </section>
+          <div className="space-y-3">
+            <input
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="템플릿명"
+              className="w-full rounded-input border border-line px-3 py-3 text-sm focus:outline-none focus:border-primary"
+            />
+            <textarea
+              value={summary}
+              onChange={(e) => setSummary(e.target.value)}
+              placeholder="수업 요약"
+              rows={3}
+              className="w-full rounded-input border border-line px-3 py-3 text-sm focus:outline-none focus:border-primary resize-none"
+            />
+            <Button variant="primary" size="lg" fullWidth onClick={submit}>
+              템플릿 추가
+            </Button>
+          </div>
+        </Card>
 
-        <section className="space-y-3">
+        <div className="space-y-3">
           {templates.map((template) => (
-            <div key={template.id} className="rounded-card bg-surface p-4 shadow-card">
+            <Card key={template.id} variant="elevated" padding="md">
               <div className="flex items-center justify-between gap-3">
                 <div>
                   <p className="text-sm font-semibold">{template.name}</p>
-                  <p className="mt-1 text-xs text-content-secondary">{template.category} · {template.durationMinutes}분 · {template.intensity}</p>
+                  <p className="mt-1 text-xs text-content-secondary">
+                    {template.category} · {template.durationMinutes}분 · {template.intensity}
+                  </p>
                 </div>
-                <span className="rounded-full bg-surface-secondary px-2 py-1 text-[11px] font-semibold text-content-secondary">
-                  #{template.id}
-                </span>
+                <Badge tone="neutral" variant="soft">#{template.id}</Badge>
               </div>
               <p className="mt-3 text-sm text-content-secondary">{template.summary}</p>
-            </div>
+            </Card>
           ))}
-        </section>
+        </div>
       </div>
     </div>
   );

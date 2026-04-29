@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { ArrowLeft, AlertCircle, CalendarClock, Clock, User } from 'lucide-react';
+import { AlertCircle, CalendarClock, Clock, User } from 'lucide-react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { toast } from 'sonner';
 import { useAuthStore } from '@/stores/authStore';
@@ -11,6 +11,7 @@ import {
   type GolfInstructorSlot,
 } from '@/lib/memberExperience';
 import { cn, formatCurrency, formatDateKo } from '@/lib/utils';
+import { PageHeader, Button, Chip } from '@/components/ui';
 
 interface Bay {
   id: number;
@@ -115,62 +116,56 @@ export default function GolfBayReservation() {
 
   return (
     <div className="min-h-screen bg-surface-secondary">
-      <header className="bg-surface sticky top-0 z-10 border-b border-line">
-        <div className="flex items-center px-4 pt-safe-top h-14">
-          <button onClick={() => navigate(-1)}>
-            <ArrowLeft className="w-6 h-6 text-content" />
-          </button>
-          <h1 className="flex-1 text-center font-semibold text-lg">골프 예약</h1>
-          <div className="w-6" />
-        </div>
-
-        <div className="px-4 pb-3 flex gap-2">
-          {[
-            { key: 'coach' as const, label: '골프 강사 예약' },
-            { key: 'bay' as const, label: '골프 타석 예약' },
-          ].map((item) => (
-            <button
-              key={item.key}
-              onClick={() => {
-                setTab(item.key);
-                const next = new URLSearchParams(searchParams);
-                next.set('tab', item.key);
-                next.delete('modal');
-                setSearchParams(next, { replace: true });
-              }}
-              className={cn(
-                'flex-1 py-2 rounded-full text-sm font-medium',
-                tab === item.key ? 'bg-primary text-white' : 'bg-surface-tertiary text-content-secondary'
-              )}
-            >
-              {item.label}
-            </button>
-          ))}
-        </div>
-      </header>
+      <PageHeader
+        title="골프 예약"
+        onBack={() => navigate(-1)}
+        rightSlot={
+          <div className="flex gap-2">
+            {[
+              { key: 'coach' as const, label: '강사 예약' },
+              { key: 'bay' as const, label: '타석 예약' },
+            ].map((item) => (
+              <Chip
+                key={item.key}
+                active={tab === item.key}
+                size="sm"
+                onClick={() => {
+                  setTab(item.key);
+                  const next = new URLSearchParams(searchParams);
+                  next.set('tab', item.key);
+                  next.delete('modal');
+                  setSearchParams(next, { replace: true });
+                }}
+              >
+                {item.label}
+              </Chip>
+            ))}
+          </div>
+        }
+      />
 
       <div className="px-4 py-4 space-y-4 pb-20">
         {tab === 'coach' && (
           <>
-            <section className="bg-surface rounded-card p-5 shadow-card">
+            <section className="bg-surface rounded-card p-5 shadow-card-soft">
               <h2 className="text-lg font-bold">골프 강사 예약</h2>
               <p className="text-sm text-content-secondary mt-2">강사별 레슨 시간과 타석을 확인하고 바로 예약할 수 있습니다.</p>
             </section>
 
             {coachBookings.length > 0 && (
-              <section className="bg-surface rounded-card p-5 shadow-card space-y-4">
+              <section className="bg-surface rounded-card p-5 shadow-card-soft space-y-4">
                 <div className="flex items-start justify-between gap-3">
                   <div>
                     <h3 className="text-sm font-semibold">내 골프 레슨 스케줄</h3>
                     <p className="text-xs text-content-secondary mt-1">예약한 레슨 시간과 타석을 한 번에 확인할 수 있습니다.</p>
                   </div>
-                  <span className="rounded-full bg-primary-light px-2 py-1 text-[11px] font-semibold text-primary">
+                  <span className="rounded-pill bg-primary-light px-2 py-1 text-[11px] font-semibold text-primary">
                     {coachBookings.length}건
                   </span>
                 </div>
 
                 {nextCoachBooking && (
-                  <div className="rounded-2xl bg-primary/8 border border-primary/10 p-4">
+                  <div className="rounded-card bg-primary/[0.08] border border-primary/10 p-4">
                     <p className="text-xs font-semibold text-primary">다음 예약</p>
                     <p className="mt-1 text-sm font-semibold">{nextCoachBooking.lessonName}</p>
                     <p className="mt-1 text-xs text-content-secondary">
@@ -181,13 +176,13 @@ export default function GolfBayReservation() {
 
                 <div className="space-y-2">
                   {coachBookings.map((booking) => (
-                    <div key={booking.id} className="bg-surface-secondary rounded-xl p-4">
+                    <div key={booking.id} className="bg-surface-secondary rounded-card p-4">
                       <div className="flex items-center justify-between gap-3">
                         <div>
                           <p className="text-sm font-semibold">{booking.lessonName}</p>
                           <p className="text-xs text-content-secondary mt-1">{booking.instructorName} 강사 · {booking.bayLabel}</p>
                         </div>
-                        <span className="px-2 py-1 rounded-full bg-primary-light text-primary text-[11px] font-semibold">
+                        <span className="px-2 py-1 rounded-pill bg-primary-light text-primary text-[11px] font-semibold">
                           예약 완료
                         </span>
                       </div>
@@ -206,15 +201,15 @@ export default function GolfBayReservation() {
                 <button
                   key={slot.id}
                   onClick={() => setSelectedSlot(slot)}
-                  className="w-full bg-surface rounded-card p-5 shadow-card text-left"
+                  className="w-full bg-surface rounded-card p-5 shadow-card-soft text-left"
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div>
                       <div className="flex items-center gap-2 mb-2">
-                        <span className="px-2 py-1 rounded-full bg-state-info/10 text-state-info text-[11px] font-semibold">
+                        <span className="px-2 py-1 rounded-pill bg-state-info/10 text-state-info text-[11px] font-semibold">
                           골프 강사
                         </span>
-                        <span className="px-2 py-1 rounded-full bg-surface-secondary text-content-tertiary text-[11px] font-medium">
+                        <span className="px-2 py-1 rounded-pill bg-surface-secondary text-content-tertiary text-[11px] font-medium">
                           {slot.bayLabel}
                         </span>
                       </div>
@@ -231,18 +226,15 @@ export default function GolfBayReservation() {
               ))}
             </section>
 
-            <button
-              onClick={() => navigate('/shop')}
-              className="w-full bg-primary text-white rounded-button py-3.5 font-semibold"
-            >
+            <Button fullWidth onClick={() => navigate('/shop')}>
               골프 레슨권 / 이용권 구매하러 가기
-            </button>
+            </Button>
           </>
         )}
 
         {tab === 'bay' && (
           <>
-            <div className="bg-surface px-4 py-4 border border-line rounded-card shadow-card">
+            <div className="bg-surface px-4 py-4 border border-line rounded-card shadow-card-soft">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-content-secondary">현재 이용 가능</p>
@@ -273,7 +265,7 @@ export default function GolfBayReservation() {
                         onClick={() => handleReserveBay(bay)}
                         disabled={bay.status !== 'available'}
                         className={cn(
-                          'aspect-square rounded-xl border-2 p-2 flex flex-col items-center justify-center transition-all',
+                          'aspect-square rounded-card border-2 p-2 flex flex-col items-center justify-center transition-all',
                           config.bgColor,
                           bay.status === 'available' && 'active:scale-95 cursor-pointer',
                           bay.status !== 'available' && 'cursor-default'
@@ -295,12 +287,9 @@ export default function GolfBayReservation() {
                 <AlertCircle className="w-8 h-8 text-state-warning mx-auto mb-2" />
                 <p className="text-sm font-medium mb-1">현재 이용 가능한 타석이 없습니다</p>
                 <p className="text-xs text-content-secondary mb-3">예상 대기 시간: 약 30분</p>
-                <button
-                  onClick={handleWaitlist}
-                  className="px-6 py-2 bg-state-warning text-white rounded-button font-medium text-sm"
-                >
+                <Button variant="secondary" onClick={handleWaitlist}>
                   대기열 등록
-                </button>
+                </Button>
               </div>
             )}
           </>
@@ -311,7 +300,7 @@ export default function GolfBayReservation() {
         <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40">
           <div className="mobile-bottom-sheet bg-surface rounded-t-2xl p-6 pb-safe-bottom slide-up">
             <h3 className="text-lg font-bold mb-4">골프 강사 예약 확인</h3>
-            <div className="space-y-3 bg-surface-secondary rounded-xl p-4">
+            <div className="space-y-3 bg-surface-secondary rounded-card p-4">
               <p className="text-sm font-semibold">{selectedSlot.lessonName}</p>
               <p className="text-sm text-content-secondary flex items-center gap-2"><User className="w-4 h-4" />{selectedSlot.instructorName} 강사</p>
               <p className="text-sm text-content-secondary flex items-center gap-2"><CalendarClock className="w-4 h-4" />{selectedSlot.dateLabel}</p>
@@ -319,23 +308,21 @@ export default function GolfBayReservation() {
               <p className="text-lg font-bold">{formatCurrency(selectedSlot.price)}</p>
             </div>
             <div className="mt-6 flex gap-3">
-              <button
+              <Button
+                variant="outline"
+                fullWidth
                 onClick={() => {
                   setSelectedSlot(null);
                   const next = new URLSearchParams(searchParams);
                   next.delete('modal');
                   setSearchParams(next, { replace: true });
                 }}
-                className="flex-1 py-3 rounded-button border border-line text-content-secondary font-medium"
               >
                 취소
-              </button>
-              <button
-                onClick={confirmCoachBooking}
-                className="flex-1 py-3 rounded-button bg-primary text-white font-semibold"
-              >
+              </Button>
+              <Button fullWidth onClick={confirmCoachBooking}>
                 예약하기
-              </button>
+              </Button>
             </div>
           </div>
         </div>
@@ -345,29 +332,27 @@ export default function GolfBayReservation() {
         <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40">
           <div className="mobile-bottom-sheet bg-surface rounded-t-2xl p-6 pb-safe-bottom slide-up">
             <h3 className="text-lg font-bold mb-4">타석 예약 확인</h3>
-            <div className="bg-surface-secondary rounded-xl p-4 mb-4">
+            <div className="bg-surface-secondary rounded-card p-4 mb-4">
               <p className="text-sm text-content-secondary">선택한 타석</p>
               <p className="text-xl font-bold text-primary">{selectedBay.number}</p>
             </div>
             <p className="text-sm text-content-secondary mb-6">예약 시간은 1시간이며, 시간 초과 시 자동 반납됩니다.</p>
             <div className="flex gap-3">
-              <button
+              <Button
+                variant="outline"
+                fullWidth
                 onClick={() => {
                   setSelectedBay(null);
                   const next = new URLSearchParams(searchParams);
                   next.delete('modal');
                   setSearchParams(next, { replace: true });
                 }}
-                className="flex-1 py-3 rounded-button border border-line text-content-secondary font-medium"
               >
                 취소
-              </button>
-              <button
-                onClick={confirmReserveBay}
-                className="flex-1 py-3 rounded-button bg-primary text-white font-semibold"
-              >
+              </Button>
+              <Button fullWidth onClick={confirmReserveBay}>
                 예약하기
-              </button>
+              </Button>
             </div>
           </div>
         </div>

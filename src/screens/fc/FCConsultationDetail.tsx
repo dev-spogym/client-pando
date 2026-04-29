@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 import { getConsultationById, updateConsultation } from '@/lib/mockOperations';
+import { Chip, Card } from '@/components/ui';
 
 export default function FCConsultationDetail() {
   const { id } = useParams<{ id: string }>();
@@ -23,48 +24,50 @@ export default function FCConsultationDetail() {
       </header>
 
       <div className="px-5 py-4 pb-24 space-y-4">
-        <section className="rounded-card bg-surface p-4 shadow-card">
+        <Card>
           <p className="text-sm font-semibold">{consultation.type} · {consultation.channel}</p>
           <p className="mt-1 text-xs text-content-secondary">{consultation.scheduledAt.replace('T', ' ').slice(0, 16)}</p>
           <p className="mt-3 text-sm text-content-secondary">{consultation.summary}</p>
-        </section>
+        </Card>
 
-        <section className="rounded-card bg-surface p-4 shadow-card space-y-3">
+        <Card className="space-y-3">
           <p className="text-sm font-semibold">상담 상태 수정</p>
-          <div className="grid grid-cols-3 gap-2">
+          <div className="flex gap-2">
             {(['scheduled', 'completed', 'no_show'] as const).map((status) => (
-              <button
+              <Chip
                 key={status}
+                size="sm"
+                active={consultation.status === status}
                 onClick={() => {
                   updateConsultation(consultation.id, { status });
                   toast.success('상담 상태를 저장했습니다.');
                   setVersion((value) => value + 1);
                 }}
-                className={`rounded-xl px-3 py-2 text-sm font-semibold ${consultation.status === status ? 'bg-primary text-white' : 'bg-surface-secondary text-content-secondary'}`}
               >
                 {status}
-              </button>
+              </Chip>
             ))}
           </div>
-          <div className="grid grid-cols-3 gap-2">
+          <div className="flex gap-2">
             {(['등록', '미등록', '보류'] as const).map((result) => (
-              <button
+              <Chip
                 key={result}
+                size="sm"
+                active={consultation.result === result}
                 onClick={() => {
                   updateConsultation(consultation.id, { result, status: 'completed' });
                   toast.success('상담 결과를 저장했습니다.');
                   setVersion((value) => value + 1);
                 }}
-                className={`rounded-xl px-3 py-2 text-sm font-semibold ${consultation.result === result ? 'bg-sky-600 text-white' : 'bg-surface-secondary text-content-secondary'}`}
               >
                 {result}
-              </button>
+              </Chip>
             ))}
           </div>
           <div className="rounded-2xl bg-surface-secondary p-4 text-sm text-content-secondary">
             후속 조치: {consultation.followUp || '미입력'}
           </div>
-        </section>
+        </Card>
       </div>
     </div>
   );

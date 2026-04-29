@@ -1,9 +1,9 @@
 import { useNavigate } from 'react-router-dom';
 import {
-  ArrowLeft, MapPin, Phone, Clock, ChevronRight,
+  MapPin, Phone, Clock, ChevronRight,
   Dumbbell, Users, Music, Lock, Waves, Wifi,
 } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { PageHeader, Card } from '@/components/ui';
 
 interface Facility {
   icon: React.ReactNode;
@@ -21,10 +21,10 @@ interface Trainer {
 const FACILITIES: Facility[] = [
   { icon: <Dumbbell className="w-5 h-5 text-primary" />, name: '헬스장', description: '최신 기구 완비, 프리웨이트 존 별도 운영' },
   { icon: <Users className="w-5 h-5 text-accent" />, name: 'PT룸', description: '1:1 개인 트레이닝 전용 공간' },
-  { icon: <Music className="w-5 h-5 text-purple-500" />, name: 'GX룸', description: '그룹 운동 수업 (요가, 필라테스, 에어로빅)' },
-  { icon: <Lock className="w-5 h-5 text-orange-500" />, name: '락커룸', description: '개인 락커, 샤워실, 파우더룸 완비' },
-  { icon: <Waves className="w-5 h-5 text-blue-500" />, name: '스트레칭 존', description: '폼롤러, 밴드 등 스트레칭 용품 구비' },
-  { icon: <Wifi className="w-5 h-5 text-green-500" />, name: '라운지', description: '무료 Wi-Fi, 단백질 음료 판매' },
+  { icon: <Music className="w-5 h-5 text-primary" />, name: 'GX룸', description: '그룹 운동 수업 (요가, 필라테스, 에어로빅)' },
+  { icon: <Lock className="w-5 h-5 text-state-warning" />, name: '락커룸', description: '개인 락커, 샤워실, 파우더룸 완비' },
+  { icon: <Waves className="w-5 h-5 text-state-info" />, name: '스트레칭 존', description: '폼롤러, 밴드 등 스트레칭 용품 구비' },
+  { icon: <Wifi className="w-5 h-5 text-state-success" />, name: '라운지', description: '무료 Wi-Fi, 단백질 음료 판매' },
 ];
 
 const TRAINERS: Trainer[] = [
@@ -66,20 +66,11 @@ export default function CenterInfo() {
 
   return (
     <div className="min-h-screen bg-surface-secondary">
-      {/* 헤더 */}
-      <header className="bg-surface sticky top-0 z-10 border-b border-line">
-        <div className="flex items-center px-4 pt-safe-top h-14">
-          <button onClick={() => navigate(-1)}>
-            <ArrowLeft className="w-6 h-6 text-content" />
-          </button>
-          <h1 className="flex-1 text-center font-semibold text-lg">센터 정보</h1>
-          <div className="w-6" />
-        </div>
-      </header>
+      <PageHeader title="센터 정보" onBack={() => navigate(-1)} />
 
       <div className="px-4 mt-3 space-y-4 pb-4">
         {/* 센터 기본 정보 */}
-        <div className="bg-surface rounded-card p-5 shadow-card">
+        <Card padding="lg">
           <div className="flex items-center gap-3 mb-4">
             <div className="w-12 h-12 bg-primary rounded-xl flex items-center justify-center">
               <span className="text-white font-bold text-lg">스포</span>
@@ -103,10 +94,10 @@ export default function CenterInfo() {
               <a href="tel:02-1234-5678" className="text-sm text-primary font-medium">02-1234-5678</a>
             </div>
           </div>
-        </div>
+        </Card>
 
         {/* 영업시간 */}
-        <div className="bg-surface rounded-card p-4 shadow-card">
+        <Card>
           <div className="flex items-center gap-2 mb-3">
             <Clock className="w-5 h-5 text-primary" />
             <h3 className="font-semibold text-sm">영업시간</h3>
@@ -119,14 +110,14 @@ export default function CenterInfo() {
               </div>
             ))}
           </div>
-        </div>
+        </Card>
 
         {/* 시설 안내 */}
-        <div className="bg-surface rounded-card p-4 shadow-card">
+        <Card>
           <h3 className="font-semibold text-sm mb-3">시설 안내</h3>
           <div className="grid grid-cols-2 gap-3">
             {FACILITIES.map((f) => (
-              <div key={f.name} className="bg-surface-secondary rounded-xl p-3">
+              <div key={f.name} className="bg-surface-secondary rounded-card p-3">
                 <div className="flex items-center gap-2 mb-1.5">
                   {f.icon}
                   <span className="text-sm font-medium">{f.name}</span>
@@ -135,13 +126,10 @@ export default function CenterInfo() {
               </div>
             ))}
           </div>
-        </div>
+        </Card>
 
         {/* 이벤트/공지 */}
-        <div
-          onClick={() => navigate('/notices')}
-          className="bg-surface rounded-card p-4 shadow-card touch-card cursor-pointer"
-        >
+        <Card interactive onClick={() => navigate('/notices')}>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <div className="w-8 h-8 bg-state-info/10 rounded-lg flex items-center justify-center">
@@ -154,21 +142,21 @@ export default function CenterInfo() {
             </div>
             <ChevronRight className="w-5 h-5 text-content-tertiary" />
           </div>
-        </div>
+        </Card>
 
         {/* 트레이너 소개 */}
-        <div className="bg-surface rounded-card p-4 shadow-card">
+        <Card>
           <h3 className="font-semibold text-sm mb-3">트레이너 소개</h3>
           <div className="space-y-3">
             {TRAINERS.map((trainer) => (
-              <div key={trainer.name} className="flex items-start gap-3 p-3 bg-surface-secondary rounded-xl">
+              <div key={trainer.name} className="flex items-start gap-3 p-3 bg-surface-secondary rounded-card">
                 <div className="w-12 h-12 bg-primary-light rounded-full flex items-center justify-center flex-shrink-0">
                   <span className="text-primary font-bold text-sm">{trainer.name.slice(0, 1)}</span>
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1">
                     <h4 className="font-semibold text-sm">{trainer.name}</h4>
-                    <span className="text-[10px] px-1.5 py-0.5 bg-primary-light text-primary rounded-full font-medium">
+                    <span className="text-[10px] px-1.5 py-0.5 bg-primary-light text-primary rounded-pill font-medium">
                       {trainer.experience}
                     </span>
                   </div>
@@ -184,7 +172,7 @@ export default function CenterInfo() {
               </div>
             ))}
           </div>
-        </div>
+        </Card>
       </div>
     </div>
   );

@@ -13,7 +13,7 @@ export default function StaffHome() {
 
   return (
     <div className="min-h-screen bg-surface-secondary">
-      <header className="bg-gradient-to-br from-slate-800 to-slate-600 px-5 pt-safe-top pb-6">
+      <header className="bg-gradient-to-br from-content to-content-secondary px-5 pt-safe-top pb-6">
         <div className="pt-4 flex items-center justify-between">
           <div>
             <p className="text-white/80 text-sm">Staff</p>
@@ -33,9 +33,9 @@ export default function StaffHome() {
       </header>
 
       <div className="px-5 -mt-2 pb-24 grid grid-cols-3 gap-3">
-        <QuickMenu label="회원 조회" icon={<Users className="w-5 h-5 text-slate-700" />} onClick={() => navigate('/staff/members')} />
+        <QuickMenu label="회원 조회" icon={<Users className="w-5 h-5 text-content-secondary" />} onClick={() => navigate('/staff/members')} />
         <QuickMenu label="수동 출석" icon={<ScanLine className="w-5 h-5 text-state-success" />} onClick={() => navigate('/staff/attendance/manual')} />
-        <QuickMenu label="일정 조회" icon={<CalendarDays className="w-5 h-5 text-state-info" />} onClick={() => navigate('/staff/schedule')} />
+        <QuickMenu label="일정 조회" icon={<CalendarDays className="w-5 h-5 text-primary" />} onClick={() => navigate('/staff/schedule')} />
       </div>
     </div>
   );
@@ -52,7 +52,7 @@ function SummaryCard({ label, value }: { label: string; value: string }) {
 
 function QuickMenu({ label, icon, onClick }: { label: string; icon: React.ReactNode; onClick: () => void }) {
   return (
-    <button onClick={onClick} className="rounded-card bg-surface p-4 text-left shadow-card">
+    <button onClick={onClick} className="rounded-card bg-surface p-4 text-left shadow-card-soft">
       {icon}
       <p className="mt-3 text-sm font-semibold">{label}</p>
     </button>

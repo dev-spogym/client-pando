@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { addConsultation } from '@/lib/mockOperations';
+import { Input, Button } from '@/components/ui';
 
 export default function FCConsultationEditor() {
   const navigate = useNavigate();
@@ -43,13 +44,33 @@ export default function FCConsultationEditor() {
       </header>
 
       <div className="px-5 py-4 pb-24 space-y-3">
-        <input value={memberName} onChange={(e) => setMemberName(e.target.value)} placeholder="회원명" className="w-full rounded-xl border border-line px-3 py-3 text-sm focus:outline-none focus:border-primary" />
-        <input value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="연락처" className="w-full rounded-xl border border-line px-3 py-3 text-sm focus:outline-none focus:border-primary" />
-        <textarea value={summary} onChange={(e) => setSummary(e.target.value)} placeholder="상담 내용" rows={4} className="w-full rounded-xl border border-line px-3 py-3 text-sm resize-none focus:outline-none focus:border-primary" />
-        <textarea value={followUp} onChange={(e) => setFollowUp(e.target.value)} placeholder="후속 조치" rows={3} className="w-full rounded-xl border border-line px-3 py-3 text-sm resize-none focus:outline-none focus:border-primary" />
-        <button onClick={submit} className="w-full rounded-xl bg-primary px-4 py-3 text-sm font-semibold text-white">
+        <Input
+          value={memberName}
+          onChange={(e) => setMemberName(e.target.value)}
+          placeholder="회원명"
+        />
+        <Input
+          value={phone}
+          onChange={(e) => setPhone(e.target.value)}
+          placeholder="연락처"
+        />
+        <textarea
+          value={summary}
+          onChange={(e) => setSummary(e.target.value)}
+          placeholder="상담 내용"
+          rows={4}
+          className="w-full rounded-xl border border-line px-3 py-3 text-sm resize-none focus:outline-none focus:border-primary bg-surface"
+        />
+        <textarea
+          value={followUp}
+          onChange={(e) => setFollowUp(e.target.value)}
+          placeholder="후속 조치"
+          rows={3}
+          className="w-full rounded-xl border border-line px-3 py-3 text-sm resize-none focus:outline-none focus:border-primary bg-surface"
+        />
+        <Button fullWidth size="lg" onClick={submit}>
           저장
-        </button>
+        </Button>
       </div>
     </div>
   );

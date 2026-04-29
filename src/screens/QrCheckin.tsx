@@ -82,13 +82,13 @@ export default function QrCheckin() {
         <div className="qr-container flex flex-col items-center w-full max-w-xs">
           {/* 회원 정보 */}
           <div className="mb-4 text-center">
-            <p className="text-lg font-bold text-content">{member.name}</p>
-            <p className="text-sm text-content-secondary">회원번호 #{String(member.id).padStart(6, '0')}</p>
+            <p className="text-lg font-bold text-white">{member.name}</p>
+            <p className="text-sm text-white/70">회원번호 #{String(member.id).padStart(6, '0')}</p>
           </div>
 
           {/* QR 코드 */}
           <div className={cn(
-            'relative p-2 rounded-xl',
+            'relative p-4 bg-white rounded-card-lg shadow-card-elevated',
             isExpired && 'opacity-30'
           )}>
             <QRCodeSVG
@@ -103,7 +103,7 @@ export default function QrCheckin() {
               <div className="absolute inset-0 flex items-center justify-center">
                 <button
                   onClick={generateQr}
-                  className="bg-primary text-white px-4 py-2 rounded-lg font-medium flex items-center gap-2 shadow-lg"
+                  className="bg-primary text-white px-4 py-2 rounded-button font-medium flex items-center gap-2 shadow-card-elevated"
                 >
                   <RefreshCw className="w-5 h-5" />
                   갱신하기
@@ -113,13 +113,13 @@ export default function QrCheckin() {
           </div>
 
           {/* 타이머 */}
-          <div className="w-full mt-4">
+          <div className="w-full mt-6">
             {/* 진행 바 */}
-            <div className="w-full h-1.5 bg-line-light rounded-full overflow-hidden mb-2">
+            <div className="w-full h-1.5 bg-white/20 rounded-full overflow-hidden mb-2">
               <div
                 className={cn(
                   'h-full rounded-full transition-all duration-1000 ease-linear',
-                  remainSeconds > 15 ? 'bg-primary' : remainSeconds > 5 ? 'bg-state-warning' : 'bg-state-error'
+                  remainSeconds > 15 ? 'bg-white' : remainSeconds > 5 ? 'bg-state-warning' : 'bg-state-error'
                 )}
                 style={{ width: `${progressPercent}%` }}
               />
@@ -127,11 +127,11 @@ export default function QrCheckin() {
             <div className="flex items-center justify-center gap-1.5">
               <Shield className={cn(
                 'w-4 h-4',
-                remainSeconds > 15 ? 'text-primary' : 'text-state-error'
+                remainSeconds > 15 ? 'text-white/70' : 'text-state-error'
               )} />
               <span className={cn(
                 'text-sm font-medium',
-                remainSeconds > 15 ? 'text-content-secondary' : 'text-state-error'
+                remainSeconds > 15 ? 'text-white/70' : 'text-state-error'
               )}>
                 {isExpired ? '만료됨 - 자동 갱신 중...' : `${remainSeconds}초 후 자동 갱신`}
               </span>

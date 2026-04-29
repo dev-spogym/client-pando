@@ -11,6 +11,7 @@ import {
   type NotificationRole,
 } from '@/lib/mockOperations';
 import { useAuthStore } from '@/stores/authStore';
+import { PageHeader, Card, Badge, Button } from '@/components/ui';
 
 type RoleSettingsFieldKey =
   | 'pushEnabled'
@@ -71,27 +72,24 @@ export default function RoleSettingsScreen({ role, title, screenId, fields }: Ro
 
   return (
     <div className="min-h-screen bg-surface-secondary">
-      <header className="bg-surface px-5 pt-safe-top pb-4 shadow-sm">
-        <div className="pt-4">
-          <p className="text-xs text-content-tertiary">{screenId}</p>
-          <h1 className="text-lg font-bold">{title}</h1>
-        </div>
-      </header>
+      <PageHeader showBack={false} title={title} subtitle={screenId} />
 
       <div className="px-5 py-4 pb-24 space-y-4">
-        <section className="rounded-card bg-surface p-4 shadow-card">
+        <Card variant="elevated" padding="md">
           <p className="text-sm font-semibold">{profile.name}</p>
           <p className="mt-1 text-xs text-content-secondary">{profile.title} · {profile.branch}</p>
           <p className="mt-2 text-sm text-content-tertiary">{profile.subtitle}</p>
-        </section>
+        </Card>
 
         <section className="space-y-3">
           <SectionTitle>알림 설정</SectionTitle>
           {fields.map((field) => (
-            <button
+            <Card
               key={field.key}
+              variant="elevated"
+              padding="md"
+              interactive
               onClick={() => toggle(field.key)}
-              className="w-full rounded-card bg-surface px-4 py-4 text-left shadow-card"
             >
               <div className="flex items-center justify-between gap-4">
                 <div>
@@ -100,11 +98,14 @@ export default function RoleSettingsScreen({ role, title, screenId, fields }: Ro
                     <p className="mt-1 text-xs text-content-tertiary">{field.description}</p>
                   ) : null}
                 </div>
-                <span className={`rounded-full px-3 py-1 text-xs font-semibold ${settings[field.key] ? 'bg-teal-50 text-teal-600' : 'bg-surface-secondary text-content-secondary'}`}>
+                <Badge
+                  tone={settings[field.key] ? 'primary' : 'neutral'}
+                  variant="soft"
+                >
                   {settings[field.key] ? 'ON' : 'OFF'}
-                </span>
+                </Badge>
               </div>
-            </button>
+            </Card>
           ))}
         </section>
 
@@ -121,9 +122,11 @@ export default function RoleSettingsScreen({ role, title, screenId, fields }: Ro
           <ActionRow label="개인정보처리방침" onClick={() => navigate('/legal?tab=privacy')} />
         </section>
 
-        <button
+        <Card
+          variant="elevated"
+          padding="md"
+          interactive
           onClick={() => setLogoutConfirmOpen(true)}
-          className="w-full rounded-card bg-surface px-4 py-4 text-left shadow-card"
         >
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
@@ -132,7 +135,7 @@ export default function RoleSettingsScreen({ role, title, screenId, fields }: Ro
             </div>
             <span className="text-xs font-semibold text-state-error">확인</span>
           </div>
-        </button>
+        </Card>
       </div>
 
       {logoutConfirmOpen ? (
@@ -143,26 +146,29 @@ export default function RoleSettingsScreen({ role, title, screenId, fields }: Ro
             onClick={() => !isLoggingOut && setLogoutConfirmOpen(false)}
             className="absolute inset-0"
           />
-          <div className="relative z-10 w-full max-w-sm rounded-[28px] bg-surface p-5 shadow-2xl">
+          <div className="relative z-10 w-full max-w-sm rounded-card-lg bg-surface p-5 shadow-card-elevated">
             <p className="text-base font-semibold">로그아웃할까요?</p>
             <p className="mt-2 text-sm text-content-secondary">현재 기기에서 로그인 세션이 종료됩니다.</p>
             <div className="mt-5 flex gap-2">
-              <button
-                type="button"
+              <Button
+                variant="tertiary"
+                size="lg"
+                fullWidth
                 disabled={isLoggingOut}
                 onClick={() => setLogoutConfirmOpen(false)}
-                className="flex-1 rounded-xl bg-surface-secondary px-4 py-3 text-sm font-semibold text-content-secondary disabled:opacity-60"
               >
                 취소
-              </button>
-              <button
-                type="button"
+              </Button>
+              <Button
+                variant="danger"
+                size="lg"
+                fullWidth
                 disabled={isLoggingOut}
+                loading={isLoggingOut}
                 onClick={handleLogout}
-                className="flex-1 rounded-xl bg-state-error px-4 py-3 text-sm font-semibold text-white disabled:opacity-60"
               >
-                {isLoggingOut ? '처리 중...' : '로그아웃'}
-              </button>
+                로그아웃
+              </Button>
             </div>
           </div>
         </div>
@@ -177,24 +183,20 @@ function SectionTitle({ children }: { children: string }) {
 
 function InfoRow({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-card bg-surface px-4 py-4 shadow-card">
+    <Card variant="elevated" padding="md">
       <p className="text-xs text-content-tertiary">{label}</p>
       <p className="mt-1 text-sm font-medium">{value}</p>
-    </div>
+    </Card>
   );
 }
 
 function ActionRow({ label, onClick }: { label: string; onClick: () => void }) {
   return (
-    <button
-      type="button"
-      onClick={onClick}
-      className="w-full rounded-card bg-surface px-4 py-4 text-left shadow-card"
-    >
+    <Card variant="elevated" padding="md" interactive onClick={onClick}>
       <div className="flex items-center justify-between gap-3">
         <span className="text-sm font-medium">{label}</span>
         <ChevronRight className="h-4 w-4 text-content-tertiary" />
       </div>
-    </button>
+    </Card>
   );
 }

@@ -1,13 +1,14 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
-  ArrowLeft, ChevronLeft, ChevronRight, Plus, X, Clock, Flame, Trash2,
+  ChevronLeft, ChevronRight, Plus, X, Clock, Flame, Trash2,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { getPreviewWorkoutEntries, isPreviewMode } from '@/lib/preview';
 import { supabase } from '@/lib/supabase';
 import { useAuthStore } from '@/stores/authStore';
 import LoadingSpinner from '@/components/LoadingSpinner';
+import { PageHeader, Button, Chip, EmptyState } from '@/components/ui';
 
 /** 운동 부위 카테고리 */
 const CATEGORIES = ['가슴', '등', '어깨', '하체', '팔', '코어'] as const;
@@ -62,6 +63,15 @@ function rowToEntry(row: Record<string, unknown>): WorkoutEntry {
     duration: (row.duration as number) || 0,
   };
 }
+
+const categoryColor: Record<Category, string> = {
+  '가슴': 'bg-state-error/10 text-state-error',
+  '등': 'bg-state-info/10 text-state-info',
+  '어깨': 'bg-state-warning/10 text-state-warning',
+  '하체': 'bg-state-success/10 text-state-success',
+  '팔': 'bg-primary-light text-primary',
+  '코어': 'bg-accent-light text-accent',
+};
 
 /** 운동일지 페이지 */
 export default function WorkoutLog() {
@@ -214,31 +224,13 @@ export default function WorkoutLog() {
     currentDate.getMonth() === today.getMonth() &&
     currentDate.getDate() === today.getDate();
 
-  const categoryColor: Record<Category, string> = {
-    '가슴': 'bg-red-100 text-red-600',
-    '등': 'bg-blue-100 text-blue-600',
-    '어깨': 'bg-orange-100 text-orange-600',
-    '하체': 'bg-green-100 text-green-600',
-    '팔': 'bg-purple-100 text-purple-600',
-    '코어': 'bg-yellow-100 text-yellow-700',
-  };
-
   if (!member) {
     return <LoadingSpinner fullScreen text="운동일지를 불러오는 중..." />;
   }
 
   return (
     <div className="min-h-screen bg-surface-secondary">
-      {/* 헤더 */}
-      <header className="bg-surface sticky top-0 z-10 border-b border-line">
-        <div className="flex items-center px-4 pt-safe-top h-14">
-          <button onClick={() => navigate(-1)}>
-            <ArrowLeft className="w-6 h-6 text-content" />
-          </button>
-          <h1 className="flex-1 text-center font-semibold text-lg">운동일지</h1>
-          <div className="w-6" />
-        </div>
-      </header>
+      <PageHeader title="운동일지" onBack={() => navigate(-1)} />
 
       {/* 날짜 선택 */}
       <div className="bg-surface px-4 py-3 flex items-center justify-between">
@@ -256,7 +248,7 @@ export default function WorkoutLog() {
 
       {/* 요약 카드 */}
       <div className="px-4 mt-3">
-        <div className="bg-surface rounded-card p-4 shadow-card grid grid-cols-2 gap-4">
+        <div className="bg-surface rounded-card p-4 shadow-card-soft grid grid-cols-2 gap-4">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-primary-light rounded-lg flex items-center justify-center">
               <Clock className="w-5 h-5 text-primary" />
@@ -283,17 +275,17 @@ export default function WorkoutLog() {
         {loading ? (
           <div className="text-center py-12 text-content-tertiary text-sm">불러오는 중...</div>
         ) : entries.length === 0 ? (
-          <div className="text-center py-12">
-            <Flame className="w-12 h-12 text-content-tertiary/30 mx-auto mb-3" />
-            <p className="text-content-tertiary text-sm">운동 기록이 없습니다</p>
-            <p className="text-content-tertiary text-xs mt-1">+ 버튼을 눌러 운동을 추가하세요</p>
-          </div>
+          <EmptyState
+            icon={<Flame className="w-8 h-8" />}
+            title="운동 기록 없음"
+            description="+ 버튼을 눌러 운동을 추가하세요"
+          />
         ) : (
           <div className="space-y-3">
             {entries.map((entry) => {
               const entryVolume = entry.sets.reduce((s, set) => s + set.weight * set.reps, 0);
               return (
-                <div key={entry.id} className="bg-surface rounded-card p-4 shadow-card">
+                <div key={entry.id} className="bg-surface rounded-card p-4 shadow-card-soft">
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center gap-2">
                       <span className={cn('text-xs px-2 py-0.5 rounded-full font-medium', categoryColor[entry.category])}>
@@ -334,7 +326,7 @@ export default function WorkoutLog() {
       {/* FAB 추가 버튼 */}
       <button
         onClick={() => { resetForm(); setShowModal(true); }}
-        className="mobile-fab fixed w-14 h-14 bg-primary text-white rounded-full shadow-lg flex items-center justify-center active:scale-95 transition-transform z-20"
+        className="mobile-fab fixed w-14 h-14 bg-primary text-white rounded-full shadow-fab flex items-center justify-center active:scale-95 transition-transform z-20"
       >
         <Plus className="w-6 h-6" />
       </button>
@@ -357,18 +349,13 @@ export default function WorkoutLog() {
                 <label className="text-sm font-medium text-content-secondary mb-2 block">운동 부위</label>
                 <div className="flex flex-wrap gap-2">
                   {CATEGORIES.map((cat) => (
-                    <button
+                    <Chip
                       key={cat}
+                      active={formCategory === cat}
                       onClick={() => setFormCategory(cat)}
-                      className={cn(
-                        'px-3 py-1.5 rounded-full text-sm font-medium transition-colors',
-                        formCategory === cat
-                          ? 'bg-primary text-white'
-                          : 'bg-surface-tertiary text-content-secondary',
-                      )}
                     >
                       {cat}
-                    </button>
+                    </Chip>
                   ))}
                 </div>
               </div>
@@ -381,7 +368,7 @@ export default function WorkoutLog() {
                   value={formName}
                   onChange={(e) => setFormName(e.target.value)}
                   placeholder="예: 벤치프레스"
-                  className="w-full px-4 py-3 bg-surface-secondary rounded-xl text-sm border border-line focus:border-primary focus:outline-none"
+                  className="w-full px-4 py-3 bg-surface-secondary rounded-input text-sm border border-line focus:border-primary focus:outline-none"
                 />
               </div>
 
@@ -432,17 +419,14 @@ export default function WorkoutLog() {
                   value={formDuration || ''}
                   onChange={(e) => setFormDuration(Number(e.target.value))}
                   placeholder="예: 30"
-                  className="w-full px-4 py-3 bg-surface-secondary rounded-xl text-sm border border-line focus:border-primary focus:outline-none"
+                  className="w-full px-4 py-3 bg-surface-secondary rounded-input text-sm border border-line focus:border-primary focus:outline-none"
                 />
               </div>
 
               {/* 저장 */}
-              <button
-                onClick={handleAddEntry}
-                className="w-full py-3 bg-primary text-white font-semibold rounded-xl active:bg-primary-dark transition-colors"
-              >
+              <Button fullWidth onClick={handleAddEntry}>
                 저장
-              </button>
+              </Button>
             </div>
           </div>
         </div>

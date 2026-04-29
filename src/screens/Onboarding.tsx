@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { ArrowLeft, ChevronRight } from 'lucide-react';
+import { ChevronRight } from 'lucide-react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { toast } from 'sonner';
 import { useAuthStore } from '@/stores/authStore';
@@ -11,6 +11,7 @@ import {
   saveOnboarding,
   type OnboardingDraft,
 } from '@/lib/memberExperience';
+import { Button, Chip, PageHeader } from '@/components/ui';
 
 const GOAL_OPTIONS = ['체중 감량', '근력 증가', '체형 교정', '골프 퍼포먼스', '운동 습관 만들기'];
 const STYLE_OPTIONS = ['저강도 적응', '밸런스형', '집중형'];
@@ -77,15 +78,14 @@ export default function Onboarding() {
   return (
     <div className="min-h-screen bg-surface-secondary page-with-action">
       <header className="page-header-sticky">
-        <div className="flex items-center px-4 pt-safe-top h-14">
-          <button onClick={() => (step === 1 ? navigate(-1) : setStep((prev) => prev - 1))}>
-            <ArrowLeft className="w-6 h-6 text-content" />
-          </button>
-          <h1 className="flex-1 text-center font-semibold text-lg">운동 온보딩</h1>
-          <div className="w-6" />
-        </div>
+        <PageHeader
+          title="운동 온보딩"
+          showBack
+          onBack={() => (step === 1 ? navigate(-1) : setStep((prev) => prev - 1))}
+          sticky={false}
+        />
 
-        <div className="px-4 pb-4">
+        <div className="px-5 pb-4">
           <div className="flex gap-2">
             {[1, 2, 3].map((item) => (
               <div
@@ -100,25 +100,26 @@ export default function Onboarding() {
         </div>
       </header>
 
-      <div className="px-4 py-4 space-y-4 pb-32">
+      <div className="px-5 py-4 space-y-4 pb-32">
         {step === 1 && (
           <>
-            <section className="bg-surface rounded-card p-5 shadow-card">
+            <section className="bg-surface rounded-card p-5 shadow-card-soft">
               <h2 className="text-lg font-bold mb-2">운동 목적을 선택해 주세요</h2>
               <p className="text-sm text-content-secondary mb-4">복수 선택이 가능하며 첫 루틴 추천에 반영됩니다.</p>
               <div className="flex flex-wrap gap-2">
                 {GOAL_OPTIONS.map((item) => (
-                  <ChoiceChip
+                  <Chip
                     key={item}
                     active={draft.goals.includes(item)}
                     onClick={() => toggleMultiValue('goals', item)}
-                    label={item}
-                  />
+                  >
+                    {item}
+                  </Chip>
                 ))}
               </div>
             </section>
 
-            <section className="bg-surface rounded-card p-5 shadow-card">
+            <section className="bg-surface rounded-card p-5 shadow-card-soft">
               <h2 className="text-lg font-bold mb-2">선호 강도를 알려주세요</h2>
               <div className="grid grid-cols-1 gap-2">
                 {STYLE_OPTIONS.map((item) => (
@@ -137,54 +138,58 @@ export default function Onboarding() {
 
         {step === 2 && (
           <>
-            <section className="bg-surface rounded-card p-5 shadow-card">
+            <section className="bg-surface rounded-card p-5 shadow-card-soft">
               <h2 className="text-lg font-bold mb-2">통증이나 불편 부위를 선택해 주세요</h2>
               <div className="flex flex-wrap gap-2">
                 {PAIN_OPTIONS.map((item) => (
-                  <ChoiceChip
+                  <Chip
                     key={item}
                     active={draft.painAreas.includes(item)}
                     onClick={() => toggleMultiValue('painAreas', item)}
-                    label={item}
-                  />
+                  >
+                    {item}
+                  </Chip>
                 ))}
               </div>
             </section>
 
-            <section className="bg-surface rounded-card p-5 shadow-card">
+            <section className="bg-surface rounded-card p-5 shadow-card-soft">
               <h2 className="text-lg font-bold mb-2">우선 관리할 부위를 골라 주세요</h2>
               <div className="grid grid-cols-2 gap-2">
                 {BODY_FOCUS_OPTIONS.map((item) => (
-                  <ChoiceChip
+                  <Chip
                     key={item}
                     active={draft.bodyFocus === item}
                     onClick={() => patchDraft({ bodyFocus: item })}
-                    label={item}
-                  />
+                  >
+                    {item}
+                  </Chip>
                 ))}
               </div>
             </section>
 
-            <section className="bg-surface rounded-card p-5 shadow-card">
+            <section className="bg-surface rounded-card p-5 shadow-card-soft">
               <h2 className="text-lg font-bold mb-2">가능한 운동 요일과 시간</h2>
               <div className="flex flex-wrap gap-2 mb-4">
                 {DAY_OPTIONS.map((item) => (
-                  <ChoiceChip
+                  <Chip
                     key={item}
                     active={draft.preferredDays.includes(item)}
                     onClick={() => toggleMultiValue('preferredDays', item)}
-                    label={item}
-                  />
+                  >
+                    {item}
+                  </Chip>
                 ))}
               </div>
               <div className="flex gap-2">
                 {DURATION_OPTIONS.map((item) => (
-                  <ChoiceChip
+                  <Chip
                     key={item}
                     active={draft.preferredDuration === item}
                     onClick={() => patchDraft({ preferredDuration: item })}
-                    label={item}
-                  />
+                  >
+                    {item}
+                  </Chip>
                 ))}
               </div>
             </section>
@@ -193,7 +198,7 @@ export default function Onboarding() {
 
         {step === 3 && (
           <>
-            <section className="bg-surface rounded-card p-5 shadow-card">
+            <section className="bg-surface rounded-card p-5 shadow-card-soft">
               <p className="text-xs text-primary font-semibold mb-2">온보딩 요약</p>
               <h2 className="text-xl font-bold">{routine.title}</h2>
               <p className="text-sm text-content-secondary mt-2">{routine.summary}</p>
@@ -205,11 +210,11 @@ export default function Onboarding() {
               </div>
             </section>
 
-            <section className="bg-surface rounded-card p-5 shadow-card">
+            <section className="bg-surface rounded-card p-5 shadow-card-soft">
               <h3 className="text-lg font-bold mb-3">첫 루틴 제안</h3>
               <div className="space-y-2">
                 {routine.routine.map((item, index) => (
-                  <div key={item} className="flex items-center gap-3 bg-surface-secondary rounded-xl px-3 py-3">
+                  <div key={item} className="flex items-center gap-3 bg-surface-secondary rounded-card px-3 py-3">
                     <div className="w-7 h-7 rounded-full bg-primary-light text-primary flex items-center justify-center text-sm font-semibold">
                       {index + 1}
                     </div>
@@ -225,47 +230,29 @@ export default function Onboarding() {
       <div className="bottom-action-bar">
         <div className="max-w-lg mx-auto">
           {step < 3 ? (
-            <button
-              onClick={() => setStep((prev) => prev + 1)}
+            <Button
+              variant="primary"
+              size="lg"
+              fullWidth
               disabled={(step === 1 && !canNextStep1) || (step === 2 && !canNextStep2)}
-              className="w-full py-3.5 rounded-button font-semibold bg-primary text-white disabled:opacity-40"
+              onClick={() => setStep((prev) => prev + 1)}
             >
               다음 단계
-            </button>
+            </Button>
           ) : (
-            <button
+            <Button
+              variant="primary"
+              size="lg"
+              fullWidth
+              rightIcon={<ChevronRight className="w-4 h-4" />}
               onClick={handleComplete}
-              className="w-full py-3.5 rounded-button font-semibold bg-primary text-white flex items-center justify-center gap-2"
             >
               루틴 저장하고 시작하기
-              <ChevronRight className="w-4 h-4" />
-            </button>
+            </Button>
           )}
         </div>
       </div>
     </div>
-  );
-}
-
-function ChoiceChip({
-  active,
-  onClick,
-  label,
-}: {
-  active: boolean;
-  onClick: () => void;
-  label: string;
-}) {
-  return (
-    <button
-      onClick={onClick}
-      className={cn(
-        'px-4 py-2.5 rounded-full text-sm font-medium transition-colors',
-        active ? 'bg-primary text-white' : 'bg-surface-secondary text-content-secondary'
-      )}
-    >
-      {label}
-    </button>
   );
 }
 
@@ -284,7 +271,7 @@ function ChoiceCard({
     <button
       onClick={onClick}
       className={cn(
-        'rounded-xl border p-4 text-left transition-colors',
+        'rounded-card border p-4 text-left transition-colors',
         active ? 'border-primary bg-primary-light' : 'border-line bg-surface'
       )}
     >
@@ -296,7 +283,7 @@ function ChoiceCard({
 
 function SummaryBox({ label, value }: { label: string; value: string }) {
   return (
-    <div className="bg-surface-secondary rounded-xl p-3">
+    <div className="bg-surface-secondary rounded-card p-3">
       <p className="text-[11px] text-content-tertiary">{label}</p>
       <p className="text-sm font-medium mt-1">{value || '-'}</p>
     </div>

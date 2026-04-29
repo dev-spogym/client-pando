@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { ArrowLeft, Coins, Gift, Medal, Ticket } from 'lucide-react';
+import { Coins, Gift, Medal, Ticket } from 'lucide-react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
 import { useAuthStore } from '@/stores/authStore';
@@ -10,6 +10,7 @@ import {
   type BadgeItem,
 } from '@/lib/memberExperience';
 import { cn, formatCurrency, formatDateKo } from '@/lib/utils';
+import { PageHeader, EmptyState, Card, Badge } from '@/components/ui';
 
 interface CouponItem {
   id: number;
@@ -89,17 +90,9 @@ export default function Coupons() {
 
   return (
     <div className="min-h-screen bg-surface-secondary">
-      <header className="bg-surface sticky top-0 z-10 border-b border-line">
-        <div className="flex items-center px-4 pt-safe-top h-14">
-          <button onClick={() => navigate(-1)}>
-            <ArrowLeft className="w-6 h-6 text-content" />
-          </button>
-          <h1 className="flex-1 text-center font-semibold text-lg">리워드 센터</h1>
-          <div className="w-6" />
-        </div>
-      </header>
+      <PageHeader title="리워드 센터" showBack />
 
-      <div className="bg-gradient-to-r from-primary to-primary-dark mx-4 mt-4 rounded-xl p-5 text-white">
+      <div className="bg-gradient-to-r from-primary to-primary-dark mx-5 mt-4 rounded-card p-5 text-white">
         <div className="flex items-center justify-between gap-4">
           <div>
             <div className="flex items-center gap-2 mb-1">
@@ -139,21 +132,22 @@ export default function Coupons() {
         ))}
       </div>
 
-      <div className="px-4 py-4">
+      <div className="px-5 py-4">
         {tab === 'coupon' && (
           loading ? (
             <div className="text-center py-8 text-content-tertiary text-sm">불러오는 중...</div>
           ) : coupons.length === 0 ? (
-            <div className="text-center py-12">
-              <Gift className="w-12 h-12 text-content-tertiary/30 mx-auto mb-3" />
-              <p className="text-content-tertiary text-sm">사용 가능한 쿠폰이 없습니다</p>
-            </div>
+            <EmptyState
+              icon={<Gift className="w-8 h-8" />}
+              title="사용 가능한 쿠폰이 없습니다"
+              size="md"
+            />
           ) : (
             <div className="space-y-3">
               {coupons.map((coupon) => {
                 const isPercentage = coupon.type === '할인율';
                 return (
-                  <div key={coupon.id} className="bg-surface rounded-card overflow-hidden shadow-card">
+                  <div key={coupon.id} className="bg-surface rounded-card overflow-hidden shadow-card-soft">
                     <div className="flex">
                       <div className="w-24 bg-primary-light flex flex-col items-center justify-center p-3">
                         <span className="text-2xl font-bold text-primary">
@@ -166,9 +160,9 @@ export default function Coupons() {
                         <p className="text-xs text-content-tertiary mt-1">
                           {formatDateKo(coupon.validFrom)} ~ {formatDateKo(coupon.validUntil)}
                         </p>
-                        <span className="inline-block mt-2 text-[10px] px-2 py-0.5 bg-state-success/10 text-state-success rounded-full font-medium">
-                          사용가능
-                        </span>
+                        <div className="mt-2">
+                          <Badge tone="success" variant="soft">사용가능</Badge>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -180,15 +174,15 @@ export default function Coupons() {
 
         {tab === 'mileage' && (
           <div className="space-y-4">
-            <div className="bg-surface rounded-card p-4 shadow-card">
+            <Card variant="soft" padding="md">
               <h3 className="font-semibold text-sm mb-3">마일리지 운영 기준</h3>
               <div className="space-y-2 text-sm text-content-secondary">
                 <p>결제 리워드는 마일리지로 통합 운영됩니다.</p>
                 <p>1P = 1원으로 결제 시 사용 가능</p>
                 <p>적립 후 1년 내 미사용 시 소멸</p>
               </div>
-            </div>
-            <div className="bg-surface rounded-card p-4 shadow-card">
+            </Card>
+            <Card variant="soft" padding="md">
               <h3 className="font-semibold text-sm mb-3">적립 / 사용 내역</h3>
               <div className="space-y-3">
                 {mileageHistory.map((item) => (
@@ -207,7 +201,7 @@ export default function Coupons() {
                   </div>
                 ))}
               </div>
-            </div>
+            </Card>
           </div>
         )}
 
@@ -217,7 +211,7 @@ export default function Coupons() {
               <div
                 key={badge.id}
                 className={cn(
-                  'rounded-card p-4 shadow-card border',
+                  'rounded-card p-4 shadow-card-soft border',
                   badge.earned ? 'bg-surface border-primary/20' : 'bg-surface border-transparent'
                 )}
               >
@@ -225,7 +219,7 @@ export default function Coupons() {
                   <div>
                     <div className="flex items-center gap-2">
                       <span className={cn(
-                        'w-10 h-10 rounded-xl flex items-center justify-center text-lg',
+                        'w-10 h-10 rounded-card flex items-center justify-center text-lg',
                         badge.tone === 'gold' && 'bg-state-warning/10',
                         badge.tone === 'blue' && 'bg-state-info/10',
                         badge.tone === 'green' && 'bg-state-success/10',
@@ -240,12 +234,12 @@ export default function Coupons() {
                     </div>
                     <p className="text-sm text-content-secondary mt-3 leading-relaxed">{badge.description}</p>
                   </div>
-                  <span className={cn(
-                    'text-[11px] px-2 py-1 rounded-full font-semibold flex-shrink-0',
-                    badge.earned ? 'bg-primary-light text-primary' : 'bg-surface-secondary text-content-tertiary'
-                  )}>
+                  <Badge
+                    tone={badge.earned ? 'primary' : 'neutral'}
+                    variant="soft"
+                  >
                     {badge.earned ? '획득 완료' : '도전 중'}
-                  </span>
+                  </Badge>
                 </div>
                 <div className="mt-4 flex items-center justify-between text-xs">
                   <span className="text-content-secondary">{badge.progressText}</span>

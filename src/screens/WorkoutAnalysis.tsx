@@ -1,21 +1,22 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-  ArrowLeft, BarChart3, Calendar, Flame, TrendingUp,
+  BarChart3, Calendar, Flame, TrendingUp,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { PageHeader, EmptyState } from '@/components/ui';
 
 const STORAGE_KEY = 'spogym-workout-logs';
 
 const CATEGORIES = ['가슴', '등', '어깨', '하체', '팔', '코어'] as const;
 
 const categoryColor: Record<string, string> = {
-  '가슴': 'bg-red-400',
-  '등': 'bg-blue-400',
-  '어깨': 'bg-orange-400',
-  '하체': 'bg-green-400',
-  '팔': 'bg-purple-400',
-  '코어': 'bg-yellow-400',
+  '가슴': 'bg-state-error/60',
+  '등': 'bg-state-info/60',
+  '어깨': 'bg-state-warning/60',
+  '하체': 'bg-state-success/60',
+  '팔': 'bg-primary',
+  '코어': 'bg-accent',
 };
 
 interface WorkoutSet {
@@ -134,16 +135,7 @@ export default function WorkoutAnalysis() {
 
   return (
     <div className="min-h-screen bg-surface-secondary">
-      {/* 헤더 */}
-      <header className="bg-surface sticky top-0 z-10 border-b border-line">
-        <div className="flex items-center px-4 pt-safe-top h-14">
-          <button onClick={() => navigate(-1)}>
-            <ArrowLeft className="w-6 h-6 text-content" />
-          </button>
-          <h1 className="flex-1 text-center font-semibold text-lg">운동기록 분석</h1>
-          <div className="w-6" />
-        </div>
-      </header>
+      <PageHeader title="운동기록 분석" onBack={() => navigate(-1)} />
 
       {/* 주간/월간 토글 */}
       <div className="bg-surface px-4 py-3">
@@ -165,13 +157,13 @@ export default function WorkoutAnalysis() {
 
       <div className="px-4 mt-3 space-y-4 pb-4">
         {logs === null ? (
-          <div className="rounded-card bg-surface p-8 text-center text-sm text-content-tertiary shadow-card">
+          <div className="rounded-card bg-surface p-8 text-center text-sm text-content-tertiary shadow-card-soft">
             불러오는 중...
           </div>
         ) : (
           <>
         {/* 운동 일수 */}
-        <div className="bg-surface rounded-card p-4 shadow-card flex items-center gap-4">
+        <div className="bg-surface rounded-card p-4 shadow-card-soft flex items-center gap-4">
           <div className="w-12 h-12 bg-primary-light rounded-xl flex items-center justify-center">
             <Calendar className="w-6 h-6 text-primary" />
           </div>
@@ -184,7 +176,7 @@ export default function WorkoutAnalysis() {
         </div>
 
         {/* 부위별 운동 비율 */}
-        <div className="bg-surface rounded-card p-4 shadow-card">
+        <div className="bg-surface rounded-card p-4 shadow-card-soft">
           <div className="flex items-center gap-2 mb-4">
             <BarChart3 className="w-5 h-5 text-primary" />
             <h3 className="font-semibold text-sm">부위별 운동 비율</h3>
@@ -210,15 +202,13 @@ export default function WorkoutAnalysis() {
         </div>
 
         {/* 총 볼륨 추이 */}
-        <div className="bg-surface rounded-card p-4 shadow-card">
+        <div className="bg-surface rounded-card p-4 shadow-card-soft">
           <div className="flex items-center gap-2 mb-4">
             <TrendingUp className="w-5 h-5 text-primary" />
             <h3 className="font-semibold text-sm">총 볼륨 추이</h3>
           </div>
           {dailyVolume.length === 0 ? (
-            <div className="text-center py-6 text-content-tertiary text-sm">
-              기록된 데이터가 없습니다
-            </div>
+            <EmptyState size="sm" title="데이터 없음" description="기록된 데이터가 없습니다" />
           ) : (
             <div className="flex items-end gap-1 h-32">
               {dailyVolume.map((d, i) => (
@@ -237,22 +227,20 @@ export default function WorkoutAnalysis() {
         </div>
 
         {/* 최근 운동 기록 */}
-        <div className="bg-surface rounded-card p-4 shadow-card">
+        <div className="bg-surface rounded-card p-4 shadow-card-soft">
           <div className="flex items-center gap-2 mb-4">
             <Flame className="w-5 h-5 text-state-warning" />
             <h3 className="font-semibold text-sm">최근 운동 기록</h3>
           </div>
           {recentEntries.length === 0 ? (
-            <div className="text-center py-6 text-content-tertiary text-sm">
-              운동 기록이 없습니다
-            </div>
+            <EmptyState size="sm" title="운동 기록 없음" />
           ) : (
             <div className="space-y-2">
               {recentEntries.map((entry, i) => {
                 const d = new Date(entry.date);
                 const volume = entry.sets.reduce((s, set) => s + set.weight * set.reps, 0);
                 return (
-                  <div key={i} className="flex items-center gap-3 p-3 bg-surface-secondary rounded-lg">
+                  <div key={i} className="flex items-center gap-3 p-3 bg-surface-secondary rounded-card">
                     <div className="w-10 h-10 bg-primary-light rounded-lg flex items-center justify-center">
                       <span className="text-primary font-bold text-sm">{d.getDate()}</span>
                     </div>
@@ -262,11 +250,7 @@ export default function WorkoutAnalysis() {
                         {entry.sets.length}세트 · 볼륨 {volume.toLocaleString()}kg
                       </p>
                     </div>
-                    <span className={cn(
-                      'text-[10px] px-1.5 py-0.5 rounded-full font-medium',
-                      categoryColor[entry.category]?.replace('bg-', 'bg-').replace('-400', '-100'),
-                      'bg-surface-tertiary text-content-secondary',
-                    )}>
+                    <span className="text-[10px] px-1.5 py-0.5 rounded-full font-medium bg-surface-tertiary text-content-secondary">
                       {entry.category}
                     </span>
                   </div>

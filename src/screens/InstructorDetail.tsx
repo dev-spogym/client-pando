@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { ArrowLeft, CalendarRange, Clock, Sparkles, Star, UserRound } from 'lucide-react';
+import { CalendarRange, Clock, Sparkles, Star, UserRound } from 'lucide-react';
 import { toast } from 'sonner';
 import { useNavigate, useParams } from 'react-router-dom';
 import { getInstructorProfile } from '@/lib/memberExperience';
@@ -13,6 +13,7 @@ import { getPreviewTrainerClasses, isPreviewMode } from '@/lib/preview';
 import { supabase } from '@/lib/supabase';
 import { useAuthStore } from '@/stores/authStore';
 import { cn, formatDateKo, formatTime } from '@/lib/utils';
+import { Button, Card, Badge, PageHeader } from '@/components/ui';
 
 interface ScheduleClass {
   id: number;
@@ -245,26 +246,18 @@ export default function InstructorDetail() {
 
   return (
     <div className="min-h-screen bg-surface-secondary">
-      <header className="bg-surface sticky top-0 z-10 border-b border-line">
-        <div className="flex items-center px-4 pt-safe-top h-14">
-          <button onClick={() => navigate(-1)}>
-            <ArrowLeft className="w-6 h-6 text-content" />
-          </button>
-          <h1 className="flex-1 text-center font-semibold text-lg">강사 상세</h1>
-          <div className="w-6" />
-        </div>
-      </header>
+      <PageHeader title="강사 상세" showBack />
 
       <div className="px-4 py-4 space-y-4 pb-24">
-        <section className="bg-surface rounded-card p-5 shadow-card">
+        <Card variant="soft" padding="lg">
           <div className="flex items-center gap-4">
             <div className="w-16 h-16 rounded-full bg-primary-light flex items-center justify-center">
               <UserRound className="w-8 h-8 text-primary" />
             </div>
             <div className="flex-1">
-              <p className="text-xl font-bold">{profile.name}</p>
-              <p className="text-sm text-content-secondary mt-1">경력 {profile.careerYears}년</p>
-              <div className="mt-2 flex items-center gap-2 text-sm">
+              <p className="text-h3 text-content">{profile.name}</p>
+              <p className="text-body-sm text-content-secondary mt-1">경력 {profile.careerYears}년</p>
+              <div className="mt-2 flex items-center gap-2 text-body-sm">
                 <span className="inline-flex items-center gap-1 text-state-warning font-medium">
                   <Star className="w-4 h-4 fill-current" />
                   {profile.rating.toFixed(1)}
@@ -273,53 +266,51 @@ export default function InstructorDetail() {
               </div>
             </div>
           </div>
-          <p className="text-sm text-content-secondary mt-4 leading-relaxed">{profile.intro}</p>
-        </section>
+          <p className="text-body-sm text-content-secondary mt-4 leading-relaxed">{profile.intro}</p>
+        </Card>
 
-        <section className="bg-primary/8 rounded-card p-4 border border-primary/15">
-          <p className="text-sm font-semibold text-primary">회원 예약 요청 방식</p>
-          <p className="text-sm text-content-secondary mt-1">
+        <div className="bg-primary/8 rounded-card p-4 border border-primary/15">
+          <p className="text-body-sm font-semibold text-primary">회원 예약 요청 방식</p>
+          <p className="text-body-sm text-content-secondary mt-1">
             트레이너 실제 일정에서 수업이 없는 시간대를 자동 체크해 보여주고, 회원은 원하는 시간으로 수업을 요청할 수 있습니다.
           </p>
-        </section>
+        </div>
 
-        <section className="bg-surface rounded-card p-5 shadow-card">
-          <h2 className="text-sm font-semibold mb-3">전문 분야</h2>
+        <Card variant="soft" padding="lg">
+          <h2 className="text-body font-semibold mb-3">전문 분야</h2>
           <div className="flex flex-wrap gap-2">
             {profile.specialties.map((item) => (
-              <span key={item} className="px-3 py-1.5 rounded-full bg-primary-light text-primary text-sm font-medium">
-                {item}
-              </span>
+              <Badge key={item} tone="primary" size="md">{item}</Badge>
             ))}
           </div>
-        </section>
+        </Card>
 
-        <section className="bg-surface rounded-card p-5 shadow-card">
-          <h2 className="text-sm font-semibold mb-3">가능 프로그램</h2>
+        <Card variant="soft" padding="lg">
+          <h2 className="text-body font-semibold mb-3">가능 프로그램</h2>
           <div className="space-y-2">
             {profile.availablePrograms.map((item) => (
-              <div key={item} className="bg-surface-secondary rounded-xl px-3 py-3 text-sm text-content-secondary">
+              <div key={item} className="bg-surface-secondary rounded-xl px-3 py-3 text-body-sm text-content-secondary">
                 {item}
               </div>
             ))}
           </div>
-        </section>
+        </Card>
 
-        <section className="bg-surface rounded-card p-5 shadow-card">
+        <Card variant="soft" padding="lg">
           <div className="flex items-center gap-2 mb-3">
             <CalendarRange className="w-5 h-5 text-primary" />
-            <h2 className="text-sm font-semibold">예약 가능 스케줄</h2>
+            <h2 className="text-body font-semibold">예약 가능 스케줄</h2>
           </div>
 
           {loading ? (
-            <div className="py-6 text-sm text-content-tertiary text-center">가능 시간을 불러오는 중...</div>
+            <div className="py-6 text-body-sm text-content-tertiary text-center">가능 시간을 불러오는 중...</div>
           ) : availableSlots.length === 0 ? (
             <div className="space-y-2">
-              <p className="text-sm text-content-secondary">
+              <p className="text-body-sm text-content-secondary">
                 현재 자동 확인된 빈 시간이 없습니다. 아래 최근 가능 시간과 상담 요청을 참고해 주세요.
               </p>
               {profile.nextSlots.map((item) => (
-                <div key={item} className="bg-surface-secondary rounded-xl px-3 py-3 text-sm text-content-secondary">
+                <div key={item} className="bg-surface-secondary rounded-xl px-3 py-3 text-body-sm text-content-secondary">
                   {item}
                 </div>
               ))}
@@ -334,70 +325,55 @@ export default function InstructorDetail() {
                 const blockedByOtherMember = Boolean(slotReservedByOther && slotReservedByOther.memberId !== member?.id);
 
                 return (
-                  <div key={slot.id} className="rounded-2xl border border-line bg-surface-secondary p-4">
+                  <div key={slot.id} className="rounded-card border border-line bg-surface-secondary p-4">
                     <div className="flex items-start justify-between gap-3">
                       <div className="min-w-0">
                         <div className="flex items-center gap-2">
-                          <p className="text-sm font-semibold">
+                          <p className="text-body-sm font-semibold">
                             {slot.source === 'free_time' ? `${profile.name} 맞춤 PT 요청` : slot.title}
                           </p>
-                          <span
-                            className={cn(
-                              'rounded-full px-2 py-0.5 text-[10px] font-semibold',
-                              slot.source === 'free_time'
-                                ? 'bg-state-info/10 text-state-info'
-                                : 'bg-primary-light text-primary'
-                            )}
+                          <Badge
+                            tone={slot.source === 'free_time' ? 'info' : 'primary'}
+                            size="sm"
                           >
                             {slot.source === 'free_time' ? '자동 빈시간' : '등록 슬롯'}
-                          </span>
+                          </Badge>
                         </div>
-                        <p className="mt-1 text-xs text-content-secondary">
+                        <p className="mt-1 text-caption text-content-secondary">
                           {formatDateKo(slot.startTime)} · {formatTime(slot.startTime)} - {formatTime(slot.endTime)}
                         </p>
-                        <p className="mt-1 text-xs text-content-tertiary">
+                        <p className="mt-1 text-caption text-content-tertiary">
                           {slot.room || '장소 협의'} · 승인형 예약
                         </p>
                       </div>
-                      <span
-                        className={cn(
-                          'shrink-0 rounded-full px-2 py-1 text-[11px] font-semibold',
-                          isApproved
-                            ? 'bg-state-success/10 text-state-success'
-                            : isPending
-                              ? 'bg-state-warning/10 text-state-warning'
-                              : blockedByOtherMember
-                                ? 'bg-surface-tertiary text-content-tertiary'
-                              : 'bg-primary-light text-primary'
-                        )}
+                      <Badge
+                        tone={isApproved ? 'success' : isPending ? 'warning' : blockedByOtherMember ? 'neutral' : 'primary'}
+                        size="sm"
                       >
                         {isApproved ? '예약 확정' : isPending ? '승인 대기' : blockedByOtherMember ? '요청 있음' : '예약 가능'}
-                      </span>
+                      </Badge>
                     </div>
 
                     {slot.source === 'free_time' && (
                       <div className="mt-3 rounded-xl bg-state-info/6 px-3 py-3">
                         <div className="flex items-center gap-2 text-state-info">
                           <Sparkles className="w-4 h-4" />
-                          <p className="text-xs font-semibold">트레이너 수업 없음 자동 체크</p>
+                          <p className="text-caption font-semibold">트레이너 수업 없음 자동 체크</p>
                         </div>
-                        <p className="mt-1 text-xs text-content-secondary">
+                        <p className="mt-1 text-caption text-content-secondary">
                           현재 일정 기준으로 겹치는 수업이 없는 시간대입니다.
                         </p>
                       </div>
                     )}
 
-                    <div className="mt-3 flex gap-2">
-                      <button
-                        onClick={() => handleRequest(slot)}
+                    <div className="mt-3">
+                      <Button
+                        variant={isPending || isApproved || blockedByOtherMember ? 'tertiary' : 'primary'}
+                        size="md"
+                        fullWidth
                         disabled={isPending || isApproved || blockedByOtherMember || requestingId === slot.id}
-                        className={cn(
-                          'flex-1 rounded-xl py-3 text-sm font-semibold text-white transition-colors',
-                          isPending || isApproved || blockedByOtherMember
-                            ? 'bg-surface-tertiary text-content-tertiary'
-                            : 'bg-primary active:bg-primary-dark',
-                          (isPending || isApproved || blockedByOtherMember) && 'cursor-not-allowed'
-                        )}
+                        loading={requestingId === slot.id}
+                        onClick={() => handleRequest(slot)}
                       >
                         {requestingId === slot.id
                           ? '요청 중...'
@@ -407,45 +383,43 @@ export default function InstructorDetail() {
                               ? '승인 대기 중'
                               : blockedByOtherMember
                                 ? '다른 요청 접수됨'
-                              : '이 시간으로 요청하기'}
-                      </button>
+                                : '이 시간으로 요청하기'}
+                      </Button>
                     </div>
                   </div>
                 );
               })}
             </div>
           )}
-        </section>
+        </Card>
 
         {occupiedSlots.length > 0 && (
-          <section className="bg-surface rounded-card p-5 shadow-card">
+          <Card variant="soft" padding="lg">
             <div className="flex items-center gap-2 mb-3">
               <Clock className="w-5 h-5 text-content-secondary" />
-              <h2 className="text-sm font-semibold">이미 배정된 수업</h2>
+              <h2 className="text-body font-semibold">이미 배정된 수업</h2>
             </div>
             <div className="space-y-2">
               {occupiedSlots.map((slot) => (
                 <div key={slot.id} className="bg-surface-secondary rounded-xl px-3 py-3">
-                  <p className="text-sm font-medium">{slot.title}</p>
-                  <p className="mt-1 text-xs text-content-secondary">
+                  <p className="text-body-sm font-medium">{slot.title}</p>
+                  <p className="mt-1 text-caption text-content-secondary">
                     {formatDateKo(slot.startTime)} · {formatTime(slot.startTime)} - {formatTime(slot.endTime)}
                   </p>
                 </div>
               ))}
             </div>
-          </section>
+          </Card>
         )}
 
-        <section className="bg-surface rounded-card p-5 shadow-card">
-          <h2 className="text-sm font-semibold mb-3">추천 코칭 포인트</h2>
+        <Card variant="soft" padding="lg">
+          <h2 className="text-body font-semibold mb-3">추천 코칭 포인트</h2>
           <div className="flex flex-wrap gap-2">
             {profile.focusAreas.map((item) => (
-              <span key={item} className="px-3 py-1.5 rounded-full bg-state-info/10 text-state-info text-sm font-medium">
-                {item}
-              </span>
+              <Badge key={item} tone="info" size="md">{item}</Badge>
             ))}
           </div>
-        </section>
+        </Card>
       </div>
     </div>
   );

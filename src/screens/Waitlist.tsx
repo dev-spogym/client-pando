@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react';
-import { ArrowLeft, Clock3, Users } from 'lucide-react';
+import { Clock3, Users } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { useAuthStore } from '@/stores/authStore';
 import { cancelWaitlistEntry, getWaitlistEntries, type WaitlistEntry } from '@/lib/memberExperience';
 import { cn, formatDateKo, formatTime } from '@/lib/utils';
+import { PageHeader, EmptyState } from '@/components/ui';
 
 /** 대기 예약 관리 */
 export default function Waitlist() {
@@ -27,31 +28,26 @@ export default function Waitlist() {
 
   return (
     <div className="min-h-screen bg-surface-secondary">
-      <header className="bg-surface sticky top-0 z-10 border-b border-line">
-        <div className="flex items-center px-4 pt-safe-top h-14">
-          <button onClick={() => navigate(-1)}>
-            <ArrowLeft className="w-6 h-6 text-content" />
-          </button>
-          <h1 className="flex-1 text-center font-semibold text-lg">대기 예약 관리</h1>
-          <div className="w-6" />
-        </div>
-      </header>
+      <PageHeader title="대기 예약 관리" onBack={() => navigate(-1)} />
 
       <div className="px-4 py-4">
         {entries.length === 0 ? (
-          <div className="bg-surface rounded-card shadow-card text-center py-12">
-            <Users className="w-12 h-12 text-content-tertiary/30 mx-auto mb-3" />
-            <p className="text-content-tertiary text-sm">등록된 대기 예약이 없습니다</p>
+          <div className="bg-surface rounded-card shadow-card-soft">
+            <EmptyState
+              icon={<Users className="w-8 h-8" />}
+              title="대기 예약 없음"
+              description="등록된 대기 예약이 없습니다"
+            />
           </div>
         ) : (
           <div className="space-y-3">
             {entries.map((entry) => (
-              <div key={`${entry.classId}-${entry.createdAt}`} className="bg-surface rounded-card p-4 shadow-card">
+              <div key={`${entry.classId}-${entry.createdAt}`} className="bg-surface rounded-card p-4 shadow-card-soft">
                 <div className="flex items-start justify-between gap-3">
                   <div>
                     <div className="flex items-center gap-2">
                       <h3 className="font-semibold text-sm">{entry.title}</h3>
-                      <span className="px-2 py-0.5 rounded-full text-[11px] bg-state-warning/10 text-state-warning font-medium">
+                      <span className="px-2 py-0.5 rounded-pill text-[11px] bg-state-warning/10 text-state-warning font-medium">
                         {entry.status === 'cancelled' ? '취소됨' : `${entry.position}번 대기`}
                       </span>
                     </div>
@@ -64,7 +60,7 @@ export default function Waitlist() {
 
                   <div className="text-right">
                     <div className={cn(
-                      'px-2.5 py-1 rounded-full text-[11px] font-medium',
+                      'px-2.5 py-1 rounded-pill text-[11px] font-medium',
                       entry.autoPromoted ? 'bg-state-success/10 text-state-success' : 'bg-surface-tertiary text-content-secondary'
                     )}>
                       {entry.autoPromoted ? '자동 확정 ON' : '수동 확인'}

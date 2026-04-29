@@ -13,6 +13,7 @@ import {
 import { getMemberLessonBookingRequests } from '@/lib/lessonPlanning';
 import { cn } from '@/lib/utils';
 import LoadingSpinner from '@/components/LoadingSpinner';
+import { Button, EmptyState } from '@/components/ui';
 
 interface ClassRecord {
   id: number;
@@ -214,7 +215,7 @@ export default function LessonHistory() {
                 setSearchParams(next, { replace: true });
               }}
               className={cn(
-                'flex-1 py-2 rounded-lg text-[13px] font-semibold transition-colors',
+                'flex-1 py-2 rounded-button text-[13px] font-semibold transition-colors',
                 tab === item ? 'bg-primary text-white' : 'bg-surface text-content-secondary'
               )}
             >
@@ -228,10 +229,11 @@ export default function LessonHistory() {
             <div className="w-6 h-6 border-2 border-primary-light border-t-primary rounded-full animate-spin" />
           </div>
         ) : displayed.length === 0 ? (
-          <div className="text-center py-12 text-content-tertiary">
-            <BookOpen size={40} className="mx-auto mb-2" />
-            <p className="text-[14px]">{tab === 'upcoming' ? '예정된 수업이 없습니다' : '수업 이력이 없습니다'}</p>
-          </div>
+          <EmptyState
+            icon={<BookOpen className="w-8 h-8" />}
+            title={tab === 'upcoming' ? '예정된 수업 없음' : '수업 이력 없음'}
+            description={tab === 'upcoming' ? '예정된 수업이 없습니다' : '수업 이력이 없습니다'}
+          />
         ) : (
           <div className="space-y-3">
             {displayed.map((item) => {
@@ -240,40 +242,40 @@ export default function LessonHistory() {
               const waitlist = member && item.kind === 'class' ? getWaitlistEntry(member.id, item.id) : null;
 
               return (
-                <div key={item.key} className="p-4 rounded-xl border border-line bg-surface shadow-card">
+                <div key={item.key} className="p-4 rounded-card border border-line bg-surface shadow-card-soft">
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-1">
+                      <div className="flex items-center gap-2 mb-1 flex-wrap">
                         <span className="text-[11px] text-content-tertiary">
                           {item.type === 'PERSONAL' ? '1:1' : item.type === 'GROUP' ? '그룹' : item.type}
                         </span>
                         {item.kind === 'request' && item.lesson_status === 'pending' && (
-                          <span className="text-[11px] px-2 py-0.5 rounded-full bg-state-warning/10 text-state-warning font-medium">
+                          <span className="text-[11px] px-2 py-0.5 rounded-pill bg-state-warning/10 text-state-warning font-medium">
                             승인 대기
                           </span>
                         )}
                         {item.kind === 'request' && item.lesson_status === 'approved' && (
-                          <span className="text-[11px] px-2 py-0.5 rounded-full bg-state-success/10 text-state-success font-medium">
+                          <span className="text-[11px] px-2 py-0.5 rounded-pill bg-state-success/10 text-state-success font-medium">
                             예약 확정
                           </span>
                         )}
                         {reserved && (
-                          <span className="text-[11px] px-2 py-0.5 rounded-full bg-state-success/10 text-state-success font-medium">
+                          <span className="text-[11px] px-2 py-0.5 rounded-pill bg-state-success/10 text-state-success font-medium">
                             예약 확정
                           </span>
                         )}
                         {item.kind === 'class' && item.lesson_status === 'completed' && (
-                          <span className="text-[11px] px-2 py-0.5 rounded-full bg-state-info/10 text-state-info font-medium">
+                          <span className="text-[11px] px-2 py-0.5 rounded-pill bg-state-info/10 text-state-info font-medium">
                             수업 완료
                           </span>
                         )}
                         {waitlist && (
-                          <span className="text-[11px] px-2 py-0.5 rounded-full bg-state-warning/10 text-state-warning font-medium">
+                          <span className="text-[11px] px-2 py-0.5 rounded-pill bg-state-warning/10 text-state-warning font-medium">
                             대기 {waitlist.position}번
                           </span>
                         )}
                         {feedback && (
-                          <span className="text-[11px] px-2 py-0.5 rounded-full bg-primary-light text-primary font-medium">
+                          <span className="text-[11px] px-2 py-0.5 rounded-pill bg-primary-light text-primary font-medium">
                             후기 완료
                           </span>
                         )}
@@ -292,64 +294,73 @@ export default function LessonHistory() {
                   <div className="mt-4 flex gap-2">
                     {item.kind === 'request' ? (
                       <>
-                        <button
+                        <Button
+                          size="sm"
+                          fullWidth
                           onClick={() =>
                             item.id > 0
                               ? navigate(`/classes/${item.id}`)
                               : item.staffId && navigate(`/instructors/${item.staffId}`)
                           }
-                          className="flex-1 py-2.5 rounded-lg bg-primary text-white text-sm font-medium"
                         >
                           {item.id > 0 ? '요청 시간 보기' : '요청 시간 확인'}
-                        </button>
-                        <button
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="tertiary"
+                          fullWidth
                           onClick={() => item.staffId && navigate(`/instructors/${item.staffId}`)}
-                          className="flex-1 py-2.5 rounded-lg bg-surface-secondary text-content-secondary text-sm font-medium"
                         >
                           강사 보기
-                        </button>
+                        </Button>
                       </>
                     ) : tab === 'upcoming' ? (
                       <>
-                        <button
+                        <Button
+                          size="sm"
+                          fullWidth
                           onClick={() => navigate(`/classes/${item.id}`)}
-                          className="flex-1 py-2.5 rounded-lg bg-primary text-white text-sm font-medium"
                         >
                           수업 상세
-                        </button>
+                        </Button>
                         {waitlist ? (
-                          <button
+                          <Button
+                            size="sm"
+                            variant="tertiary"
+                            fullWidth
                             onClick={() => navigate('/waitlist')}
-                            className="flex-1 py-2.5 rounded-lg bg-surface-secondary text-content-secondary text-sm font-medium"
                           >
                             대기 현황
-                          </button>
+                          </Button>
                         ) : (
-                          <button
+                          <Button
+                            size="sm"
+                            variant="tertiary"
+                            fullWidth
                             onClick={() => item.staffId && navigate(`/instructors/${item.staffId}`)}
-                            className="flex-1 py-2.5 rounded-lg bg-surface-secondary text-content-secondary text-sm font-medium"
                           >
                             강사 보기
-                          </button>
+                          </Button>
                         )}
                       </>
                     ) : (
                       <>
-                        <button
+                        <Button
+                          size="sm"
+                          variant="tertiary"
+                          fullWidth
                           onClick={() => navigate(`/classes/${item.id}`)}
-                          className="flex-1 py-2.5 rounded-lg bg-surface-secondary text-content-secondary text-sm font-medium"
                         >
                           수업 다시 보기
-                        </button>
-                        <button
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant={feedback ? 'secondary' : 'primary'}
+                          fullWidth
                           onClick={() => navigate(`/classes/${item.id}/feedback`)}
-                          className={cn(
-                            'flex-1 py-2.5 rounded-lg text-sm font-medium',
-                            feedback ? 'bg-primary-light text-primary' : 'bg-primary text-white'
-                          )}
                         >
                           {feedback ? '후기 확인' : '후기 작성'}
-                        </button>
+                        </Button>
                       </>
                     )}
                   </div>

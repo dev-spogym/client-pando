@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { CreditCard, ChevronRight, Calendar, Hash } from 'lucide-react';
+import { CreditCard, Calendar } from 'lucide-react';
 import { useAuthStore } from '@/stores/authStore';
 import { getPreviewContracts, isPreviewMode } from '@/lib/preview';
 import {
@@ -12,6 +12,7 @@ import {
 import { getReservations } from '@/lib/memberExperience';
 import { supabase } from '@/lib/supabase';
 import { cn, calcDday, formatDateKo, calcPercent } from '@/lib/utils';
+import { PageHeader, Card, Badge, EmptyState, Chip } from '@/components/ui';
 
 interface ContractItem {
   id: number;
@@ -183,18 +184,18 @@ export default function Membership() {
       </header>
 
       {/* 이용권 리스트 */}
-      <div className="px-4 py-4">
-        <div className="grid grid-cols-2 gap-3 mb-4">
+      <div className="px-5 py-4 space-y-4">
+        <div className="grid grid-cols-2 gap-3">
           <button
             onClick={() => navigate('/shop')}
-            className="bg-surface rounded-card p-4 shadow-card text-left"
+            className="bg-surface rounded-card p-4 shadow-card-soft text-left"
           >
             <p className="text-xs text-content-tertiary">이용권 구매</p>
             <p className="text-sm font-semibold mt-1">헬스장 / 골프장 / PT 상품</p>
           </button>
           <button
             onClick={() => navigate('/payment/personal')}
-            className="bg-primary text-white rounded-card p-4 shadow-card text-left"
+            className="bg-primary text-white rounded-card p-4 shadow-card-soft text-left"
           >
             <p className="text-xs text-white/80">개인 결제</p>
             <p className="text-sm font-semibold mt-1">결제 페이지 바로가기</p>
@@ -202,7 +203,7 @@ export default function Membership() {
         </div>
 
         {activeLessonCount && (
-          <div className="bg-surface rounded-card p-4 shadow-card mb-4">
+          <Card variant="soft" padding="md">
             <div className="flex items-start justify-between gap-3">
               <div>
                 <p className="text-xs text-content-tertiary">수강권 / 잔여 회차</p>
@@ -211,7 +212,7 @@ export default function Membership() {
                   {Math.max(activeLessonCount.totalCount - activeLessonCount.usedCount, 0)}회
                 </p>
               </div>
-              <div className="rounded-xl bg-primary-light px-3 py-2 text-right">
+              <div className="rounded-card bg-primary-light px-3 py-2 text-right">
                 <p className="text-[11px] text-primary">사용</p>
                 <p className="text-sm font-semibold text-primary">
                   {activeLessonCount.usedCount}/{activeLessonCount.totalCount}
@@ -223,18 +224,16 @@ export default function Membership() {
               {latestLessonHistory && <span>최근 차감: {formatDateKo(latestLessonHistory.deductedAt)}</span>}
               {nextLessonDate && <span>다음 예약: {formatDateKo(nextLessonDate)}</span>}
             </div>
-          </div>
+          </Card>
         )}
 
         {loading ? (
           <div className="text-center py-12 text-content-tertiary text-sm">불러오는 중...</div>
         ) : displayList.length === 0 ? (
-          <div className="text-center py-12">
-            <CreditCard className="w-12 h-12 text-content-tertiary/30 mx-auto mb-3" />
-            <p className="text-content-tertiary text-sm">
-              {tab === 'active' ? '이용 중인 이용권이 없습니다' : '만료된 이용권이 없습니다'}
-            </p>
-          </div>
+          <EmptyState
+            icon={<CreditCard className="w-8 h-8" />}
+            title={tab === 'active' ? '이용 중인 이용권이 없습니다' : '만료된 이용권이 없습니다'}
+          />
         ) : (
           <div className="space-y-3">
             {displayList.map((contract) => {
@@ -242,7 +241,6 @@ export default function Membership() {
               const ddayUrgent = dday !== null && dday <= 7 && dday >= 0;
               const isExpired = dday !== null && dday < 0;
 
-              // 기간 기반 진행률 계산
               let progress = 0;
               if (contract.startDate && contract.endDate) {
                 const total = new Date(contract.endDate).getTime() - new Date(contract.startDate).getTime();
@@ -251,18 +249,18 @@ export default function Membership() {
               }
 
               return (
-                <div
+                <Card
                   key={contract.id}
+                  variant="soft"
+                  padding="md"
+                  interactive
                   onClick={() => navigate(`/membership/${contract.id}`)}
-                  className={cn(
-                    'bg-surface rounded-card p-4 shadow-card touch-card cursor-pointer',
-                    ddayUrgent && 'ring-2 ring-state-error/50'
-                  )}
+                  className={cn(ddayUrgent && 'ring-2 ring-state-error/50')}
                 >
                   <div className="flex items-start justify-between mb-3">
                     <div className="flex items-center gap-2">
                       <div className={cn(
-                        'w-10 h-10 rounded-xl flex items-center justify-center',
+                        'w-10 h-10 rounded-card flex items-center justify-center',
                         isExpired ? 'bg-surface-tertiary' : 'bg-primary-light'
                       )}>
                         <CreditCard className={cn(
@@ -274,14 +272,16 @@ export default function Membership() {
                         <h3 className="font-semibold text-sm">
                           {contract.productName || '이용권'}
                         </h3>
-                        <span className={cn(
-                          'text-xs px-2 py-0.5 rounded-full',
-                          contract.status === '서명완료' ? 'bg-state-success/10 text-state-success' :
-                          contract.status === '대기' ? 'bg-state-warning/10 text-state-warning' :
-                          'bg-surface-tertiary text-content-tertiary'
-                        )}>
+                        <Badge
+                          tone={
+                            contract.status === '서명완료' ? 'success' :
+                            contract.status === '대기' ? 'warning' :
+                            'neutral'
+                          }
+                          variant="soft"
+                        >
                           {contract.status}
-                        </span>
+                        </Badge>
                       </div>
                     </div>
                     {dday !== null && !isExpired && (
@@ -294,7 +294,6 @@ export default function Membership() {
                     )}
                   </div>
 
-                  {/* 기간 정보 */}
                   <div className="flex items-center gap-4 text-xs text-content-secondary mb-2">
                     {contract.startDate && (
                       <span className="flex items-center gap-1">
@@ -304,7 +303,6 @@ export default function Membership() {
                     )}
                   </div>
 
-                  {/* 진행률 바 */}
                   {!isExpired && contract.startDate && contract.endDate && (
                     <div className="progress-bar">
                       <div
@@ -316,11 +314,7 @@ export default function Membership() {
                       />
                     </div>
                   )}
-
-                  <div className="flex items-center justify-end mt-2">
-                    <ChevronRight className="w-4 h-4 text-content-tertiary" />
-                  </div>
-                </div>
+                </Card>
               );
             })}
           </div>

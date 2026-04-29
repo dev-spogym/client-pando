@@ -1,5 +1,6 @@
 import { toast } from 'sonner';
 import { getRoleSettings, updateRoleSettings } from '@/lib/mockOperations';
+import { PageHeader, Card, Badge } from '@/components/ui';
 
 export default function TrainerSettings() {
   const settings = getRoleSettings('trainer');
@@ -11,12 +12,7 @@ export default function TrainerSettings() {
 
   return (
     <div className="min-h-screen bg-surface-secondary">
-      <header className="bg-surface px-5 pt-safe-top pb-4 shadow-sm">
-        <div className="pt-4">
-          <p className="text-xs text-content-tertiary">MA-252</p>
-          <h1 className="text-lg font-bold">트레이너 설정</h1>
-        </div>
-      </header>
+      <PageHeader showBack={false} title="트레이너 설정" subtitle="MA-252" />
 
       <div className="px-5 py-4 pb-24 space-y-3">
         {[
@@ -24,18 +20,23 @@ export default function TrainerSettings() {
           { key: 'reservationEnabled' as const, label: '예약 요청 알림' },
           { key: 'systemEnabled' as const, label: '시스템 공지 알림' },
         ].map((item) => (
-          <button
+          <Card
             key={item.key}
+            variant="elevated"
+            padding="md"
+            interactive
             onClick={() => toggle(item.key)}
-            className="w-full rounded-card bg-surface px-4 py-4 shadow-card"
           >
             <div className="flex items-center justify-between">
               <span className="text-sm font-medium">{item.label}</span>
-              <span className={`rounded-full px-3 py-1 text-xs font-semibold ${settings[item.key] ? 'bg-teal-50 text-teal-600' : 'bg-surface-secondary text-content-secondary'}`}>
+              <Badge
+                tone={settings[item.key] ? 'primary' : 'neutral'}
+                variant="soft"
+              >
                 {settings[item.key] ? 'ON' : 'OFF'}
-              </span>
+              </Badge>
             </div>
-          </button>
+          </Card>
         ))}
       </div>
     </div>

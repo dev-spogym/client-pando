@@ -1,7 +1,7 @@
-import { ArrowLeft } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { cn } from '@/lib/utils';
+import { PageHeader, Chip, Card } from '@/components/ui';
 
 const DOCUMENTS = [
   {
@@ -51,20 +51,16 @@ export default function TermsCenter() {
 
   return (
     <div className="min-h-screen bg-surface-secondary">
-      <header className="bg-surface sticky top-0 z-10 border-b border-line">
-        <div className="flex items-center px-4 pt-safe-top h-14">
-          <button onClick={() => navigate(-1)}>
-            <ArrowLeft className="w-6 h-6 text-content" />
-          </button>
-          <h1 className="flex-1 text-center font-semibold text-lg">약관 / 정책</h1>
-          <div className="w-6" />
-        </div>
-
-        <div className="overflow-x-auto no-scrollbar pb-3 snap-x snap-proximity">
-          <div className="flex w-max min-w-full gap-2 px-4">
+      <PageHeader
+        title="약관 / 정책"
+        onBack={() => navigate(-1)}
+        rightSlot={
+          <div className="flex gap-1 overflow-x-auto no-scrollbar">
             {DOCUMENTS.map((item) => (
-              <button
+              <Chip
                 key={item.id}
+                active={tab === item.id}
+                size="sm"
                 onClick={() => {
                   setTab(item.id);
                   const next = new URLSearchParams(searchParams);
@@ -72,27 +68,23 @@ export default function TermsCenter() {
                   else next.set('tab', item.id);
                   setSearchParams(next, { replace: true });
                 }}
-                className={cn(
-                  'snap-start px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap',
-                  tab === item.id ? 'bg-primary text-white' : 'bg-surface-tertiary text-content-secondary'
-                )}
               >
                 {item.title}
-              </button>
+              </Chip>
             ))}
           </div>
-        </div>
-      </header>
+        }
+      />
 
       <div className="px-4 py-4">
-        <div className="bg-surface rounded-card p-5 shadow-card">
+        <Card padding="lg">
           <h2 className="text-lg font-bold">{document.title}</h2>
           <div className="mt-4 space-y-3 text-sm text-content-secondary leading-relaxed">
             {document.content.map((line) => (
               <p key={line}>{line}</p>
             ))}
           </div>
-        </div>
+        </Card>
       </div>
     </div>
   );

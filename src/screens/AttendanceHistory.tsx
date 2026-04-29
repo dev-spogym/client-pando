@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react';
-import { ArrowLeft, ChevronLeft, ChevronRight, Clock } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Clock } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '@/stores/authStore';
 import { getPreviewAttendanceRecords, isPreviewMode } from '@/lib/preview';
 import { supabase } from '@/lib/supabase';
 import { cn, formatTime } from '@/lib/utils';
+import { PageHeader, EmptyState } from '@/components/ui';
 
 interface AttendanceRecord {
   id: number;
@@ -81,16 +82,7 @@ export default function AttendanceHistory() {
 
   return (
     <div className="min-h-screen bg-surface-secondary">
-      {/* 헤더 */}
-      <header className="bg-surface sticky top-0 z-10 border-b border-line">
-        <div className="flex items-center px-4 pt-safe-top h-14">
-          <button onClick={() => navigate(-1)}>
-            <ArrowLeft className="w-6 h-6 text-content" />
-          </button>
-          <h1 className="flex-1 text-center font-semibold text-lg">출석 이력</h1>
-          <div className="w-6" />
-        </div>
-      </header>
+      <PageHeader title="출석 이력" onBack={() => navigate(-1)} />
 
       {/* 월 선택 */}
       <div className="bg-surface px-4 py-3 flex items-center justify-between">
@@ -157,7 +149,11 @@ export default function AttendanceHistory() {
         {loading ? (
           <div className="text-center py-8 text-content-tertiary text-sm">불러오는 중...</div>
         ) : records.length === 0 ? (
-          <div className="text-center py-8 text-content-tertiary text-sm">이번 달 출석 기록이 없습니다.</div>
+          <EmptyState
+            size="sm"
+            title="출석 기록 없음"
+            description="이번 달 출석 기록이 없습니다."
+          />
         ) : (
           <div className="space-y-2">
             {records.map((record) => {
@@ -168,7 +164,7 @@ export default function AttendanceHistory() {
                 : null;
 
               return (
-                <div key={record.id} className="bg-surface rounded-lg p-3 flex items-center gap-3">
+                <div key={record.id} className="bg-surface rounded-card shadow-card-soft p-3 flex items-center gap-3">
                   <div className="w-10 h-10 bg-primary-light rounded-lg flex items-center justify-center">
                     <span className="text-primary font-bold text-sm">{checkIn.getDate()}</span>
                   </div>

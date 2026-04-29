@@ -14,7 +14,7 @@ export default function FCHome() {
 
   return (
     <div className="min-h-screen bg-surface-secondary">
-      <header className="bg-gradient-to-br from-indigo-600 to-sky-600 px-5 pt-safe-top pb-6">
+      <header className="bg-gradient-to-br from-primary to-primary-dark px-5 pt-safe-top pb-6">
         <div className="pt-4 flex items-center justify-between">
           <div>
             <p className="text-white/80 text-sm">FC</p>
@@ -35,12 +35,12 @@ export default function FCHome() {
 
       <div className="px-5 -mt-2 pb-24 space-y-4">
         <div className="grid grid-cols-3 gap-3">
-          <QuickMenu label="상담 목록" icon={<CalendarClock className="w-5 h-5 text-indigo-600" />} onClick={() => navigate('/fc/leads')} />
-          <QuickMenu label="회원 목록" icon={<Users className="w-5 h-5 text-sky-600" />} onClick={() => navigate('/fc/members')} />
+          <QuickMenu label="상담 목록" icon={<CalendarClock className="w-5 h-5 text-primary" />} onClick={() => navigate('/fc/leads')} />
+          <QuickMenu label="회원 목록" icon={<Users className="w-5 h-5 text-primary" />} onClick={() => navigate('/fc/members')} />
           <QuickMenu label="만료 예정" icon={<CreditCard className="w-5 h-5 text-state-error" />} onClick={() => navigate('/fc/expiring')} />
         </div>
 
-        <section className="rounded-card bg-surface p-4 shadow-card">
+        <section className="rounded-card bg-surface p-4 shadow-card-soft">
           <p className="text-sm font-semibold">오늘의 상담 일정</p>
           <div className="mt-3 space-y-2">
             {dashboard.todayConsultations.length === 0 ? (
@@ -58,13 +58,13 @@ export default function FCHome() {
           </div>
         </section>
 
-        <section className="rounded-card bg-surface p-4 shadow-card">
+        <section className="rounded-card bg-surface p-4 shadow-card-soft">
           <p className="text-sm font-semibold">긴급 알림</p>
           <div className="mt-3 space-y-2">
             {urgentMembers.map((member) => (
-              <div key={member.id} className="rounded-xl bg-rose-50 px-3 py-3">
-                <p className="text-sm font-semibold text-rose-700">{member.name}</p>
-                <p className="mt-1 text-xs text-rose-600">만료일 {formatDateKo(member.membershipEnd)}</p>
+              <div key={member.id} className="rounded-xl bg-state-error/10 px-3 py-3">
+                <p className="text-sm font-semibold text-state-error">{member.name}</p>
+                <p className="mt-1 text-xs text-state-error/80">만료일 {formatDateKo(member.membershipEnd)}</p>
               </div>
             ))}
           </div>
@@ -85,7 +85,7 @@ function SummaryCard({ label, value }: { label: string; value: string }) {
 
 function QuickMenu({ label, icon, onClick }: { label: string; icon: React.ReactNode; onClick: () => void }) {
   return (
-    <button onClick={onClick} className="rounded-card bg-surface p-4 text-left shadow-card">
+    <button onClick={onClick} className="rounded-card bg-surface p-4 text-left shadow-card-soft">
       {icon}
       <p className="mt-3 text-sm font-semibold">{label}</p>
     </button>

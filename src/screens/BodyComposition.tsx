@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { ArrowLeft, Minus, Scale, TrendingDown, TrendingUp } from 'lucide-react';
+import { Minus, Scale, TrendingDown, TrendingUp } from 'lucide-react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
   getPreviewBodyRecords,
@@ -9,6 +9,7 @@ import { supabase } from '@/lib/supabase';
 import { useAuthStore } from '@/stores/authStore';
 import { buildFmsReport, isOnboardingComplete } from '@/lib/memberExperience';
 import { cn, formatDateKo } from '@/lib/utils';
+import { PageHeader, Button, Chip, EmptyState } from '@/components/ui';
 
 interface BodyRecord {
   id: number;
@@ -74,39 +75,33 @@ export default function BodyComposition() {
 
   return (
     <div className="min-h-screen bg-surface-secondary">
-      <header className="bg-surface sticky top-0 z-10 border-b border-line">
-        <div className="flex items-center px-4 pt-safe-top h-14">
-          <button onClick={() => navigate(-1)}>
-            <ArrowLeft className="w-6 h-6 text-content" />
-          </button>
-          <h1 className="flex-1 text-center font-semibold text-lg">체성분 / FMS</h1>
-          <div className="w-6" />
-        </div>
-
-        <div className="px-4 pb-3 flex gap-2">
-          {[
-            { key: 'body' as const, label: '인바디' },
-            { key: 'fms' as const, label: 'FMS / 체형' },
-          ].map((item) => (
-            <button
-              key={item.key}
-              onClick={() => {
-                setTab(item.key);
-                const next = new URLSearchParams(searchParams);
-                if (item.key === 'body') next.delete('tab');
-                else next.set('tab', item.key);
-                setSearchParams(next, { replace: true });
-              }}
-              className={cn(
-                'px-4 py-2 rounded-full text-sm font-medium transition-colors',
-                tab === item.key ? 'bg-primary text-white' : 'bg-surface-tertiary text-content-secondary'
-              )}
-            >
-              {item.label}
-            </button>
-          ))}
-        </div>
-      </header>
+      <PageHeader
+        title="체성분 / FMS"
+        onBack={() => navigate(-1)}
+        rightSlot={
+          <div className="flex gap-2">
+            {[
+              { key: 'body' as const, label: '인바디' },
+              { key: 'fms' as const, label: 'FMS / 체형' },
+            ].map((item) => (
+              <Chip
+                key={item.key}
+                active={tab === item.key}
+                size="sm"
+                onClick={() => {
+                  setTab(item.key);
+                  const next = new URLSearchParams(searchParams);
+                  if (item.key === 'body') next.delete('tab');
+                  else next.set('tab', item.key);
+                  setSearchParams(next, { replace: true });
+                }}
+              >
+                {item.label}
+              </Chip>
+            ))}
+          </div>
+        }
+      />
 
       {tab === 'body' ? (
         <>
@@ -145,7 +140,7 @@ export default function BodyComposition() {
                 />
               </div>
               {latest.bmi !== null && (
-                <div className="mt-3 bg-surface-secondary rounded-xl p-3 flex items-center justify-between">
+                <div className="mt-3 bg-surface-secondary rounded-card p-3 flex items-center justify-between">
                   <span className="text-sm text-content-secondary">BMI</span>
                   <span className="font-bold text-primary">{latest.bmi}</span>
                 </div>
@@ -158,15 +153,15 @@ export default function BodyComposition() {
             {loading ? (
               <div className="text-center py-8 text-content-tertiary text-sm">불러오는 중...</div>
             ) : records.length === 0 ? (
-              <div className="text-center py-12">
-                <Scale className="w-12 h-12 text-content-tertiary/30 mx-auto mb-3" />
-                <p className="text-content-tertiary text-sm">체성분 측정 기록이 없습니다</p>
-                <p className="text-content-tertiary text-xs mt-1">센터에서 InBody 측정 후 기록됩니다</p>
-              </div>
+              <EmptyState
+                icon={<Scale className="w-8 h-8" />}
+                title="체성분 측정 기록 없음"
+                description="센터에서 InBody 측정 후 기록됩니다"
+              />
             ) : (
               <div className="space-y-2">
                 {records.map((record) => (
-                  <div key={record.id} className="bg-surface rounded-lg p-4">
+                  <div key={record.id} className="bg-surface rounded-card p-4 shadow-card-soft">
                     <div className="flex items-center justify-between mb-2">
                       <span className="text-sm font-medium">{formatDateKo(record.date)}</span>
                     </div>
@@ -187,7 +182,7 @@ export default function BodyComposition() {
         </>
       ) : (
         <div className="px-4 py-4 space-y-4">
-          <div className="bg-surface rounded-card p-5 shadow-card">
+          <div className="bg-surface rounded-card p-5 shadow-card-soft">
             <p className="text-xs text-primary font-semibold mb-2">FMS / 체형 요약</p>
             <h2 className="text-2xl font-bold">총점 {fms.totalScore}점</h2>
             <p className="text-sm text-content-secondary mt-2 leading-relaxed">{fms.postureSummary}</p>
@@ -195,11 +190,11 @@ export default function BodyComposition() {
 
           <div className="space-y-3">
             {fms.sections.map((section) => (
-              <div key={section.title} className="bg-surface rounded-card p-4 shadow-card">
+              <div key={section.title} className="bg-surface rounded-card p-4 shadow-card-soft">
                 <div className="flex items-center justify-between">
                   <h3 className="text-sm font-semibold">{section.title}</h3>
                   <span className={cn(
-                    'px-2.5 py-1 rounded-full text-[11px] font-semibold',
+                    'px-2.5 py-1 rounded-pill text-[11px] font-semibold',
                     section.status === 'good' && 'bg-state-success/10 text-state-success',
                     section.status === 'watch' && 'bg-state-warning/10 text-state-warning',
                     section.status === 'care' && 'bg-state-error/10 text-state-error'
@@ -212,16 +207,17 @@ export default function BodyComposition() {
             ))}
           </div>
 
-          <div className="bg-surface rounded-card p-5 shadow-card">
+          <div className="bg-surface rounded-card p-5 shadow-card-soft">
             <h3 className="text-sm font-semibold mb-3">코치 메모</h3>
             <p className="text-sm text-content-secondary leading-relaxed">{fms.coachComment}</p>
             {!onboardingDone && (
-              <button
+              <Button
+                fullWidth
+                className="mt-4"
                 onClick={() => navigate('/onboarding')}
-                className="mt-4 w-full py-3 rounded-button bg-primary text-white text-sm font-semibold"
               >
                 통증 / 체형 정보 입력하기
-              </button>
+              </Button>
             )}
           </div>
         </div>
@@ -248,7 +244,7 @@ function MetricCard({
   const isGood = diff !== null && diff !== 0 && ((good === 'down' && diff < 0) || (good === 'up' && diff > 0));
 
   return (
-    <div className="bg-surface-secondary rounded-xl p-3">
+    <div className="bg-surface-secondary rounded-card p-3">
       <div className="flex items-center gap-2 mb-2">
         {icon}
         <span className="text-xs text-content-secondary">{label}</span>

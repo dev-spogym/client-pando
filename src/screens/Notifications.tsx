@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
-import { ArrowLeft, Bell, ChevronRight } from 'lucide-react';
+import { Bell, ChevronRight } from 'lucide-react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuthStore } from '@/stores/authStore';
 import { cn, formatDateKo } from '@/lib/utils';
 import { getNotificationItems, markNotificationRead, type NotificationItem } from '@/lib/memberExperience';
+import { PageHeader, Chip, EmptyState, Card } from '@/components/ui';
 
 /** 알림센터 */
 export default function Notifications() {
@@ -37,21 +38,16 @@ export default function Notifications() {
   return (
     <div className="min-h-screen bg-surface-secondary">
       <header className="bg-surface sticky top-0 z-10 border-b border-line">
-        <div className="flex items-center px-4 pt-safe-top h-14">
-          <button onClick={() => navigate(-1)}>
-            <ArrowLeft className="w-6 h-6 text-content" />
-          </button>
-          <h1 className="flex-1 text-center font-semibold text-lg">알림센터</h1>
-          <div className="w-6" />
-        </div>
+        <PageHeader title="알림센터" showBack sticky={false} />
 
-        <div className="px-4 pb-3 flex gap-2">
+        <div className="px-5 pb-3 flex gap-2">
           {[
             { key: 'all' as const, label: `전체 ${items.length}` },
             { key: 'unread' as const, label: `미읽음 ${items.filter((item) => !item.read).length}` },
           ].map((item) => (
-            <button
+            <Chip
               key={item.key}
+              active={tab === item.key}
               onClick={() => {
                 setTab(item.key);
                 const next = new URLSearchParams(searchParams);
@@ -59,34 +55,33 @@ export default function Notifications() {
                 else next.set('tab', item.key);
                 setSearchParams(next, { replace: true });
               }}
-              className={cn(
-                'px-4 py-2 rounded-full text-sm font-medium transition-colors',
-                tab === item.key ? 'bg-primary text-white' : 'bg-surface-tertiary text-content-secondary'
-              )}
             >
               {item.label}
-            </button>
+            </Chip>
           ))}
         </div>
       </header>
 
-      <div className="px-4 py-4">
+      <div className="px-5 py-4">
         {filteredItems.length === 0 ? (
-          <div className="bg-surface rounded-card shadow-card text-center py-12">
-            <Bell className="w-12 h-12 text-content-tertiary/30 mx-auto mb-3" />
-            <p className="text-content-tertiary text-sm">표시할 알림이 없습니다</p>
-          </div>
+          <Card variant="soft" padding="none">
+            <EmptyState
+              icon={<Bell className="w-8 h-8" />}
+              title="표시할 알림이 없습니다"
+              size="md"
+            />
+          </Card>
         ) : (
           <div className="space-y-3">
             {filteredItems.map((item) => (
               <button
                 key={item.id}
                 onClick={() => handleOpen(item)}
-                className="w-full bg-surface rounded-card p-4 shadow-card text-left"
+                className="w-full bg-surface rounded-card p-4 shadow-card-soft text-left"
               >
                 <div className="flex items-start gap-3">
                   <div className={cn(
-                    'w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0',
+                    'w-10 h-10 rounded-card flex items-center justify-center flex-shrink-0',
                     item.category === 'reservation' && 'bg-primary-light text-primary',
                     item.category === 'membership' && 'bg-state-warning/10 text-state-warning',
                     item.category === 'reward' && 'bg-state-success/10 text-state-success',

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { addConsultation, getExpiringMembers } from '@/lib/mockOperations';
+import { Button } from '@/components/ui';
 
 export default function FCRenewalConsultation() {
   const navigate = useNavigate();
@@ -20,14 +21,32 @@ export default function FCRenewalConsultation() {
       </header>
 
       <div className="px-5 py-4 pb-24 space-y-3">
-        <select value={memberId} onChange={(e) => setMemberId(e.target.value)} className="w-full rounded-xl border border-line px-3 py-3 text-sm bg-surface focus:outline-none focus:border-primary">
+        <select
+          value={memberId}
+          onChange={(e) => setMemberId(e.target.value)}
+          className="w-full rounded-xl border border-line px-3 py-3 text-sm bg-surface focus:outline-none focus:border-primary"
+        >
           {members.map((member) => (
             <option key={member.id} value={member.id}>{member.name} · 만료일 {member.membershipEnd.slice(0, 10)}</option>
           ))}
         </select>
-        <textarea value={summary} onChange={(e) => setSummary(e.target.value)} placeholder="재등록 상담 내용" rows={4} className="w-full rounded-xl border border-line px-3 py-3 text-sm resize-none focus:outline-none focus:border-primary" />
-        <textarea value={followUp} onChange={(e) => setFollowUp(e.target.value)} placeholder="후속 조치" rows={3} className="w-full rounded-xl border border-line px-3 py-3 text-sm resize-none focus:outline-none focus:border-primary" />
-        <button
+        <textarea
+          value={summary}
+          onChange={(e) => setSummary(e.target.value)}
+          placeholder="재등록 상담 내용"
+          rows={4}
+          className="w-full rounded-xl border border-line px-3 py-3 text-sm resize-none focus:outline-none focus:border-primary bg-surface"
+        />
+        <textarea
+          value={followUp}
+          onChange={(e) => setFollowUp(e.target.value)}
+          placeholder="후속 조치"
+          rows={3}
+          className="w-full rounded-xl border border-line px-3 py-3 text-sm resize-none focus:outline-none focus:border-primary bg-surface"
+        />
+        <Button
+          fullWidth
+          size="lg"
           onClick={() => {
             const target = members.find((item) => String(item.id) === memberId);
             if (!target || !summary.trim()) {
@@ -49,10 +68,9 @@ export default function FCRenewalConsultation() {
             toast.success('재등록 상담을 등록했습니다.');
             navigate('/fc/leads');
           }}
-          className="w-full rounded-xl bg-primary px-4 py-3 text-sm font-semibold text-white"
         >
           저장
-        </button>
+        </Button>
       </div>
     </div>
   );

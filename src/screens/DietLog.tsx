@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
-  ArrowLeft, ChevronLeft, ChevronRight, Plus, X, Flame, Camera, Trash2,
+  ChevronLeft, ChevronRight, Plus, X, Flame, Camera, Trash2,
 } from 'lucide-react';
+import { PageHeader, Button, EmptyState } from '@/components/ui';
 
 type MealType = '아침' | '점심' | '저녁' | '간식';
 
@@ -169,16 +170,7 @@ export default function DietLog() {
 
   return (
     <div className="min-h-screen bg-surface-secondary">
-      {/* 헤더 */}
-      <header className="bg-surface sticky top-0 z-10 border-b border-line">
-        <div className="flex items-center px-4 pt-safe-top h-14">
-          <button onClick={() => navigate(-1)}>
-            <ArrowLeft className="w-6 h-6 text-content" />
-          </button>
-          <h1 className="flex-1 text-center font-semibold text-lg">식단 관리</h1>
-          <div className="w-6" />
-        </div>
-      </header>
+      <PageHeader title="식단 관리" onBack={() => navigate(-1)} />
 
       {/* 날짜 선택 */}
       <div className="bg-surface px-4 py-3 flex items-center justify-between">
@@ -196,7 +188,7 @@ export default function DietLog() {
 
       {/* 총 칼로리 요약 */}
       <div className="px-4 mt-3">
-        <div className="bg-surface rounded-card p-4 shadow-card flex items-center gap-4">
+        <div className="bg-surface rounded-card p-4 shadow-card-soft flex items-center gap-4">
           <div className="w-12 h-12 bg-state-warning/10 rounded-xl flex items-center justify-center">
             <Flame className="w-6 h-6 text-state-warning" />
           </div>
@@ -212,7 +204,7 @@ export default function DietLog() {
       {/* 끼니별 섹션 */}
       <div className="px-4 mt-4 pb-4 space-y-4">
         {logs === null ? (
-          <div className="bg-surface rounded-card p-8 text-center text-sm text-content-tertiary shadow-card">
+          <div className="bg-surface rounded-card p-8 text-center text-sm text-content-tertiary shadow-card-soft">
             불러오는 중...
           </div>
         ) : (
@@ -221,7 +213,7 @@ export default function DietLog() {
             const mealCalories = entries.reduce((s, e) => s + e.calories, 0);
 
             return (
-              <div key={meal} className="bg-surface rounded-card p-4 shadow-card">
+              <div key={meal} className="bg-surface rounded-card p-4 shadow-card-soft">
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-2">
                     <span className="text-lg">{mealIcon[meal]}</span>
@@ -245,7 +237,7 @@ export default function DietLog() {
                 ) : (
                   <div className="space-y-2">
                     {entries.map((entry) => (
-                      <div key={entry.id} className="flex items-center gap-3 p-3 bg-surface-secondary rounded-lg">
+                      <div key={entry.id} className="flex items-center gap-3 p-3 bg-surface-secondary rounded-card">
                         <div className="flex-1 min-w-0">
                           <p className="text-sm font-medium truncate">{entry.name}</p>
                           <div className="flex items-center gap-2 text-xs text-content-tertiary">
@@ -287,7 +279,7 @@ export default function DietLog() {
                   value={formName}
                   onChange={(e) => setFormName(e.target.value)}
                   placeholder="예: 닭가슴살 샐러드"
-                  className="w-full px-4 py-3 bg-surface-secondary rounded-xl text-sm border border-line focus:border-primary focus:outline-none"
+                  className="w-full px-4 py-3 bg-surface-secondary rounded-input text-sm border border-line focus:border-primary focus:outline-none"
                 />
               </div>
 
@@ -299,14 +291,14 @@ export default function DietLog() {
                   value={formCalories || ''}
                   onChange={(e) => setFormCalories(Number(e.target.value))}
                   placeholder="예: 350"
-                  className="w-full px-4 py-3 bg-surface-secondary rounded-xl text-sm border border-line focus:border-primary focus:outline-none"
+                  className="w-full px-4 py-3 bg-surface-secondary rounded-input text-sm border border-line focus:border-primary focus:outline-none"
                 />
               </div>
 
               {/* 사진 첨부 (placeholder) */}
               <div>
                 <label className="text-sm font-medium text-content-secondary mb-2 block">사진 첨부</label>
-                <button className="w-full py-8 border-2 border-dashed border-line rounded-xl flex flex-col items-center gap-2 text-content-tertiary active:bg-surface-secondary">
+                <button className="w-full py-8 border-2 border-dashed border-line rounded-card flex flex-col items-center gap-2 text-content-tertiary active:bg-surface-secondary">
                   <Camera className="w-8 h-8" />
                   <span className="text-sm">사진을 추가하세요</span>
                   <span className="text-xs">(준비 중)</span>
@@ -321,17 +313,14 @@ export default function DietLog() {
                   onChange={(e) => setFormMemo(e.target.value)}
                   placeholder="간단한 메모를 남겨보세요"
                   rows={2}
-                  className="w-full px-4 py-3 bg-surface-secondary rounded-xl text-sm border border-line focus:border-primary focus:outline-none resize-none"
+                  className="w-full px-4 py-3 bg-surface-secondary rounded-input text-sm border border-line focus:border-primary focus:outline-none resize-none"
                 />
               </div>
 
               {/* 저장 */}
-              <button
-                onClick={handleAddFood}
-                className="w-full py-3 bg-primary text-white font-semibold rounded-xl active:bg-primary-dark transition-colors"
-              >
+              <Button fullWidth onClick={handleAddFood}>
                 저장
-              </button>
+              </Button>
             </div>
           </div>
         </div>

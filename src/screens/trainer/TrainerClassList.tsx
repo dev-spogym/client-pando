@@ -1,8 +1,9 @@
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ChevronRight, CircleAlert, FileStack, Filter, NotebookPen } from 'lucide-react';
+import { ChevronRight, CircleAlert, FileStack, NotebookPen } from 'lucide-react';
 import { getTrainerClasses } from '@/lib/mockOperations';
-import { cn, formatDateKo, formatTime } from '@/lib/utils';
+import { formatDateKo, formatTime } from '@/lib/utils';
+import { Chip, Card, Badge, EmptyState } from '@/components/ui';
 
 const STATUS_LABELS: Record<string, string> = {
   scheduled: '예정',
@@ -39,78 +40,80 @@ export default function TrainerClassList() {
       </header>
 
       <div className="px-5 py-4 pb-24 space-y-4">
-        <div className="grid grid-cols-3 gap-2">
+        {/* 필터 칩 */}
+        <div className="flex gap-2">
           {[
             { key: 'all' as const, label: '전체' },
             { key: 'active' as const, label: '진행중/예정' },
             { key: 'completed' as const, label: '완료' },
           ].map((item) => (
-            <button
+            <Chip
               key={item.key}
+              active={filter === item.key}
               onClick={() => setFilter(item.key)}
-              className={cn(
-                'rounded-xl px-3 py-2 text-sm font-medium',
-                filter === item.key ? 'bg-teal-600 text-white' : 'bg-surface text-content-secondary'
-              )}
             >
               {item.label}
-            </button>
+            </Chip>
           ))}
         </div>
 
+        {/* 바로가기 카드 */}
         <div className="grid grid-cols-3 gap-3">
-          <button onClick={() => navigate('/trainer/templates')} className="rounded-card bg-surface p-4 text-left shadow-card">
-            <NotebookPen className="w-5 h-5 text-teal-600" />
+          <Card variant="soft" padding="md" interactive onClick={() => navigate('/trainer/templates')}>
+            <NotebookPen className="w-5 h-5 text-primary" />
             <p className="mt-3 text-sm font-semibold">템플릿 관리</p>
-          </button>
-          <button onClick={() => navigate('/trainer/penalties')} className="rounded-card bg-surface p-4 text-left shadow-card">
+          </Card>
+          <Card variant="soft" padding="md" interactive onClick={() => navigate('/trainer/penalties')}>
             <CircleAlert className="w-5 h-5 text-state-error" />
             <p className="mt-3 text-sm font-semibold">노쇼 / 페널티</p>
-          </button>
-          <button onClick={() => navigate('/trainer/certificates')} className="rounded-card bg-surface p-4 text-left shadow-card">
+          </Card>
+          <Card variant="soft" padding="md" interactive onClick={() => navigate('/trainer/certificates')}>
             <FileStack className="w-5 h-5 text-state-info" />
             <p className="mt-3 text-sm font-semibold">확인서</p>
-          </button>
+          </Card>
         </div>
 
-        <div className="flex items-center gap-2 text-xs text-content-tertiary">
-          <Filter className="w-4 h-4" />
-          현재 {filtered.length}건
-        </div>
+        <p className="text-xs text-content-tertiary">현재 {filtered.length}건</p>
 
-        <div className="space-y-3">
-          {filtered.map((item) => (
-            <button
-              key={item.id}
-              onClick={() => navigate(`/trainer/classes/${item.id}`)}
-              className="w-full rounded-card bg-surface p-4 text-left shadow-card"
-            >
-              <div className="flex items-start justify-between gap-3">
-                <div>
-                  <div className="flex items-center gap-2">
-                    <span className={cn(
-                      'rounded-full px-2 py-0.5 text-[11px] font-semibold',
-                      item.type === 'PT' ? 'bg-teal-50 text-teal-600' : item.type === 'GOLF' ? 'bg-emerald-50 text-emerald-600' : 'bg-primary-light text-primary'
-                    )}>
-                      {item.type}
-                    </span>
-                    <span className="rounded-full bg-surface-secondary px-2 py-0.5 text-[11px] text-content-secondary">
-                      {STATUS_LABELS[item.status]}
-                    </span>
+        {filtered.length === 0 ? (
+          <EmptyState size="sm" title="해당하는 수업이 없습니다" />
+        ) : (
+          <div className="space-y-3">
+            {filtered.map((item) => (
+              <Card
+                key={item.id}
+                variant="elevated"
+                padding="md"
+                interactive
+                onClick={() => navigate(`/trainer/classes/${item.id}`)}
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <Badge
+                        tone={item.type === 'PT' ? 'primary' : item.type === 'GOLF' ? 'success' : 'accent'}
+                        variant="soft"
+                      >
+                        {item.type}
+                      </Badge>
+                      <Badge tone="neutral" variant="soft">
+                        {STATUS_LABELS[item.status]}
+                      </Badge>
+                    </div>
+                    <p className="mt-2 text-sm font-semibold">{item.title}</p>
+                    <p className="mt-1 text-xs text-content-secondary">
+                      {formatDateKo(item.startTime)} · {formatTime(item.startTime)} - {formatTime(item.endTime)} · {item.room}
+                    </p>
+                    <p className="mt-2 text-xs text-content-tertiary">
+                      참여 회원 {item.participants.length}명
+                    </p>
                   </div>
-                  <p className="mt-2 text-sm font-semibold">{item.title}</p>
-                  <p className="mt-1 text-xs text-content-secondary">
-                    {formatDateKo(item.startTime)} · {formatTime(item.startTime)} - {formatTime(item.endTime)} · {item.room}
-                  </p>
-                  <p className="mt-2 text-xs text-content-tertiary">
-                    참여 회원 {item.participants.length}명
-                  </p>
+                  <ChevronRight className="w-4 h-4 text-content-tertiary flex-shrink-0" />
                 </div>
-                <ChevronRight className="w-4 h-4 text-content-tertiary" />
-              </div>
-            </button>
-          ))}
-        </div>
+              </Card>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

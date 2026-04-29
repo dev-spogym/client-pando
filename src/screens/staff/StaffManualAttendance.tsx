@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { toast } from 'sonner';
 import { addManualAttendance, getManualAttendanceRecords, getMockMembers } from '@/lib/mockOperations';
+import { Card, Chip, Button } from '@/components/ui';
 
 export default function StaffManualAttendance() {
   const members = getMockMembers();
@@ -37,36 +38,46 @@ export default function StaffManualAttendance() {
       </header>
 
       <div className="px-5 py-4 pb-24 space-y-4" key={version}>
-        <section className="rounded-card bg-surface p-4 shadow-card space-y-3">
-          <select value={memberId} onChange={(e) => setMemberId(e.target.value)} className="w-full rounded-xl border border-line px-3 py-3 text-sm focus:outline-none focus:border-primary bg-surface">
+        <Card className="space-y-3">
+          <select
+            value={memberId}
+            onChange={(e) => setMemberId(e.target.value)}
+            className="w-full rounded-xl border border-line px-3 py-3 text-sm focus:outline-none focus:border-primary bg-surface"
+          >
             {members.map((member) => (
               <option key={member.id} value={member.id}>{member.name} · {member.phone}</option>
             ))}
           </select>
-          <div className="grid grid-cols-2 gap-2">
+          <div className="flex gap-2">
             {(['입장', '퇴장'] as const).map((item) => (
-              <button
+              <Chip
                 key={item}
+                active={type === item}
                 onClick={() => setType(item)}
-                className={`rounded-xl px-3 py-3 text-sm font-semibold ${type === item ? 'bg-primary text-white' : 'bg-surface-secondary text-content-secondary'}`}
               >
                 {item}
-              </button>
+              </Chip>
             ))}
           </div>
-          <textarea value={reason} onChange={(e) => setReason(e.target.value)} placeholder="수동 출석 사유" rows={3} className="w-full rounded-xl border border-line px-3 py-3 text-sm resize-none focus:outline-none focus:border-primary" />
-          <button onClick={submit} className="w-full rounded-xl bg-primary px-4 py-3 text-sm font-semibold text-white">
+          <textarea
+            value={reason}
+            onChange={(e) => setReason(e.target.value)}
+            placeholder="수동 출석 사유"
+            rows={3}
+            className="w-full rounded-xl border border-line px-3 py-3 text-sm resize-none focus:outline-none focus:border-primary bg-surface"
+          />
+          <Button fullWidth size="lg" onClick={submit}>
             출석 처리
-          </button>
-        </section>
+          </Button>
+        </Card>
 
         <section className="space-y-3">
           {records.map((record) => (
-            <div key={record.id} className="rounded-card bg-surface p-4 shadow-card">
+            <Card key={record.id}>
               <p className="text-sm font-semibold">{record.memberName}</p>
               <p className="mt-1 text-xs text-content-secondary">{record.type} · {record.reason}</p>
               <p className="mt-2 text-xs text-content-tertiary">{record.createdAt.replace('T', ' ').slice(0, 16)} · {record.handledBy}</p>
-            </div>
+            </Card>
           ))}
         </section>
       </div>

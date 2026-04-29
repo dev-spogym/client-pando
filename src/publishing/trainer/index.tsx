@@ -107,7 +107,7 @@ export default function TrainerPublishingGallery() {
                   key={item}
                   onClick={() => setCategory(item)}
                   className={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${
-                    category === item ? 'bg-teal-600 text-white' : 'bg-teal-50 text-teal-700'
+                    category === item ? 'bg-primary text-white' : 'bg-primary-light text-primary'
                   }`}
                 >
                   {item}

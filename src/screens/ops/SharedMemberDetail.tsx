@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
-import { AlertTriangle, ArrowLeft, Pencil, Trash2 } from 'lucide-react';
+import { AlertTriangle, Pencil, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 import {
   addMemberNote,
@@ -16,6 +16,7 @@ import {
 } from '@/lib/mockOperations';
 import { cn, formatCurrency, formatDateKo } from '@/lib/utils';
 import { useAuthStore } from '@/stores/authStore';
+import { PageHeader, Card, Badge, Button, Chip } from '@/components/ui';
 
 type SharedRole = 'fc' | 'staff';
 type TabKey = 'basic' | 'membership' | 'attendance' | 'consultation' | 'payment';
@@ -29,10 +30,10 @@ const NOTE_TYPE_OPTIONS: Array<{ value: MemberNoteType; label: string }> = [
 ];
 
 const NOTE_TYPE_BADGE_CLASS: Record<MemberNoteType, string> = {
-  general: 'bg-slate-100 text-slate-600',
-  caution: 'bg-red-100 text-red-600',
-  vip: 'bg-amber-100 text-amber-700',
-  other: 'bg-sky-100 text-sky-700',
+  general: 'bg-surface-tertiary text-content-secondary',
+  caution: 'bg-state-error/10 text-state-error',
+  vip: 'bg-accent-light text-accent-dark',
+  other: 'bg-state-info/10 text-state-info',
 };
 
 export default function SharedMemberDetail({ role }: { role: SharedRole }) {
@@ -68,7 +69,11 @@ export default function SharedMemberDetail({ role }: { role: SharedRole }) {
   }, [memberId, role]);
 
   if (!member) {
-    return <div className="min-h-screen flex items-center justify-center text-sm text-content-tertiary">회원 정보를 찾을 수 없습니다.</div>;
+    return (
+      <div className="min-h-screen flex items-center justify-center text-sm text-content-tertiary">
+        회원 정보를 찾을 수 없습니다.
+      </div>
+    );
   }
 
   const isMemoSheetOpen = role === 'fc' && searchParams.get('sheet') === 'memo';
@@ -156,20 +161,15 @@ export default function SharedMemberDetail({ role }: { role: SharedRole }) {
 
   return (
     <div className="min-h-screen bg-surface-secondary">
-      <header className="bg-surface px-5 pt-safe-top pb-4 shadow-sm">
-        <div className="pt-4 flex items-center gap-3">
-          <button onClick={() => navigate(-1)} className="text-content-secondary">
-            <ArrowLeft className="w-5 h-5" />
-          </button>
-          <div>
-            <p className="text-xs text-content-tertiary">{role === 'fc' ? 'MA-421' : 'MA-511'}</p>
-            <h1 className="text-lg font-bold">{member.name}</h1>
-          </div>
-        </div>
-      </header>
+      <PageHeader
+        showBack
+        onBack={() => navigate(-1)}
+        title={member.name}
+        subtitle={role === 'fc' ? 'MA-421' : 'MA-511'}
+      />
 
       <div className="px-5 py-4 pb-24 space-y-4">
-        <section className="rounded-card bg-surface p-4 shadow-card">
+        <Card variant="elevated" padding="md">
           <div className="flex items-start justify-between gap-3">
             <div>
               <p className="text-sm font-semibold">{member.membershipName}</p>
@@ -178,24 +178,22 @@ export default function SharedMemberDetail({ role }: { role: SharedRole }) {
               </p>
             </div>
             {role === 'fc' ? (
-              <button
-                onClick={openMemoSheet}
-                className="rounded-xl bg-surface-secondary px-3 py-2 text-xs font-semibold text-content-secondary"
-              >
+              <Button variant="tertiary" size="sm" onClick={openMemoSheet}>
                 메모 관리
-              </button>
+              </Button>
             ) : null}
           </div>
           <p className="mt-3 text-sm text-content-secondary">{member.programSummary}</p>
-        </section>
+        </Card>
 
-        <div className="flex rounded-2xl bg-surface p-1 shadow-card">
+        {/* 탭 바 */}
+        <div className="flex rounded-card bg-surface p-1 shadow-card-soft">
           {tabs.map((item) => (
             <button
               key={item.key}
               onClick={() => setTab(item.key)}
               className={cn(
-                'flex-1 rounded-xl px-3 py-2 text-sm font-medium',
+                'flex-1 rounded-card px-3 py-2 text-sm font-medium transition-colors',
                 tab === item.key ? 'bg-surface-secondary text-content' : 'text-content-tertiary'
               )}
             >
@@ -219,7 +217,7 @@ export default function SharedMemberDetail({ role }: { role: SharedRole }) {
             onClick={closeMemoSheet}
             className="absolute inset-0"
           />
-          <div className="relative z-10 w-full rounded-t-[28px] bg-surface px-5 pb-[calc(env(safe-area-inset-bottom,0px)+20px)] pt-4 shadow-[0_-24px_48px_-28px_rgba(15,23,42,0.5)]">
+          <div className="relative z-10 w-full rounded-t-[28px] bg-surface px-5 pb-[calc(env(safe-area-inset-bottom,0px)+20px)] pt-4 shadow-card-elevated">
             <div className="mx-auto h-1.5 w-12 rounded-full bg-line" />
             <div className="mt-4 flex items-start justify-between gap-3">
               <div>
@@ -227,37 +225,26 @@ export default function SharedMemberDetail({ role }: { role: SharedRole }) {
                 <h2 className="text-lg font-bold">{member.name} 메모 관리</h2>
                 <p className="mt-1 text-xs text-content-tertiary">총 {notes.length} / {MAX_MEMBER_NOTES}</p>
               </div>
-              <button
-                type="button"
-                onClick={closeMemoSheet}
-                className="rounded-full bg-surface-secondary px-3 py-1.5 text-xs font-semibold text-content-secondary"
-              >
-                닫기
-              </button>
+              <Button variant="tertiary" size="sm" onClick={closeMemoSheet}>닫기</Button>
             </div>
 
             <div className="mt-4 space-y-4">
-              <div className="rounded-card bg-surface-secondary p-4 shadow-card">
+              <Card variant="soft" padding="md">
                 <div className="flex flex-wrap gap-2">
                   {NOTE_TYPE_OPTIONS.map((item) => (
-                    <button
+                    <Chip
                       key={item.value}
-                      type="button"
+                      active={noteType === item.value}
+                      size="sm"
                       onClick={() => setNoteType(item.value)}
-                      className={cn(
-                        'rounded-full px-3 py-1.5 text-xs font-semibold',
-                        noteType === item.value
-                          ? NOTE_TYPE_BADGE_CLASS[item.value]
-                          : 'bg-surface text-content-secondary'
-                      )}
                     >
                       {item.label}
-                    </button>
+                    </Chip>
                   ))}
                 </div>
 
                 {isEditing ? (
-                  <div className="mt-3 rounded-2xl bg-amber-50 px-3 py-2 text-xs text-amber-700">
+                  <div className="mt-3 rounded-card bg-accent-light/30 px-3 py-2 text-xs text-accent-dark">
                     수정 모드입니다. 저장 시 메모 내용과 유형이 함께 갱신됩니다.
                   </div>
                 ) : null}
@@ -268,7 +255,7 @@ export default function SharedMemberDetail({ role }: { role: SharedRole }) {
                   placeholder="메모를 입력하세요"
                   rows={4}
                   maxLength={500}
-                  className="mt-3 w-full resize-none rounded-xl border border-line bg-surface px-3 py-3 text-sm focus:border-primary focus:outline-none"
+                  className="mt-3 w-full resize-none rounded-input border border-line bg-surface px-3 py-3 text-sm focus:border-primary focus:outline-none"
                 />
                 <div className="mt-2 flex items-center justify-between text-xs text-content-tertiary">
                   <span>{isEditing ? '메모 수정' : '신규 메모 등록'}</span>
@@ -276,34 +263,26 @@ export default function SharedMemberDetail({ role }: { role: SharedRole }) {
                 </div>
                 <div className="mt-3 flex gap-2">
                   {isEditing ? (
-                    <button
-                      type="button"
-                      onClick={resetNoteForm}
-                      className="flex-1 rounded-xl bg-surface px-4 py-3 text-sm font-semibold text-content-secondary"
-                    >
+                    <Button variant="tertiary" size="md" fullWidth onClick={resetNoteForm}>
                       수정 취소
-                    </button>
+                    </Button>
                   ) : null}
-                  <button
-                    type="button"
-                    onClick={saveNote}
-                    className="flex-1 rounded-xl bg-primary px-4 py-3 text-sm font-semibold text-white"
-                  >
+                  <Button variant="primary" size="md" fullWidth onClick={saveNote}>
                     {isEditing ? '메모 수정' : '메모 저장'}
-                  </button>
+                  </Button>
                 </div>
-              </div>
+              </Card>
 
               <div className="max-h-[40vh] space-y-3 overflow-y-auto pb-1">
                 {notes.length === 0 ? (
-                  <div className="rounded-card bg-surface-secondary p-4 text-sm text-content-tertiary">
-                    등록된 메모가 없습니다.
-                  </div>
+                  <Card variant="soft" padding="md">
+                    <p className="text-sm text-content-tertiary">등록된 메모가 없습니다.</p>
+                  </Card>
                 ) : notes.map((note) => (
-                  <div key={note.id} className="rounded-card bg-surface-secondary p-4 shadow-card">
+                  <Card key={note.id} variant="soft" padding="md">
                     <div className="flex items-start justify-between gap-3">
                       <div className="flex items-center gap-2">
-                        <span className={cn('rounded-full px-2.5 py-1 text-[11px] font-semibold', NOTE_TYPE_BADGE_CLASS[note.type])}>
+                        <span className={cn('rounded-pill px-2.5 py-1 text-[11px] font-semibold', NOTE_TYPE_BADGE_CLASS[note.type])}>
                           {getNoteTypeLabel(note.type)}
                         </span>
                         {note.updatedAt ? (
@@ -335,7 +314,7 @@ export default function SharedMemberDetail({ role }: { role: SharedRole }) {
                     <p className="mt-2 text-xs text-content-tertiary">
                       {note.authorName} · {formatDateKo(note.createdAt)} {note.createdAt.slice(11, 16)}
                     </p>
-                  </div>
+                  </Card>
                 ))}
               </div>
             </div>
@@ -351,9 +330,9 @@ export default function SharedMemberDetail({ role }: { role: SharedRole }) {
             onClick={() => setDeleteTarget(null)}
             className="absolute inset-0"
           />
-          <div className="relative z-10 w-full max-w-sm rounded-[28px] bg-surface p-5 shadow-2xl">
+          <div className="relative z-10 w-full max-w-sm rounded-card-lg bg-surface p-5 shadow-card-elevated">
             <div className="flex items-start gap-3">
-              <div className="rounded-full bg-red-50 p-2 text-red-600">
+              <div className="rounded-full bg-state-error/10 p-2 text-state-error">
                 <AlertTriangle className="h-5 w-5" />
               </div>
               <div className="space-y-1">
@@ -362,20 +341,12 @@ export default function SharedMemberDetail({ role }: { role: SharedRole }) {
               </div>
             </div>
             <div className="mt-5 flex gap-2">
-              <button
-                type="button"
-                onClick={() => setDeleteTarget(null)}
-                className="flex-1 rounded-xl bg-surface-secondary px-4 py-3 text-sm font-semibold text-content-secondary"
-              >
+              <Button variant="tertiary" size="lg" fullWidth onClick={() => setDeleteTarget(null)}>
                 취소
-              </button>
-              <button
-                type="button"
-                onClick={confirmDeleteNote}
-                className="flex-1 rounded-xl bg-state-error px-4 py-3 text-sm font-semibold text-white"
-              >
+              </Button>
+              <Button variant="danger" size="lg" fullWidth onClick={confirmDeleteNote}>
                 삭제
-              </button>
+              </Button>
             </div>
           </div>
         </div>
@@ -390,17 +361,17 @@ function BasicTab({ member, notes, role }: { member: MockMember; notes: MemberNo
   return (
     <div className="space-y-3">
       {role === 'fc' && cautionNotes.length > 0 ? (
-        <section className="rounded-card border border-red-100 bg-red-50 p-4 shadow-card">
+        <Card variant="outline" padding="md" className="border-state-error/30 bg-state-error/5">
           <div className="flex items-start gap-3">
-            <div className="rounded-full bg-white/80 p-2 text-red-600">
+            <div className="rounded-full bg-surface p-2 text-state-error">
               <AlertTriangle className="h-4 w-4" />
             </div>
             <div>
-              <p className="text-sm font-semibold text-red-700">주의 메모 {cautionNotes.length}건</p>
-              <p className="mt-1 text-sm text-red-700">{cautionNotes[0].content}</p>
+              <p className="text-sm font-semibold text-state-error">주의 메모 {cautionNotes.length}건</p>
+              <p className="mt-1 text-sm text-state-error">{cautionNotes[0].content}</p>
             </div>
           </div>
-        </section>
+        </Card>
       ) : null}
 
       <InfoCard label="전화번호" value={member.phone} />
@@ -412,18 +383,18 @@ function BasicTab({ member, notes, role }: { member: MockMember; notes: MemberNo
       <InfoCard label="락커" value={member.lockerLabel} />
 
       {role === 'fc' ? (
-        <section className="rounded-card bg-surface p-4 shadow-card">
-          <div className="flex items-center justify-between gap-3">
+        <Card variant="elevated" padding="md">
+          <div className="flex items-center justify-between gap-3 mb-3">
             <p className="text-sm font-semibold">최근 메모</p>
             <span className="text-xs text-content-tertiary">{notes.length}건</span>
           </div>
-          <div className="mt-3 space-y-2">
-            {notes.length === 0 ? <p className="text-sm text-content-tertiary">메모가 없습니다.</p> : notes.slice(0, 3).map((note) => (
-              <div key={note.id} className="rounded-xl bg-surface-secondary px-3 py-3">
+          <div className="space-y-2">
+            {notes.length === 0 ? (
+              <p className="text-sm text-content-tertiary">메모가 없습니다.</p>
+            ) : notes.slice(0, 3).map((note) => (
+              <div key={note.id} className="rounded-card bg-surface-secondary px-3 py-3">
                 <div className="flex items-center gap-2">
-                  <span className={cn('rounded-full px-2.5 py-1 text-[11px] font-semibold', NOTE_TYPE_BADGE_CLASS[note.type])}>
-                    {getNoteTypeLabel(note.type)}
-                  </span>
+                  <Badge tone="neutral" variant="soft">{getNoteTypeLabel(note.type)}</Badge>
                 </div>
                 <p className="mt-2 text-sm text-content-secondary">{note.content}</p>
                 <p className="mt-1 text-xs text-content-tertiary">
@@ -432,7 +403,7 @@ function BasicTab({ member, notes, role }: { member: MockMember; notes: MemberNo
               </div>
             ))}
           </div>
-        </section>
+        </Card>
       ) : null}
     </div>
   );
@@ -453,11 +424,13 @@ function AttendanceTab({ member }: { member: MockMember }) {
   return (
     <section className="space-y-3">
       {member.attendanceHistory.map((record) => (
-        <div key={record.id} className="rounded-card bg-surface p-4 shadow-card">
+        <Card key={record.id} variant="elevated" padding="md">
           <p className="text-sm font-semibold">{formatDateKo(record.checkInAt)}</p>
           <p className="mt-1 text-xs text-content-secondary">{record.source === 'staff' ? '수동 처리' : 'QR 체크인'}</p>
-          <p className="mt-2 text-sm text-content-secondary">입장 {record.checkInAt.slice(11, 16)} / 퇴장 {record.checkOutAt ? record.checkOutAt.slice(11, 16) : '미처리'}</p>
-        </div>
+          <p className="mt-2 text-sm text-content-secondary">
+            입장 {record.checkInAt.slice(11, 16)} / 퇴장 {record.checkOutAt ? record.checkOutAt.slice(11, 16) : '미처리'}
+          </p>
+        </Card>
       ))}
     </section>
   );
@@ -467,13 +440,17 @@ function ConsultationTab({ consultations }: { consultations: Array<{ id: number;
   return (
     <section className="space-y-3">
       {consultations.length === 0 ? (
-        <div className="rounded-card bg-surface p-4 text-sm text-content-tertiary shadow-card">상담 이력이 없습니다.</div>
+        <Card variant="soft" padding="md">
+          <p className="text-sm text-content-tertiary">상담 이력이 없습니다.</p>
+        </Card>
       ) : consultations.map((item) => (
-        <div key={item.id} className="rounded-card bg-surface p-4 shadow-card">
+        <Card key={item.id} variant="elevated" padding="md">
           <p className="text-sm font-semibold">{item.type}</p>
-          <p className="mt-1 text-xs text-content-secondary">{formatDateKo(item.scheduledAt)} · {item.status} · {item.result || '미정'}</p>
+          <p className="mt-1 text-xs text-content-secondary">
+            {formatDateKo(item.scheduledAt)} · {item.status} · {item.result || '미정'}
+          </p>
           <p className="mt-2 text-sm text-content-secondary">{item.summary}</p>
-        </div>
+        </Card>
       ))}
     </section>
   );
@@ -483,11 +460,11 @@ function PaymentTab({ member }: { member: MockMember }) {
   return (
     <section className="space-y-3">
       {member.payments.map((payment) => (
-        <div key={payment.id} className="rounded-card bg-surface p-4 shadow-card">
+        <Card key={payment.id} variant="elevated" padding="md">
           <p className="text-sm font-semibold">{payment.product}</p>
           <p className="mt-1 text-xs text-content-secondary">{formatDateKo(payment.paidAt)} · {payment.method}</p>
           <p className="mt-2 text-sm font-semibold text-primary">{formatCurrency(payment.amount)}</p>
-        </div>
+        </Card>
       ))}
     </section>
   );
@@ -495,10 +472,10 @@ function PaymentTab({ member }: { member: MockMember }) {
 
 function InfoCard({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-card bg-surface p-4 shadow-card">
+    <Card variant="elevated" padding="md">
       <p className="text-xs text-content-tertiary">{label}</p>
       <p className="mt-1 text-sm font-semibold">{value}</p>
-    </div>
+    </Card>
   );
 }
 

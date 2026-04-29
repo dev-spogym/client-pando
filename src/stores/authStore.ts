@@ -99,35 +99,56 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   login: async (phone: string, password: string) => {
     set({ loading: true });
     try {
-      // Supabase Auth로 로그인 (이메일 형태로 전화번호 사용)
-      const email = `${phone.replace(/-/g, '')}@member.spogym.app`;
+      const cleanPhone = phone.replace(/-/g, '');
+      const email = `${cleanPhone}@member.spogym.app`;
+
+      // 1) Supabase Auth로 로그인 시도
       const { error: authError } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
 
       if (authError) {
+        if (typeof window !== 'undefined') {
+          // eslint-disable-next-line no-console
+          console.warn('[Auth] signIn failed:', authError.message);
+        }
+
+        // 2) Auth 실패 — 회원 정보가 있으면 가입이 필요한 상태로 안내
+        const { data: existingMember } = await supabase
+          .from('members')
+          .select('id, name, phone')
+          .or(`phone.eq.${cleanPhone},phone.eq.${phone}`)
+          .limit(1)
+          .maybeSingle();
+
         set({ loading: false });
+
+        if (existingMember) {
+          return {
+            error: '앱 가입이 필요합니다. 아래 "앱 연동하기"를 눌러 비밀번호를 설정해 주세요.',
+          };
+        }
+
         return { error: '전화번호 또는 비밀번호가 올바르지 않습니다.' };
       }
 
-      // 회원 정보 조회
-      const cleanPhone = phone.replace(/-/g, '');
-      const { data: member, error: memberError } = await supabase
+      // 3) Auth 성공 — 회원 정보 조회
+      const { data: member } = await supabase
         .from('members')
         .select('*')
         .or(`phone.eq.${cleanPhone},phone.eq.${phone}`)
-        .single();
+        .limit(1)
+        .maybeSingle();
 
-      if (memberError || !member) {
-        // Auth는 성공했지만 회원 정보가 없는 경우
-        // 전화번호로 직접 검색 시도
+      if (!member) {
+        // 폴백: 끝 8자리 부분 매칭
         const { data: memberByPhone } = await supabase
           .from('members')
           .select('*')
           .ilike('phone', `%${cleanPhone.slice(-8)}%`)
           .limit(1)
-          .single();
+          .maybeSingle();
 
         if (memberByPhone) {
           set({
@@ -143,7 +164,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         }
 
         set({ loading: false });
-        return { error: '등록된 회원 정보를 찾을 수 없습니다.' };
+        return { error: '등록된 회원 정보를 찾을 수 없습니다. 센터에 문의해 주세요.' };
       }
 
       set({
@@ -156,9 +177,13 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       localStorage.setItem('member_phone', cleanPhone);
       localStorage.setItem('user_role', 'member');
       return { error: null };
-    } catch {
+    } catch (err) {
+      if (typeof window !== 'undefined') {
+        // eslint-disable-next-line no-console
+        console.error('[Auth] login error:', err);
+      }
       set({ loading: false });
-      return { error: '로그인 중 오류가 발생했습니다.' };
+      return { error: '로그인 중 오류가 발생했습니다. 네트워크 상태를 확인해 주세요.' };
     }
   },
 

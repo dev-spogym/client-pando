@@ -2,7 +2,8 @@ import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Plus } from 'lucide-react';
 import { getConsultations } from '@/lib/mockOperations';
-import { cn, formatDateKo } from '@/lib/utils';
+import { formatDateKo } from '@/lib/utils';
+import { Chip, Card, Button } from '@/components/ui';
 
 export default function FCConsultations() {
   const navigate = useNavigate();
@@ -21,33 +22,32 @@ export default function FCConsultations() {
             <p className="text-xs text-content-tertiary">MA-410</p>
             <h1 className="text-lg font-bold">리드 / 상담 예정 목록</h1>
           </div>
-          <button
+          <Button
+            size="sm"
             onClick={() => navigate('/fc/leads/new')}
-            className="rounded-full bg-primary p-2 text-white"
+            leftIcon={<Plus className="w-4 h-4" />}
           >
-            <Plus className="w-5 h-5" />
-          </button>
+            추가
+          </Button>
         </div>
       </header>
 
       <div className="px-5 py-4 pb-24 space-y-4">
-        <div className="grid grid-cols-4 gap-2">
+        <div className="flex gap-2">
           {[
             { key: 'all' as const, label: '전체' },
             { key: 'scheduled' as const, label: '예정' },
             { key: 'completed' as const, label: '완료' },
             { key: 'no_show' as const, label: '노쇼' },
           ].map((item) => (
-            <button
+            <Chip
               key={item.key}
+              size="sm"
+              active={statusFilter === item.key}
               onClick={() => setStatusFilter(item.key)}
-              className={cn(
-                'rounded-xl px-2 py-2 text-xs font-semibold',
-                statusFilter === item.key ? 'bg-primary text-white' : 'bg-surface text-content-secondary'
-              )}
             >
               {item.label}
-            </button>
+            </Chip>
           ))}
         </div>
 
@@ -56,12 +56,14 @@ export default function FCConsultations() {
             <button
               key={item.id}
               onClick={() => navigate(`/fc/leads/${item.id}`)}
-              className="w-full rounded-card bg-surface p-4 text-left shadow-card"
+              className="w-full text-left"
             >
-              <p className="text-sm font-semibold">{item.memberName}</p>
-              <p className="mt-1 text-xs text-content-secondary">{item.type} · {item.channel} · {item.status}</p>
-              <p className="mt-2 text-sm text-content-secondary">{item.summary}</p>
-              <p className="mt-2 text-xs text-content-tertiary">{formatDateKo(item.scheduledAt)}</p>
+              <Card interactive>
+                <p className="text-sm font-semibold">{item.memberName}</p>
+                <p className="mt-1 text-xs text-content-secondary">{item.type} · {item.channel} · {item.status}</p>
+                <p className="mt-2 text-sm text-content-secondary">{item.summary}</p>
+                <p className="mt-2 text-xs text-content-tertiary">{formatDateKo(item.scheduledAt)}</p>
+              </Card>
             </button>
           ))}
         </div>

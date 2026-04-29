@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { AlertCircle, ArrowLeft, Clock, Dumbbell, MapPin, User, Users } from 'lucide-react';
+import { AlertCircle, Clock, Dumbbell, MapPin, User, Users } from 'lucide-react';
 import { toast } from 'sonner';
 import { getPreviewClassById, isPreviewMode, updatePreviewTrainerClass } from '@/lib/preview';
 import {
@@ -21,6 +21,7 @@ import {
   type WaitlistEntry,
 } from '@/lib/memberExperience';
 import { cn, formatDateKo, formatTime } from '@/lib/utils';
+import { Button, Card, Badge, PageHeader } from '@/components/ui';
 
 interface ClassData {
   id: number;
@@ -254,7 +255,7 @@ export default function ClassDetail() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-surface flex items-center justify-center">
+      <div className="min-h-screen bg-surface-secondary flex items-center justify-center">
         <p className="text-content-tertiary">불러오는 중...</p>
       </div>
     );
@@ -262,12 +263,10 @@ export default function ClassDetail() {
 
   if (!classData) {
     return (
-      <div className="min-h-screen bg-surface flex flex-col items-center justify-center">
+      <div className="min-h-screen bg-surface-secondary flex flex-col items-center justify-center">
         <AlertCircle className="w-12 h-12 text-content-tertiary mb-3" />
         <p className="text-content-tertiary">수업 정보를 찾을 수 없습니다.</p>
-        <button onClick={() => navigate(-1)} className="mt-4 text-primary font-medium">
-          돌아가기
-        </button>
+        <Button variant="ghost" className="mt-4" onClick={() => navigate(-1)}>돌아가기</Button>
       </div>
     );
   }
@@ -283,24 +282,26 @@ export default function ClassDetail() {
       <header className={cn('px-4 pt-safe-top pb-6', classData.type === 'PT' ? 'bg-primary' : 'bg-accent')}>
         <div className="flex items-center h-14">
           <button onClick={() => navigate(-1)}>
-            <ArrowLeft className="w-6 h-6 text-white" />
+            <span className="w-10 h-10 inline-flex items-center justify-center rounded-full text-white">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+            </span>
           </button>
-          <h1 className="flex-1 text-center font-semibold text-lg text-white pr-6">수업 상세</h1>
+          <h1 className="flex-1 text-center text-h4 text-white pr-6">수업 상세</h1>
         </div>
         <div className="text-center mt-2">
           <div className="w-16 h-16 mx-auto bg-white/20 rounded-2xl flex items-center justify-center mb-3">
             <Dumbbell className="w-8 h-8 text-white" />
           </div>
-          <h2 className="text-2xl font-bold text-white">{classData.title}</h2>
-          <span className="inline-block mt-2 px-3 py-1 bg-white/20 rounded-full text-sm text-white font-medium">
+          <h2 className="text-h1 text-white">{classData.title}</h2>
+          <span className="inline-block mt-2 px-3 py-1 bg-white/20 rounded-full text-body-sm text-white font-medium">
             {classData.type}
           </span>
         </div>
       </header>
 
       <div className="px-4 -mt-2 space-y-4 pb-32">
-        <div className="bg-surface rounded-card p-4 shadow-card">
-          <h3 className="font-semibold text-sm mb-3">수업 정보</h3>
+        <Card variant="soft" padding="md">
+          <h3 className="text-body font-semibold mb-3">수업 정보</h3>
           <div className="space-y-3">
             <InfoRow icon={<Clock className="w-5 h-5 text-content-tertiary" />} label="일시">
               {formatDateKo(classData.startTime)} {formatTime(classData.startTime)} - {formatTime(classData.endTime)}
@@ -321,26 +322,23 @@ export default function ClassDetail() {
               </span>
             </InfoRow>
           </div>
-        </div>
+        </Card>
 
-        <button
-          onClick={() => classData.staffId && navigate(`/instructors/${classData.staffId}`)}
-          className="w-full bg-surface rounded-card p-4 shadow-card text-left"
-        >
-          <p className="text-xs text-content-tertiary">강사 정보 보기</p>
+        <Card variant="soft" padding="md" interactive onClick={() => classData.staffId && navigate(`/instructors/${classData.staffId}`)}>
+          <p className="text-caption text-content-tertiary">강사 정보 보기</p>
           <div className="mt-2 flex items-center justify-between">
             <div>
-              <p className="text-sm font-semibold">{classData.staffName} 강사</p>
-              <p className="text-xs text-content-secondary mt-1">전문 분야, 후기 요약, 예약 가능 시간 확인</p>
+              <p className="text-body-sm font-semibold">{classData.staffName} 강사</p>
+              <p className="text-caption text-content-secondary mt-1">전문 분야, 후기 요약, 예약 가능 시간 확인</p>
             </div>
-            <span className="text-xs text-primary font-medium">상세 보기</span>
+            <span className="text-caption text-primary font-medium">상세 보기</span>
           </div>
-        </button>
+        </Card>
 
-        <div className="bg-surface rounded-card p-4 shadow-card">
+        <Card variant="soft" padding="md">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-medium">예약 현황</span>
-            <span className="text-sm text-content-secondary">{Math.round((classData.booked / classData.capacity) * 100)}%</span>
+            <span className="text-body-sm font-medium">예약 현황</span>
+            <span className="text-body-sm text-content-secondary">{Math.round((classData.booked / classData.capacity) * 100)}%</span>
           </div>
           <div className="progress-bar">
             <div
@@ -352,95 +350,100 @@ export default function ClassDetail() {
             />
           </div>
           {reserved && (
-            <p className="mt-3 text-xs text-state-success font-medium">
+            <p className="mt-3 text-caption text-state-success font-medium">
               {isApprovalRequired ? '트레이너 승인이 완료된 수업입니다.' : '내 예약이 확정된 수업입니다.'}
             </p>
           )}
           {pendingRequest && !reserved && (
-            <p className="mt-3 text-xs text-state-warning font-medium">현재 트레이너 승인 대기 중입니다.</p>
+            <p className="mt-3 text-caption text-state-warning font-medium">현재 트레이너 승인 대기 중입니다.</p>
           )}
-        </div>
+        </Card>
 
         {pendingRequest && !reserved && (
-          <div className="bg-surface rounded-card p-4 shadow-card">
+          <Card variant="soft" padding="md">
             <div className="flex items-center justify-between mb-2">
-              <h3 className="font-semibold text-sm">예약 요청 상태</h3>
-              <span className="text-xs px-2 py-1 rounded-full bg-state-warning/10 text-state-warning font-medium">
-                승인 대기
-              </span>
+              <h3 className="text-body font-semibold">예약 요청 상태</h3>
+              <Badge tone="warning" size="sm">승인 대기</Badge>
             </div>
-            <p className="text-sm text-content-secondary">
+            <p className="text-body-sm text-content-secondary">
               트레이너가 스케줄을 확인한 뒤 승인하면 예약이 확정됩니다.
             </p>
-          </div>
+          </Card>
         )}
 
         {(isFull || waitlistEntry) && !isApprovalRequired && (
-          <div className="bg-surface rounded-card p-4 shadow-card">
+          <Card variant="soft" padding="md">
             <div className="flex items-center justify-between mb-2">
-              <h3 className="font-semibold text-sm">대기 예약 상태</h3>
+              <h3 className="text-body font-semibold">대기 예약 상태</h3>
               {waitlistEntry && (
-                <span className="text-xs px-2 py-1 rounded-full bg-state-warning/10 text-state-warning font-medium">
-                  {waitlistEntry.position}번 대기
-                </span>
+                <Badge tone="warning" size="sm">{waitlistEntry.position}번 대기</Badge>
               )}
             </div>
-            <p className="text-sm text-content-secondary">
+            <p className="text-body-sm text-content-secondary">
               {waitlistEntry
                 ? '자동 확정 알림이 활성화되어 있습니다. 대기 관리 화면에서 상태를 확인할 수 있습니다.'
                 : '정원이 모두 찼다면 대기 예약으로 전환할 수 있습니다.'}
             </p>
-          </div>
+          </Card>
         )}
       </div>
 
       {!isPast && (
         <div className="bottom-action-bar">
           <div className="max-w-lg mx-auto flex gap-3">
-            <button
+            <Button
+              variant="tertiary"
+              size="xl"
+              className="flex-1"
               onClick={() => classData.staffId && navigate(`/instructors/${classData.staffId}`)}
-              className="flex-1 py-3.5 rounded-button font-semibold bg-surface-secondary text-content-secondary"
             >
               강사 보기
-            </button>
+            </Button>
 
             {reserved ? (
-              <button
-                onClick={handleCancel}
+              <Button
+                variant="danger"
+                size="xl"
+                className="flex-1"
                 disabled={reserving}
-                className="flex-1 py-3.5 rounded-button font-semibold bg-state-error text-white disabled:opacity-50"
-              >
-                {reserving ? '처리 중...' : '예약 취소'}
-              </button>
-            ) : pendingRequest ? (
-              <button
+                loading={reserving}
                 onClick={handleCancel}
-                className="flex-1 py-3.5 rounded-button font-semibold bg-state-warning text-white"
+              >
+                예약 취소
+              </Button>
+            ) : pendingRequest ? (
+              <Button
+                variant="danger"
+                size="xl"
+                className="flex-1"
+                onClick={handleCancel}
               >
                 요청 취소
-              </button>
+              </Button>
             ) : !isFull ? (
-              <button
-                onClick={handleReserve}
+              <Button
+                variant="primary"
+                size="xl"
+                className="flex-1"
                 disabled={reserving}
-                className="flex-1 py-3.5 rounded-button font-semibold bg-primary text-white disabled:opacity-50"
+                loading={reserving}
+                onClick={handleReserve}
               >
-                {reserving ? '처리 중...' : isApprovalRequired ? '예약 요청하기' : '예약하기'}
-              </button>
+                {isApprovalRequired ? '예약 요청하기' : '예약하기'}
+              </Button>
             ) : isApprovalRequired ? (
-              <button
-                disabled
-                className="flex-1 py-3.5 rounded-button font-semibold bg-surface-tertiary text-content-tertiary"
-              >
+              <Button variant="tertiary" size="xl" className="flex-1" disabled>
                 마감된 시간입니다
-              </button>
+              </Button>
             ) : (
-              <button
+              <Button
+                variant="primary"
+                size="xl"
+                className="flex-1 bg-state-warning hover:bg-state-warning/90"
                 onClick={handleWaitlist}
-                className="flex-1 py-3.5 rounded-button font-semibold bg-state-warning text-white"
               >
                 {waitlistEntry ? '대기 현황 보기' : '대기열 등록'}
-              </button>
+              </Button>
             )}
           </div>
         </div>
@@ -454,8 +457,8 @@ function InfoRow({ icon, label, children }: { icon: React.ReactNode; label: stri
     <div className="flex items-center gap-3">
       {icon}
       <div className="flex-1">
-        <p className="text-xs text-content-tertiary">{label}</p>
-        <p className="text-sm">{children}</p>
+        <p className="text-caption text-content-tertiary">{label}</p>
+        <p className="text-body-sm">{children}</p>
       </div>
     </div>
   );

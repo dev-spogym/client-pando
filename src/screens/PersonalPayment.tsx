@@ -1,8 +1,9 @@
-import { ArrowLeft, ChevronRight } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { getShopProducts, type ProductCategory, type ShopProduct } from '@/lib/memberExperience';
-import { cn, formatCurrency } from '@/lib/utils';
+import { formatCurrency } from '@/lib/utils';
+import { cn } from '@/lib/utils';
+import { Button, Card, Chip, Input, PageHeader } from '@/components/ui';
 
 /** 개인 결제 페이지 */
 export default function PersonalPayment() {
@@ -42,36 +43,32 @@ export default function PersonalPayment() {
     navigate(`/checkout/manual?${params.toString()}`);
   };
 
+  const categoryItems = [
+    { key: 'all' as const, label: '전체' },
+    { key: 'gym' as const, label: '헬스장' },
+    { key: 'golf' as const, label: '골프장' },
+    { key: 'pt' as const, label: 'PT' },
+    { key: 'golf_lesson' as const, label: '골프 레슨' },
+  ];
+
   return (
     <div className="min-h-screen bg-surface-secondary">
-      <header className="bg-surface sticky top-0 z-10 border-b border-line">
-        <div className="flex items-center px-4 pt-safe-top h-14">
-          <button onClick={() => navigate(-1)}>
-            <ArrowLeft className="w-6 h-6 text-content" />
-          </button>
-          <h1 className="flex-1 text-center font-semibold text-lg">개인 결제</h1>
-          <div className="w-6" />
-        </div>
-      </header>
+      <PageHeader title="개인 결제" showBack />
 
       <div className="px-4 py-4 space-y-4 pb-20">
-        <section className="bg-surface rounded-card p-5 shadow-card">
-          <h2 className="text-lg font-bold">상품을 빠르게 선택해 결제합니다</h2>
-          <p className="text-sm text-content-secondary mt-2">헬스장 이용권, 골프장 이용권, PT, 골프 레슨을 바로 결제할 수 있는 퍼블리싱 화면입니다.</p>
-        </section>
+        <Card variant="soft" padding="lg">
+          <h2 className="text-h3 text-content">상품을 빠르게 선택해 결제합니다</h2>
+          <p className="text-body-sm text-content-secondary mt-2">헬스장 이용권, 골프장 이용권, PT, 골프 레슨을 바로 결제할 수 있는 퍼블리싱 화면입니다.</p>
+        </Card>
 
-        <section className="bg-surface rounded-card p-5 shadow-card">
-          <h3 className="text-sm font-semibold mb-3">상품 유형</h3>
+        <Card variant="soft" padding="lg">
+          <h3 className="text-body font-semibold mb-3">상품 유형</h3>
           <div className="flex gap-2 overflow-x-auto no-scrollbar">
-            {[
-              { key: 'all' as const, label: '전체' },
-              { key: 'gym' as const, label: '헬스장' },
-              { key: 'golf' as const, label: '골프장' },
-              { key: 'pt' as const, label: 'PT' },
-              { key: 'golf_lesson' as const, label: '골프 레슨' },
-            ].map((item) => (
-              <button
+            {categoryItems.map((item) => (
+              <Chip
                 key={item.key}
+                active={category === item.key}
+                size="md"
                 onClick={() => {
                   setCategory(item.key);
                   const next = new URLSearchParams(searchParams);
@@ -80,19 +77,15 @@ export default function PersonalPayment() {
                   next.delete('product');
                   setSearchParams(next, { replace: true });
                 }}
-                className={cn(
-                  'px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap',
-                  category === item.key ? 'bg-primary text-white' : 'bg-surface-secondary text-content-secondary'
-                )}
               >
                 {item.label}
-              </button>
+              </Chip>
             ))}
           </div>
-        </section>
+        </Card>
 
-        <section className="bg-surface rounded-card p-5 shadow-card">
-          <h3 className="text-sm font-semibold mb-3">추천 결제 상품</h3>
+        <Card variant="soft" padding="lg">
+          <h3 className="text-body font-semibold mb-3">추천 결제 상품</h3>
           <div className="space-y-2">
             {products.slice(0, 4).map((product) => (
               <button
@@ -110,52 +103,56 @@ export default function PersonalPayment() {
               >
                 <div className="flex items-center justify-between gap-3">
                   <div>
-                    <p className="text-sm font-semibold">{product.name}</p>
-                    <p className="text-xs text-content-secondary mt-1">{product.subtitle}</p>
+                    <p className="text-body-sm font-semibold">{product.name}</p>
+                    <p className="text-caption text-content-secondary mt-1">{product.subtitle}</p>
                   </div>
                   <div className="text-right">
-                    <p className="text-sm font-bold">{formatCurrency(product.price)}</p>
-                    <ChevronRight className="w-4 h-4 text-content-tertiary ml-auto mt-2" />
+                    <p className="text-body-sm font-bold">{formatCurrency(product.price)}</p>
                   </div>
                 </div>
               </button>
             ))}
           </div>
 
-          <button
-            onClick={goToCheckoutWithPreset}
+          <Button
+            variant="primary"
+            size="lg"
+            fullWidth
+            className="mt-4"
             disabled={!selectedProduct}
-            className="mt-4 w-full py-3 rounded-button bg-primary text-white font-semibold disabled:opacity-40"
+            onClick={goToCheckoutWithPreset}
           >
             선택 상품 결제
-          </button>
-        </section>
+          </Button>
+        </Card>
 
-        <section className="bg-surface rounded-card p-5 shadow-card">
-          <h3 className="text-sm font-semibold mb-3">직접 결제 항목 만들기</h3>
+        <Card variant="soft" padding="lg">
+          <h3 className="text-body font-semibold mb-3">직접 결제 항목 만들기</h3>
           <div className="space-y-3">
             <input
               value={customName}
               onChange={(event) => setCustomName(event.target.value)}
               placeholder="예: 골프장 1개월 이용권"
-              className="w-full rounded-xl border border-line bg-surface-secondary px-4 py-3 text-sm outline-none"
+              className="w-full rounded-xl border border-line bg-surface-secondary px-4 py-3 text-body-sm outline-none"
             />
             <input
               value={customPrice}
               onChange={(event) => setCustomPrice(event.target.value.replace(/[^\d]/g, ''))}
               placeholder="결제 금액"
-              className="w-full rounded-xl border border-line bg-surface-secondary px-4 py-3 text-sm outline-none"
+              className="w-full rounded-xl border border-line bg-surface-secondary px-4 py-3 text-body-sm outline-none"
               inputMode="numeric"
             />
-            <button
-              onClick={goToCheckoutWithCustom}
+            <Button
+              variant="tertiary"
+              size="lg"
+              fullWidth
               disabled={!customName || !customPrice}
-              className="w-full py-3 rounded-button bg-surface-secondary text-content-secondary font-semibold disabled:opacity-40"
+              onClick={goToCheckoutWithCustom}
             >
               직접 입력 항목으로 결제하기
-            </button>
+            </Button>
           </div>
-        </section>
+        </Card>
       </div>
     </div>
   );

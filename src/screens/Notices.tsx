@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react';
-import { ArrowLeft, Pin, ChevronRight } from 'lucide-react';
+import { Pin, ChevronRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '@/stores/authStore';
 import { getPreviewNotices, isPreviewMode } from '@/lib/preview';
 import { supabase } from '@/lib/supabase';
 import { cn, formatDateKo } from '@/lib/utils';
+import { PageHeader, EmptyState } from '@/components/ui';
 
 interface NoticeItem {
   id: number;
@@ -55,21 +56,13 @@ export default function Notices() {
 
   return (
     <div className="min-h-screen bg-surface-secondary">
-      <header className="bg-surface sticky top-0 z-10 border-b border-line">
-        <div className="flex items-center px-4 pt-safe-top h-14">
-          <button onClick={() => navigate(-1)}>
-            <ArrowLeft className="w-6 h-6 text-content" />
-          </button>
-          <h1 className="flex-1 text-center font-semibold text-lg">공지사항</h1>
-          <div className="w-6" />
-        </div>
-      </header>
+      <PageHeader title="공지사항" showBack />
 
-      <div className="px-4 py-4">
+      <div className="px-5 py-4">
         {loading ? (
           <div className="text-center py-12 text-content-tertiary text-sm">불러오는 중...</div>
         ) : notices.length === 0 ? (
-          <div className="text-center py-12 text-content-tertiary text-sm">공지사항이 없습니다</div>
+          <EmptyState title="공지사항이 없습니다" size="md" />
         ) : (
           <div className="space-y-2">
             {notices.map((notice) => {
@@ -77,7 +70,7 @@ export default function Notices() {
               return (
                 <div
                   key={notice.id}
-                  className="bg-surface rounded-card shadow-card overflow-hidden"
+                  className="bg-surface rounded-card shadow-card-soft overflow-hidden"
                 >
                   <button
                     onClick={() => setExpandedId(isExpanded ? null : notice.id)}

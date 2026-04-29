@@ -1,7 +1,8 @@
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getMockMembers } from '@/lib/mockOperations';
-import { cn, formatDateKo } from '@/lib/utils';
+import { formatDateKo } from '@/lib/utils';
+import { Chip, Card } from '@/components/ui';
 
 export default function FCMembers() {
   const navigate = useNavigate();
@@ -24,19 +25,19 @@ export default function FCMembers() {
       </header>
 
       <div className="px-5 py-4 pb-24 space-y-4">
-        <div className="grid grid-cols-3 gap-2">
+        <div className="flex gap-2">
           {[
             { key: 'all' as const, label: '전체' },
             { key: 'active' as const, label: '활성' },
             { key: 'expiring' as const, label: '만료 임박' },
           ].map((item) => (
-            <button
+            <Chip
               key={item.key}
+              active={filter === item.key}
               onClick={() => setFilter(item.key)}
-              className={cn('rounded-xl px-3 py-2 text-sm font-medium', filter === item.key ? 'bg-primary text-white' : 'bg-surface text-content-secondary')}
             >
               {item.label}
-            </button>
+            </Chip>
           ))}
         </div>
 
@@ -45,18 +46,20 @@ export default function FCMembers() {
             <button
               key={member.id}
               onClick={() => navigate(`/fc/members/${member.id}`)}
-              className="w-full rounded-card bg-surface p-4 text-left shadow-card"
+              className="w-full text-left"
             >
-              <div className="flex items-start justify-between gap-3">
-                <div>
-                  <p className="text-sm font-semibold">{member.name}</p>
-                  <p className="mt-1 text-xs text-content-secondary">{member.membershipName}</p>
-                  <p className="mt-2 text-xs text-content-tertiary">만료일 {formatDateKo(member.membershipEnd)}</p>
+              <Card interactive>
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <p className="text-sm font-semibold">{member.name}</p>
+                    <p className="mt-1 text-xs text-content-secondary">{member.membershipName}</p>
+                    <p className="mt-2 text-xs text-content-tertiary">만료일 {formatDateKo(member.membershipEnd)}</p>
+                  </div>
+                  <span className="rounded-full bg-surface-secondary px-2 py-1 text-[11px] font-semibold text-content-secondary">
+                    {member.status}
+                  </span>
                 </div>
-                <span className="rounded-full bg-surface-secondary px-2 py-1 text-[11px] font-semibold text-content-secondary">
-                  {member.status}
-                </span>
-              </div>
+              </Card>
             </button>
           ))}
         </div>

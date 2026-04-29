@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { getExpiringMembers } from '@/lib/mockOperations';
 import { formatDateKo } from '@/lib/utils';
+import { Card } from '@/components/ui';
 
 export default function FCExpiringMembers() {
   const navigate = useNavigate();
@@ -8,7 +9,7 @@ export default function FCExpiringMembers() {
 
   return (
     <div className="min-h-screen bg-surface-secondary">
-      <header className="bg-gradient-to-br from-rose-600 to-orange-500 px-5 pt-safe-top pb-5">
+      <header className="bg-gradient-to-br from-state-error to-state-warning px-5 pt-safe-top pb-5">
         <div className="pt-4">
           <p className="text-white/80 text-sm">MA-430</p>
           <h1 className="text-white text-xl font-bold mt-1">만료 예정 회원</h1>
@@ -20,11 +21,13 @@ export default function FCExpiringMembers() {
           <button
             key={member.id}
             onClick={() => navigate(`/fc/members/${member.id}`)}
-            className="w-full rounded-card bg-surface p-4 text-left shadow-card"
+            className="w-full text-left"
           >
-            <p className="text-sm font-semibold">{member.name}</p>
-            <p className="mt-1 text-xs text-content-secondary">{member.membershipName}</p>
-            <p className="mt-2 text-sm text-state-error">만료일 {formatDateKo(member.membershipEnd)}</p>
+            <Card interactive>
+              <p className="text-sm font-semibold">{member.name}</p>
+              <p className="mt-1 text-xs text-content-secondary">{member.membershipName}</p>
+              <p className="mt-2 text-sm text-state-error">만료일 {formatDateKo(member.membershipEnd)}</p>
+            </Card>
           </button>
         ))}
       </div>

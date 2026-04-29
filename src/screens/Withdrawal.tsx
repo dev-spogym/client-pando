@@ -1,10 +1,10 @@
-import { ArrowLeft } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { useAuthStore } from '@/stores/authStore';
 import { loadWithdrawalRequest, saveWithdrawalRequest } from '@/lib/memberExperience';
 import { cn, formatDateKo } from '@/lib/utils';
+import { PageHeader, Button, Chip } from '@/components/ui';
 
 const REASONS = ['이용 빈도 감소', '가격 부담', '센터 변경', '앱 사용 불편', '기타'];
 
@@ -47,15 +47,7 @@ export default function Withdrawal() {
 
   return (
     <div className="min-h-screen bg-surface-secondary page-with-action">
-      <header className="page-header-sticky">
-        <div className="flex items-center px-4 pt-safe-top h-14">
-          <button onClick={() => navigate(-1)}>
-            <ArrowLeft className="w-6 h-6 text-content" />
-          </button>
-          <h1 className="flex-1 text-center font-semibold text-lg">회원 탈퇴</h1>
-          <div className="w-6" />
-        </div>
-      </header>
+      <PageHeader title="회원 탈퇴" onBack={() => navigate(-1)} />
 
       <div className="px-4 py-4 space-y-4 pb-28">
         <section className="bg-state-error/10 rounded-card p-5">
@@ -68,35 +60,32 @@ export default function Withdrawal() {
           )}
         </section>
 
-        <section className="bg-surface rounded-card p-5 shadow-card">
+        <section className="bg-surface rounded-card p-5 shadow-card-soft">
           <h3 className="text-sm font-semibold mb-3">탈퇴 사유</h3>
           <div className="flex flex-wrap gap-2">
             {REASONS.map((item) => (
-              <button
+              <Chip
                 key={item}
+                active={reason === item}
                 onClick={() => setReason(item)}
-                className={cn(
-                  'px-4 py-2.5 rounded-full text-sm font-medium',
-                  reason === item ? 'bg-primary text-white' : 'bg-surface-secondary text-content-secondary'
-                )}
               >
                 {item}
-              </button>
+              </Chip>
             ))}
           </div>
         </section>
 
-        <section className="bg-surface rounded-card p-5 shadow-card">
+        <section className="bg-surface rounded-card p-5 shadow-card-soft">
           <h3 className="text-sm font-semibold mb-3">추가 의견</h3>
           <textarea
             value={details}
             onChange={(event) => setDetails(event.target.value)}
             placeholder="개선이 필요한 점이나 탈퇴 사유를 자세히 남겨주세요."
-            className="w-full h-28 rounded-xl border border-line bg-surface-secondary px-4 py-3 text-sm outline-none resize-none"
+            className="w-full h-28 rounded-card border border-line bg-surface-secondary px-4 py-3 text-sm outline-none resize-none"
           />
         </section>
 
-        <label className="bg-surface rounded-card p-4 shadow-card flex items-start gap-3 cursor-pointer">
+        <label className="bg-surface rounded-card p-4 shadow-card-soft flex items-start gap-3 cursor-pointer">
           <input
             type="checkbox"
             checked={agree}
@@ -112,12 +101,9 @@ export default function Withdrawal() {
 
       <div className="bottom-action-bar">
         <div className="max-w-lg mx-auto">
-          <button
-            onClick={handleSubmit}
-            className="w-full py-3.5 rounded-button font-semibold bg-state-error text-white"
-          >
+          <Button variant="danger" fullWidth onClick={handleSubmit}>
             탈퇴 요청하기
-          </button>
+          </Button>
         </div>
       </div>
     </div>

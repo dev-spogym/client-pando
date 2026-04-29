@@ -25,6 +25,7 @@ import {
   loadOnboarding,
 } from '@/lib/memberExperience';
 import { cn, formatPhone } from '@/lib/utils';
+import { Avatar, Badge, Card, ListItem } from '@/components/ui';
 
 /** 마이페이지 */
 export default function Profile() {
@@ -55,14 +56,14 @@ export default function Profile() {
 
     return (
       <div className="min-h-screen bg-surface-secondary">
-        <header className="bg-gradient-to-br from-teal-600 to-emerald-600 px-5 pt-safe-top pb-6">
+        <header className="bg-gradient-to-br from-primary to-primary-dark px-5 pt-safe-top pb-6">
           <div className="pt-4">
             <p className="text-white/80 text-sm">트레이너 마이페이지</p>
             <h1 className="text-white text-xl font-bold mt-1">{trainer.staffName || trainer.name}</h1>
             <p className="text-white/70 text-sm mt-1">@{trainer.username}</p>
           </div>
 
-          <div className="mt-5 rounded-2xl bg-white/15 p-4 text-white">
+          <div className="mt-5 rounded-card-lg bg-white/15 p-4 text-white">
             <div className="flex items-center gap-3">
               <div className="flex h-12 w-12 items-center justify-center rounded-full bg-white/20">
                 <User className="h-6 w-6" />
@@ -78,8 +79,8 @@ export default function Profile() {
           </div>
         </header>
 
-        <div className="px-4 -mt-2 pb-4">
-          <div className="bg-surface rounded-card shadow-card overflow-hidden">
+        <div className="px-5 -mt-2 pb-4 space-y-4">
+          <Card variant="soft" padding="none" className="overflow-hidden">
             {trainerMenus.map((item, index) => {
               const Icon = item.icon;
               return (
@@ -98,11 +99,11 @@ export default function Profile() {
                 </button>
               );
             })}
-          </div>
+          </Card>
 
           <button
             onClick={handleLogout}
-            className="w-full mt-4 bg-surface rounded-card shadow-card px-4 py-3.5 flex items-center gap-3 active:bg-surface-secondary transition-colors"
+            className="w-full bg-surface rounded-card shadow-card-soft px-4 py-3.5 flex items-center gap-3 active:bg-surface-secondary transition-colors"
           >
             <LogOut className="w-5 h-5 text-state-error" />
             <span className="text-sm font-medium text-state-error">로그아웃</span>
@@ -159,29 +160,21 @@ export default function Profile() {
         </div>
 
         <div className="flex items-center gap-4">
-          <div className="w-16 h-16 rounded-full bg-primary-light flex items-center justify-center flex-shrink-0">
-            {member.profileImage ? (
-              <img src={member.profileImage} alt={member.name} className="w-full h-full rounded-full object-cover" />
-            ) : (
-              <User className="w-8 h-8 text-primary" />
-            )}
-          </div>
+          <Avatar size="xl" src={member.profileImage} alt={member.name} name={member.name} />
           <div className="flex-1 min-w-0">
             <h2 className="text-lg font-bold">{member.name}</h2>
             <p className="text-sm text-content-secondary">{formatPhone(member.phone)}</p>
             <div className="flex items-center gap-2 mt-1">
-              <span
-                className={cn(
-                  'text-xs px-2 py-0.5 rounded-full font-medium',
-                  member.status === 'ACTIVE'
-                    ? 'bg-state-success/10 text-state-success'
-                    : member.status === 'HOLDING'
-                      ? 'bg-state-warning/10 text-state-warning'
-                      : 'bg-surface-tertiary text-content-tertiary'
-                )}
+              <Badge
+                tone={
+                  member.status === 'ACTIVE' ? 'success' :
+                  member.status === 'HOLDING' ? 'warning' :
+                  'neutral'
+                }
+                variant="soft"
               >
                 {member.status === 'ACTIVE' ? '이용중' : member.status === 'HOLDING' ? '홀딩' : member.status === 'EXPIRED' ? '만료' : member.status}
-              </span>
+              </Badge>
               {member.membershipType && <span className="text-xs text-content-tertiary">{member.membershipType}</span>}
             </div>
           </div>
@@ -190,14 +183,14 @@ export default function Profile() {
         <div className="mt-4 grid grid-cols-2 gap-3">
           <button
             onClick={() => navigate('/coupons?tab=badge')}
-            className="bg-gradient-to-r from-primary to-primary-dark rounded-xl p-4 text-white text-left"
+            className="bg-gradient-to-r from-primary to-primary-dark rounded-card p-4 text-white text-left"
           >
             <p className="text-white/80 text-xs">획득 배지</p>
             <p className="text-xl font-bold mt-1">{badgeCount}개</p>
           </button>
           <button
             onClick={() => navigate('/onboarding')}
-            className="bg-surface-secondary rounded-xl p-4 text-left"
+            className="bg-surface-secondary rounded-card p-4 text-left"
           >
             <p className="text-content-tertiary text-xs">추천 루틴</p>
             <p className="text-sm font-semibold mt-1">{onboardingDone ? onboarding.recommendedTitle || '저장됨' : '온보딩 필요'}</p>
@@ -205,11 +198,11 @@ export default function Profile() {
         </div>
       </header>
 
-      <div className="px-4 mt-2 space-y-4 pb-4">
+      <div className="px-5 mt-2 space-y-4 pb-4">
         {menuGroups.map((group) => (
           <div key={group.title}>
             <h3 className="text-xs font-medium text-content-tertiary mb-2 px-1">{group.title}</h3>
-            <div className="bg-surface rounded-card shadow-card overflow-hidden">
+            <Card variant="soft" padding="none" className="overflow-hidden">
               {group.items.map((item, index) => {
                 const Icon = item.icon;
                 return (
@@ -229,13 +222,13 @@ export default function Profile() {
                   </button>
                 );
               })}
-            </div>
+            </Card>
           </div>
         ))}
 
         <button
           onClick={() => navigate('/payments')}
-          className="w-full bg-surface rounded-card shadow-card px-4 py-3.5 flex items-center gap-3 active:bg-surface-secondary transition-colors"
+          className="w-full bg-surface rounded-card shadow-card-soft px-4 py-3.5 flex items-center gap-3 active:bg-surface-secondary transition-colors"
         >
           <CreditCard className="w-5 h-5 text-state-info" />
           <span className="text-sm font-medium">결제 내역 보기</span>
@@ -244,7 +237,7 @@ export default function Profile() {
 
         <button
           onClick={handleLogout}
-          className="w-full bg-surface rounded-card shadow-card px-4 py-3.5 flex items-center gap-3 active:bg-surface-secondary transition-colors"
+          className="w-full bg-surface rounded-card shadow-card-soft px-4 py-3.5 flex items-center gap-3 active:bg-surface-secondary transition-colors"
         >
           <LogOut className="w-5 h-5 text-state-error" />
           <span className="text-sm font-medium text-state-error">로그아웃</span>

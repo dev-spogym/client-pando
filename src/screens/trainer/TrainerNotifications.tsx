@@ -1,18 +1,18 @@
 import { toast } from 'sonner';
 import { markAllNotificationsRead, markNotificationRead, getRoleNotifications } from '@/lib/mockOperations';
 import { formatDateKo } from '@/lib/utils';
+import { PageHeader, Card } from '@/components/ui';
 
 export default function TrainerNotifications() {
   const notifications = getRoleNotifications('trainer');
 
   return (
     <div className="min-h-screen bg-surface-secondary">
-      <header className="bg-surface px-5 pt-safe-top pb-4 shadow-sm">
-        <div className="pt-4 flex items-center justify-between">
-          <div>
-            <p className="text-xs text-content-tertiary">MA-251</p>
-            <h1 className="text-lg font-bold">트레이너 알림</h1>
-          </div>
+      <PageHeader
+        showBack={false}
+        title="트레이너 알림"
+        subtitle="MA-251"
+        rightSlot={
           <button
             onClick={() => {
               markAllNotificationsRead('trainer');
@@ -22,18 +22,20 @@ export default function TrainerNotifications() {
           >
             모두 읽음
           </button>
-        </div>
-      </header>
+        }
+      />
 
       <div className="px-5 py-4 pb-24 space-y-3">
         {notifications.map((item) => (
-          <button
+          <Card
             key={item.id}
+            variant="elevated"
+            padding="md"
+            interactive
             onClick={() => {
               markNotificationRead(item.id);
               toast.success('알림을 확인했습니다.');
             }}
-            className="w-full rounded-card bg-surface p-4 text-left shadow-card"
           >
             <div className="flex items-start justify-between gap-3">
               <div>
@@ -42,10 +44,10 @@ export default function TrainerNotifications() {
                 <p className="mt-2 text-xs text-content-tertiary">{formatDateKo(item.createdAt)} · {item.category}</p>
               </div>
               {!item.read ? (
-                <span className="mt-1 h-2.5 w-2.5 rounded-full bg-primary" />
+                <span className="mt-1 h-2.5 w-2.5 rounded-full bg-primary flex-shrink-0" />
               ) : null}
             </div>
-          </button>
+          </Card>
         ))}
       </div>
     </div>

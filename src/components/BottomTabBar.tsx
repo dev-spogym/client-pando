@@ -2,7 +2,6 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { Home, CalendarDays, QrCode, CreditCard, User } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
-/** 하단 탭 정의 */
 const tabs = [
   { path: '/', label: '홈', icon: Home },
   { path: '/classes', label: '예약', icon: CalendarDays },
@@ -11,39 +10,46 @@ const tabs = [
   { path: '/profile', label: 'MY', icon: User },
 ];
 
-/** 하단 탭바 컴포넌트 */
+/** 멤버 하단 탭바 */
 export default function BottomTabBar() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  /** 현재 경로가 탭에 해당하는지 확인 */
   const isActive = (path: string) => {
     if (path === '/') return location.pathname === '/';
     return location.pathname.startsWith(path);
   };
 
   return (
-    <nav className="mobile-fixed-width fixed bottom-0 z-40 bg-surface border-t border-line">
+    <nav
+      aria-label="주 메뉴"
+      className="mobile-fixed-width fixed bottom-0 z-40 bg-surface border-t border-line shadow-tab"
+    >
       <div className="flex items-end justify-around tab-bar-safe">
         {tabs.map((tab) => {
           const active = isActive(tab.path);
           const Icon = tab.icon;
 
-          // QR 중앙 FAB 버튼
           if (tab.isCenter) {
             return (
               <button
                 key={tab.path}
+                type="button"
                 onClick={() => navigate(tab.path)}
-                className="relative -top-4 flex flex-col items-center"
+                aria-label={tab.label}
+                aria-current={active ? 'page' : undefined}
+                className="relative -top-5 flex flex-col items-center"
               >
-                <div className={cn(
-                  'w-14 h-14 rounded-full flex items-center justify-center shadow-lg',
-                  'bg-primary text-white active:bg-primary-dark transition-colors'
-                )}>
-                  <Icon className="w-7 h-7" />
+                <div
+                  className={cn(
+                    'w-14 h-14 rounded-full flex items-center justify-center shadow-fab',
+                    'bg-primary text-white active:bg-primary-dark transition-colors ease-out-soft',
+                    'ring-4 ring-surface'
+                  )}
+                >
+                  <Icon className="w-7 h-7" strokeWidth={2.2} />
                 </div>
-                <span className="text-[10px] mt-1 text-content-secondary">{tab.label}</span>
+                <span className="text-[10px] mt-1 font-medium text-content-secondary">{tab.label}</span>
               </button>
             );
           }
@@ -51,18 +57,21 @@ export default function BottomTabBar() {
           return (
             <button
               key={tab.path}
+              type="button"
               onClick={() => navigate(tab.path)}
-              className="flex flex-col items-center py-2 px-3 min-w-[56px]"
+              aria-current={active ? 'page' : undefined}
+              className="flex flex-col items-center pt-2 pb-1.5 px-3 min-w-[64px]"
             >
               <Icon
                 className={cn(
-                  'w-6 h-6 transition-colors',
+                  'w-[22px] h-[22px] transition-colors ease-out-soft',
                   active ? 'text-primary' : 'text-content-tertiary'
                 )}
+                strokeWidth={active ? 2.4 : 1.8}
               />
               <span
                 className={cn(
-                  'text-[10px] mt-1 transition-colors',
+                  'text-[10px] mt-1 leading-none transition-colors ease-out-soft',
                   active ? 'text-primary font-semibold' : 'text-content-tertiary'
                 )}
               >

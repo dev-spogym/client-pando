@@ -1,4 +1,3 @@
-import { ArrowLeft } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '@/stores/authStore';
@@ -8,6 +7,7 @@ import {
   type MemberConsentState,
 } from '@/lib/memberExperience';
 import { cn, formatDateKo } from '@/lib/utils';
+import { PageHeader, Card } from '@/components/ui';
 
 /** 동의 관리 */
 export default function ConsentManagement() {
@@ -30,35 +30,27 @@ export default function ConsentManagement() {
 
   return (
     <div className="min-h-screen bg-surface-secondary">
-      <header className="bg-surface sticky top-0 z-10 border-b border-line">
-        <div className="flex items-center px-4 pt-safe-top h-14">
-          <button onClick={() => navigate(-1)}>
-            <ArrowLeft className="w-6 h-6 text-content" />
-          </button>
-          <h1 className="flex-1 text-center font-semibold text-lg">동의관리</h1>
-          <div className="w-6" />
-        </div>
-      </header>
+      <PageHeader title="동의관리" onBack={() => navigate(-1)} />
 
       <div className="px-4 py-4 space-y-4">
-        <section className="bg-surface rounded-card shadow-card overflow-hidden">
+        <section className="bg-surface rounded-card shadow-card-soft overflow-hidden">
           <ConsentRow label="서비스 이용약관" value={consents.serviceTerms} disabled />
           <ConsentRow label="개인정보 처리방침" value={consents.privacyPolicy} disabled />
           <ConsentRow label="제3자 정보 제공" value={consents.thirdPartyData} disabled />
         </section>
 
-        <section className="bg-surface rounded-card shadow-card overflow-hidden">
+        <section className="bg-surface rounded-card shadow-card-soft overflow-hidden">
           <ConsentRow label="마케팅 SMS 수신" value={consents.marketingSms} onToggle={() => toggle('marketingSms')} />
           <ConsentRow label="마케팅 이메일 수신" value={consents.marketingEmail} onToggle={() => toggle('marketingEmail')} />
           <ConsentRow label="마케팅 푸시 수신" value={consents.marketingPush} onToggle={() => toggle('marketingPush')} />
         </section>
 
-        <section className="bg-surface rounded-card p-5 shadow-card">
+        <Card padding="lg">
           <h3 className="text-sm font-semibold mb-2">최근 변경일</h3>
           <p className="text-sm text-content-secondary">
             {consents.updatedAt ? formatDateKo(consents.updatedAt) : '기록 없음'}
           </p>
-        </section>
+        </Card>
       </div>
     </div>
   );

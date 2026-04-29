@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react';
-import { ArrowLeft, ChevronRight, LogOut, ShieldAlert } from 'lucide-react';
+import { ChevronRight, LogOut, ShieldAlert } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { useAuthStore } from '@/stores/authStore';
 import { loadMemberSettings, saveMemberSettings, type MemberSettings } from '@/lib/memberExperience';
+import { PageHeader } from '@/components/ui';
 
 /** 회원 설정 */
 export default function Settings() {
@@ -33,18 +34,10 @@ export default function Settings() {
 
   return (
     <div className="min-h-screen bg-surface-secondary">
-      <header className="bg-surface sticky top-0 z-10 border-b border-line">
-        <div className="flex items-center px-4 pt-safe-top h-14">
-          <button onClick={() => navigate(-1)}>
-            <ArrowLeft className="w-6 h-6 text-content" />
-          </button>
-          <h1 className="flex-1 text-center font-semibold text-lg">설정</h1>
-          <div className="w-6" />
-        </div>
-      </header>
+      <PageHeader title="설정" showBack />
 
-      <div className="px-4 py-4 space-y-4">
-        <section className="bg-surface rounded-card shadow-card overflow-hidden">
+      <div className="px-5 py-4 space-y-4">
+        <section className="bg-surface rounded-card shadow-card-soft overflow-hidden">
           <SettingToggle label="예약 알림" description="예약 확정, 변경, 대기 확정 알림" value={settings.reservationPush} onToggle={() => toggle('reservationPush')} />
           <SettingToggle label="이용권 알림" description="만료일, 잔여 회차, 재등록 추천" value={settings.membershipPush} onToggle={() => toggle('membershipPush')} />
           <SettingToggle label="결제 알림" description="결제 완료, 영수증, 마일리지 적립" value={settings.paymentPush} onToggle={() => toggle('paymentPush')} />
@@ -52,7 +45,7 @@ export default function Settings() {
           <SettingToggle label="마케팅 알림" description="이벤트, 프로모션, 추천 상품" value={settings.marketingPush} onToggle={() => toggle('marketingPush')} />
         </section>
 
-        <section className="bg-surface rounded-card shadow-card overflow-hidden">
+        <section className="bg-surface rounded-card shadow-card-soft overflow-hidden">
           {[
             { label: '약관 / 정책', path: '/legal', value: '보기' },
             { label: '동의관리', path: '/consents', value: '관리' },
@@ -76,7 +69,7 @@ export default function Settings() {
 
         <button
           onClick={() => navigate('/withdrawal')}
-          className="w-full bg-surface rounded-card shadow-card px-4 py-4 flex items-center gap-3 text-state-error"
+          className="w-full bg-surface rounded-card shadow-card-soft px-4 py-4 flex items-center gap-3 text-state-error"
         >
           <ShieldAlert className="w-5 h-5" />
           <span className="text-sm font-medium">회원 탈퇴</span>
@@ -85,7 +78,7 @@ export default function Settings() {
 
         <button
           onClick={handleLogout}
-          className="w-full bg-surface rounded-card shadow-card px-4 py-4 flex items-center gap-3 text-state-error"
+          className="w-full bg-surface rounded-card shadow-card-soft px-4 py-4 flex items-center gap-3 text-state-error"
         >
           <LogOut className="w-5 h-5" />
           <span className="text-sm font-medium">로그아웃</span>

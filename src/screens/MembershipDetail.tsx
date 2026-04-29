@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
-import { ArrowLeft, Calendar, CreditCard, Pause, History, AlertCircle } from 'lucide-react';
+import { AlertCircle, Calendar, CreditCard, Pause, History } from 'lucide-react';
 import { useAuthStore } from '@/stores/authStore';
 import { getPreviewContractById, isPreviewMode } from '@/lib/preview';
 import {
@@ -13,6 +13,7 @@ import { getReservations } from '@/lib/memberExperience';
 import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
 import { cn, calcDday, formatDateKo, formatCurrency, calcPercent } from '@/lib/utils';
+import { Button, Card, Badge, PageHeader } from '@/components/ui';
 
 interface ContractDetail {
   id: number;
@@ -148,7 +149,7 @@ export default function MembershipDetail() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-surface flex items-center justify-center">
+      <div className="min-h-screen bg-surface-secondary flex items-center justify-center">
         <p className="text-content-tertiary">불러오는 중...</p>
       </div>
     );
@@ -156,10 +157,10 @@ export default function MembershipDetail() {
 
   if (!contract) {
     return (
-      <div className="min-h-screen bg-surface flex flex-col items-center justify-center">
+      <div className="min-h-screen bg-surface-secondary flex flex-col items-center justify-center">
         <AlertCircle className="w-12 h-12 text-content-tertiary mb-3" />
         <p className="text-content-tertiary">이용권 정보를 찾을 수 없습니다.</p>
-        <button onClick={() => navigate(-1)} className="mt-4 text-primary font-medium">돌아가기</button>
+        <Button variant="ghost" className="mt-4" onClick={() => navigate(-1)}>돌아가기</Button>
       </div>
     );
   }
@@ -192,15 +193,17 @@ export default function MembershipDetail() {
       <header className="bg-primary px-4 pt-safe-top pb-8">
         <div className="flex items-center h-14">
           <button onClick={() => navigate(-1)}>
-            <ArrowLeft className="w-6 h-6 text-white" />
+            <span className="w-10 h-10 inline-flex items-center justify-center rounded-full text-white">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+            </span>
           </button>
-          <h1 className="flex-1 text-center font-semibold text-lg text-white pr-6">이용권 상세</h1>
+          <h1 className="flex-1 text-center text-h4 text-white pr-6">이용권 상세</h1>
         </div>
         <div className="text-center">
           <CreditCard className="w-10 h-10 text-white/80 mx-auto mb-2" />
-          <h2 className="text-xl font-bold text-white">{contract.productName || '이용권'}</h2>
+          <h2 className="text-h2 text-white">{contract.productName || '이용권'}</h2>
           <span className={cn(
-            'inline-block mt-2 px-3 py-1 rounded-full text-sm font-medium',
+            'inline-block mt-2 px-3 py-1 rounded-full text-body-sm font-medium',
             isExpired ? 'bg-white/20 text-white/60' : 'bg-white/20 text-white'
           )}>
             {isExpired ? '만료됨' : contract.status}
@@ -211,15 +214,9 @@ export default function MembershipDetail() {
       <div className="px-4 -mt-4 space-y-4 pb-32">
         {/* D-day 카드 */}
         {!isExpired && dday !== null && (
-          <div className={cn(
-            'bg-surface rounded-card p-5 shadow-card text-center',
-            ddayUrgent && 'ring-2 ring-state-error'
-          )}>
-            <p className="text-sm text-content-secondary mb-1">만료까지</p>
-            <p className={cn(
-              'text-4xl font-bold',
-              ddayUrgent ? 'text-state-error' : 'text-primary'
-            )}>
+          <Card variant="soft" padding="lg" className={cn('text-center', ddayUrgent && 'ring-2 ring-state-error')}>
+            <p className="text-body-sm text-content-secondary mb-1">만료까지</p>
+            <p className={cn('text-display-lg font-bold', ddayUrgent ? 'text-state-error' : 'text-primary')}>
               {dday > 0 ? `D-${dday}` : 'D-Day'}
             </p>
             <div className="mt-3 progress-bar">
@@ -228,32 +225,34 @@ export default function MembershipDetail() {
                 style={{ width: `${progress}%` }}
               />
             </div>
-            <p className="text-xs text-content-tertiary mt-2">
+            <p className="text-caption text-content-tertiary mt-2">
               {remainDays}일 남음 / 총 {totalDays}일
             </p>
-          </div>
+          </Card>
         )}
 
         {/* 상세 정보 */}
-        <div className="bg-surface rounded-card p-4 shadow-card space-y-3">
-          <h3 className="font-semibold text-sm mb-2">이용권 정보</h3>
-          <DetailRow label="상품명" value={contract.productName || '-'} />
-          {contract.amount && <DetailRow label="금액" value={formatCurrency(contract.amount)} />}
-          {contract.startDate && <DetailRow label="시작일" value={formatDateKo(contract.startDate)} />}
-          {contract.endDate && <DetailRow label="종료일" value={formatDateKo(contract.endDate)} />}
-          {contract.signedAt && <DetailRow label="계약일" value={formatDateKo(contract.signedAt)} />}
-        </div>
+        <Card variant="soft" padding="md">
+          <h3 className="text-body font-semibold mb-2">이용권 정보</h3>
+          <div className="space-y-3">
+            <DetailRow label="상품명" value={contract.productName || '-'} />
+            {contract.amount && <DetailRow label="금액" value={formatCurrency(contract.amount)} />}
+            {contract.startDate && <DetailRow label="시작일" value={formatDateKo(contract.startDate)} />}
+            {contract.endDate && <DetailRow label="종료일" value={formatDateKo(contract.endDate)} />}
+            {contract.signedAt && <DetailRow label="계약일" value={formatDateKo(contract.signedAt)} />}
+          </div>
+        </Card>
 
         {relevantLessonCount && (
-          <div className="bg-surface rounded-card p-4 shadow-card space-y-4">
+          <Card variant="soft" padding="md" className="space-y-4">
             <div className="flex items-start justify-between gap-3">
               <div>
-                <p className="text-xs text-content-tertiary">PT / 레슨 이용 현황</p>
-                <p className="mt-1 text-sm font-semibold">{relevantLessonCount.productName}</p>
+                <p className="text-caption text-content-tertiary">PT / 레슨 이용 현황</p>
+                <p className="mt-1 text-body-sm font-semibold">{relevantLessonCount.productName}</p>
               </div>
               <div className="rounded-xl bg-primary-light px-3 py-2 text-right">
-                <p className="text-[11px] text-primary">잔여 회차</p>
-                <p className="text-lg font-bold text-primary">
+                <p className="text-caption text-primary">잔여 회차</p>
+                <p className="text-h3 font-bold text-primary">
                   {Math.max(relevantLessonCount.totalCount - relevantLessonCount.usedCount, 0)}회
                 </p>
               </div>
@@ -261,14 +260,14 @@ export default function MembershipDetail() {
 
             <div className="grid grid-cols-2 gap-3">
               <div className="rounded-xl bg-surface-secondary px-3 py-3">
-                <p className="text-[11px] text-content-tertiary">사용 회차</p>
-                <p className="mt-1 text-sm font-semibold">
+                <p className="text-caption text-content-tertiary">사용 회차</p>
+                <p className="mt-1 text-body-sm font-semibold">
                   {relevantLessonCount.usedCount}/{relevantLessonCount.totalCount}
                 </p>
               </div>
               <div className="rounded-xl bg-surface-secondary px-3 py-3">
-                <p className="text-[11px] text-content-tertiary">사용 기간</p>
-                <p className="mt-1 text-sm font-semibold">
+                <p className="text-caption text-content-tertiary">사용 기간</p>
+                <p className="mt-1 text-body-sm font-semibold">
                   {formatDateKo(relevantLessonCount.startDate)} ~ {formatDateKo(relevantLessonCount.endDate)}
                 </p>
               </div>
@@ -276,49 +275,48 @@ export default function MembershipDetail() {
 
             {nextLessonDate && (
               <div className="rounded-xl bg-surface-secondary px-3 py-3">
-                <p className="text-[11px] text-content-tertiary">다음 예약 예정</p>
-                <p className="mt-1 text-sm font-semibold">{formatDateKo(nextLessonDate)}</p>
+                <p className="text-caption text-content-tertiary">다음 예약 예정</p>
+                <p className="mt-1 text-body-sm font-semibold">{formatDateKo(nextLessonDate)}</p>
               </div>
             )}
 
             <div>
               <div className="mb-2 flex items-center gap-2">
                 <History className="w-4 h-4 text-content-secondary" />
-                <p className="text-sm font-semibold">차감 이력</p>
+                <p className="text-body-sm font-semibold">차감 이력</p>
               </div>
               {relevantHistories.length === 0 ? (
-                <p className="text-sm text-content-tertiary">아직 차감된 이력이 없습니다.</p>
+                <p className="text-body-sm text-content-tertiary">아직 차감된 이력이 없습니다.</p>
               ) : (
                 <div className="space-y-2">
                   {relevantHistories.map((item) => (
                     <div key={item.id} className="rounded-xl bg-surface-secondary px-3 py-3">
                       <div className="flex items-center justify-between gap-3">
-                        <p className="text-sm font-medium">{item.title}</p>
-                        <span className="text-xs text-content-tertiary">{formatDateKo(item.deductedAt)}</span>
+                        <p className="text-body-sm font-medium">{item.title}</p>
+                        <span className="text-caption text-content-tertiary">{formatDateKo(item.deductedAt)}</span>
                       </div>
-                      {item.note && <p className="mt-1 text-xs text-content-secondary">{item.note}</p>}
+                      {item.note && <p className="mt-1 text-caption text-content-secondary">{item.note}</p>}
                     </div>
                   ))}
                 </div>
               )}
             </div>
-          </div>
+          </Card>
         )}
 
         {/* 홀딩 신청 버튼 */}
         {!isExpired && contract.status === '서명완료' && (
-          <button
-            onClick={() => setShowHolding(true)}
-            className="w-full bg-surface rounded-card p-4 shadow-card flex items-center gap-3 touch-card"
-          >
-            <div className="w-10 h-10 bg-state-warning/10 rounded-xl flex items-center justify-center">
-              <Pause className="w-5 h-5 text-state-warning" />
+          <Card variant="soft" padding="md" interactive onClick={() => setShowHolding(true)}>
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-state-warning/10 rounded-xl flex items-center justify-center">
+                <Pause className="w-5 h-5 text-state-warning" />
+              </div>
+              <div className="flex-1 text-left">
+                <p className="font-medium text-body-sm">홀딩(일시정지) 신청</p>
+                <p className="text-caption text-content-tertiary">이용권을 일시적으로 정지합니다</p>
+              </div>
             </div>
-            <div className="flex-1 text-left">
-              <p className="font-medium text-sm">홀딩(일시정지) 신청</p>
-              <p className="text-xs text-content-tertiary">이용권을 일시적으로 정지합니다</p>
-            </div>
-          </button>
+          </Card>
         )}
       </div>
 
@@ -326,17 +324,17 @@ export default function MembershipDetail() {
       {showHolding && (
         <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40">
           <div className="mobile-bottom-sheet bg-surface rounded-t-2xl p-6 pb-safe-bottom slide-up">
-            <h3 className="text-lg font-bold mb-4">홀딩 신청</h3>
+            <h3 className="text-h3 mb-4">홀딩 신청</h3>
             <div className="space-y-4">
               <div>
-                <label className="text-sm font-medium text-content-secondary mb-1 block">정지 기간 (일)</label>
+                <label className="text-body-sm font-medium text-content-secondary mb-1 block">정지 기간 (일)</label>
                 <div className="flex gap-2">
                   {[7, 14, 30].map((d) => (
                     <button
                       key={d}
                       onClick={() => setHoldingDays(d)}
                       className={cn(
-                        'flex-1 py-2 rounded-lg text-sm font-medium border',
+                        'flex-1 py-2 rounded-lg text-body-sm font-medium border',
                         holdingDays === d ? 'border-primary bg-primary-light text-primary' : 'border-line text-content-secondary'
                       )}
                     >
@@ -346,28 +344,22 @@ export default function MembershipDetail() {
                 </div>
               </div>
               <div>
-                <label className="text-sm font-medium text-content-secondary mb-1 block">사유</label>
+                <label className="text-body-sm font-medium text-content-secondary mb-1 block">사유</label>
                 <textarea
                   value={holdingReason}
                   onChange={(e) => setHoldingReason(e.target.value)}
                   placeholder="홀딩 사유를 입력하세요 (선택)"
-                  className="w-full p-3 rounded-xl border border-line bg-surface text-sm resize-none h-20 focus:outline-none focus:border-primary"
+                  className="w-full p-3 rounded-xl border border-line bg-surface text-body-sm resize-none h-20 focus:outline-none focus:border-primary"
                 />
               </div>
             </div>
             <div className="flex gap-3 mt-6">
-              <button
-                onClick={() => setShowHolding(false)}
-                className="flex-1 py-3 rounded-button border border-line text-content-secondary font-medium"
-              >
+              <Button variant="outline" size="lg" className="flex-1" onClick={() => setShowHolding(false)}>
                 취소
-              </button>
-              <button
-                onClick={handleHolding}
-                className="flex-1 py-3 rounded-button bg-primary text-white font-semibold"
-              >
+              </Button>
+              <Button variant="primary" size="lg" className="flex-1" onClick={handleHolding}>
                 신청하기
-              </button>
+              </Button>
             </div>
           </div>
         </div>
@@ -379,8 +371,8 @@ export default function MembershipDetail() {
 function DetailRow({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex items-center justify-between py-1">
-      <span className="text-sm text-content-secondary">{label}</span>
-      <span className="text-sm font-medium">{value}</span>
+      <span className="text-body-sm text-content-secondary">{label}</span>
+      <span className="text-body-sm font-medium">{value}</span>
     </div>
   );
 }

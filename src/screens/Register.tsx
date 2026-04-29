@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { ArrowLeft, Lock, Phone, ShieldCheck, User } from 'lucide-react';
+import { Lock, Phone, ShieldCheck, User } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase } from '@/lib/supabase';
 import { cn } from '@/lib/utils';
+import { Button, PageHeader } from '@/components/ui';
 
 /** 회원 앱 연동(가입) 페이지 */
 export default function Register() {
@@ -112,21 +113,19 @@ export default function Register() {
 
   return (
     <div className="min-h-screen bg-surface flex flex-col">
-      <header className="flex items-center px-4 pt-safe-top h-14">
-        <button
-          onClick={() => {
-            if (step === 'phone') navigate(-1);
-            else if (step === 'verify') setStep('phone');
-            else setStep('verify');
-          }}
-        >
-          <ArrowLeft className="w-6 h-6 text-content" />
-        </button>
-        <h1 className="flex-1 text-center font-semibold text-lg pr-6">앱 가입 / 연동</h1>
-      </header>
+      <PageHeader
+        title="앱 가입 / 연동"
+        showBack
+        onBack={() => {
+          if (step === 'phone') navigate(-1);
+          else if (step === 'verify') setStep('phone');
+          else setStep('verify');
+        }}
+        sticky={false}
+      />
 
       <div className="flex-1 px-6 pt-8">
-        <div className="bg-primary-light rounded-2xl p-4 mb-6">
+        <div className="bg-primary-light rounded-card p-4 mb-6">
           <p className="text-sm font-semibold text-primary">진행 방식 안내</p>
           <p className="text-xs text-content-secondary mt-2 leading-relaxed">
             회원 기본 정보는 CRM에서 먼저 등록되고, 앱에서는 휴대폰 인증 후 비밀번호를 설정해 연동을 완료합니다.
@@ -161,7 +160,7 @@ export default function Register() {
                   value={name}
                   onChange={(event) => setName(event.target.value)}
                   placeholder="이름 (선택)"
-                  className="w-full pl-12 pr-4 py-4 rounded-xl border border-line bg-surface text-content placeholder:text-content-tertiary focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary text-base"
+                  className="w-full pl-12 pr-4 py-4 rounded-input border border-line bg-surface text-content placeholder:text-content-tertiary focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary text-base"
                 />
               </div>
               <div className="relative">
@@ -171,18 +170,21 @@ export default function Register() {
                   value={phone}
                   onChange={(event) => handlePhoneChange(event.target.value)}
                   placeholder="010-0000-0000"
-                  className="w-full pl-12 pr-4 py-4 rounded-xl border border-line bg-surface text-content placeholder:text-content-tertiary focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary text-base"
+                  className="w-full pl-12 pr-4 py-4 rounded-input border border-line bg-surface text-content placeholder:text-content-tertiary focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary text-base"
                 />
               </div>
             </div>
 
-            <button
+            <Button
+              variant="primary"
+              size="xl"
+              fullWidth
+              loading={loading}
+              disabled={phone.replace(/-/g, '').length < 10}
               onClick={handlePhoneSubmit}
-              disabled={phone.replace(/-/g, '').length < 10 || loading}
-              className="w-full py-4 rounded-xl font-semibold bg-primary text-white active:bg-primary-dark disabled:opacity-50 transition-colors"
             >
               {loading ? '회원 확인 중...' : '인증번호 받기'}
-            </button>
+            </Button>
           </div>
         )}
 
@@ -199,17 +201,19 @@ export default function Register() {
                 value={verifyCode}
                 onChange={(event) => setVerifyCode(event.target.value.slice(0, 4))}
                 placeholder="인증번호 4자리"
-                className="w-full pl-12 pr-4 py-4 rounded-xl border border-line bg-surface text-content placeholder:text-content-tertiary focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary text-base tracking-widest"
+                className="w-full pl-12 pr-4 py-4 rounded-input border border-line bg-surface text-content placeholder:text-content-tertiary focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary text-base tracking-widest"
                 inputMode="numeric"
               />
             </div>
-            <button
-              onClick={handleVerify}
+            <Button
+              variant="primary"
+              size="xl"
+              fullWidth
               disabled={verifyCode.length !== 4}
-              className="w-full py-4 rounded-xl font-semibold bg-primary text-white active:bg-primary-dark disabled:opacity-50 transition-colors"
+              onClick={handleVerify}
             >
               확인
-            </button>
+            </Button>
           </div>
         )}
 
@@ -227,7 +231,7 @@ export default function Register() {
                   value={password}
                   onChange={(event) => setPassword(event.target.value)}
                   placeholder="비밀번호"
-                  className="w-full pl-12 pr-4 py-4 rounded-xl border border-line bg-surface text-content placeholder:text-content-tertiary focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary text-base"
+                  className="w-full pl-12 pr-4 py-4 rounded-input border border-line bg-surface text-content placeholder:text-content-tertiary focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary text-base"
                 />
               </div>
               <div className="relative">
@@ -237,17 +241,20 @@ export default function Register() {
                   value={confirmPassword}
                   onChange={(event) => setConfirmPassword(event.target.value)}
                   placeholder="비밀번호 확인"
-                  className="w-full pl-12 pr-4 py-4 rounded-xl border border-line bg-surface text-content placeholder:text-content-tertiary focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary text-base"
+                  className="w-full pl-12 pr-4 py-4 rounded-input border border-line bg-surface text-content placeholder:text-content-tertiary focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary text-base"
                 />
               </div>
             </div>
-            <button
+            <Button
+              variant="primary"
+              size="xl"
+              fullWidth
+              loading={loading}
+              disabled={password.length < 6}
               onClick={handleSetPassword}
-              disabled={password.length < 6 || loading}
-              className="w-full py-4 rounded-xl font-semibold bg-primary text-white active:bg-primary-dark disabled:opacity-50 transition-colors"
             >
               {loading ? '처리 중...' : '앱 연동 완료'}
-            </button>
+            </Button>
           </div>
         )}
 

@@ -3,6 +3,7 @@ import { toast } from 'sonner';
 import { AlertTriangle, CheckCircle2 } from 'lucide-react';
 import { getTrainerPenalties, waivePenalty } from '@/lib/mockOperations';
 import { formatDateKo } from '@/lib/utils';
+import { Card, Badge, Button, EmptyState } from '@/components/ui';
 
 export default function TrainerPenaltyBoard() {
   const [version, setVersion] = useState(0);
@@ -26,11 +27,9 @@ export default function TrainerPenaltyBoard() {
 
       <div className="px-5 py-4 pb-24 space-y-3" key={version}>
         {penalties.length === 0 ? (
-          <div className="rounded-card bg-surface p-10 text-center text-sm text-content-tertiary shadow-card">
-            등록된 페널티가 없습니다.
-          </div>
+          <EmptyState title="등록된 페널티가 없습니다" />
         ) : penalties.map((penalty) => (
-          <div key={penalty.id} className="rounded-card bg-surface p-4 shadow-card">
+          <Card key={penalty.id} variant="elevated" padding="md">
             <div className="flex items-start justify-between gap-3">
               <div>
                 <div className="flex items-center gap-2">
@@ -38,29 +37,32 @@ export default function TrainerPenaltyBoard() {
                   <p className="text-sm font-semibold">{penalty.memberName}</p>
                 </div>
                 <p className="mt-2 text-sm text-content">{penalty.title}</p>
-                <p className="mt-1 text-xs text-content-secondary">{formatDateKo(penalty.appliedAt)} · {penalty.reason}</p>
+                <p className="mt-1 text-xs text-content-secondary">
+                  {formatDateKo(penalty.appliedAt)} · {penalty.reason}
+                </p>
               </div>
-              <span className="rounded-full bg-rose-50 px-2 py-1 text-[11px] font-semibold text-rose-600">
-                {penalty.type}
-              </span>
+              <Badge tone="error" variant="soft">{penalty.type}</Badge>
             </div>
 
             <div className="mt-3 flex items-center justify-between">
-              <p className="text-xs text-content-tertiary">차감 {penalty.deductCount}회 · 상태 {penalty.status}</p>
+              <p className="text-xs text-content-tertiary">
+                차감 {penalty.deductCount}회 · 상태 {penalty.status}
+              </p>
               {penalty.status === 'active' ? (
-                <button
+                <Button
+                  variant="tertiary"
+                  size="sm"
                   onClick={() => handleWaive(penalty.id)}
-                  className="rounded-xl bg-surface-secondary px-3 py-2 text-xs font-semibold text-content-secondary"
                 >
                   면제 처리
-                </button>
+                </Button>
               ) : (
                 <span className="flex items-center gap-1 text-xs font-semibold text-state-success">
                   <CheckCircle2 className="w-4 h-4" /> 면제됨
                 </span>
               )}
             </div>
-          </div>
+          </Card>
         ))}
       </div>
     </div>

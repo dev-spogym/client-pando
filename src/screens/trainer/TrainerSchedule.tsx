@@ -29,6 +29,7 @@ import { supabase } from '@/lib/supabase';
 import { cn, formatTime } from '@/lib/utils';
 import { markReservationCompleted, upsertReservation } from '@/lib/memberExperience';
 import { toast } from 'sonner';
+import { Button, Badge, Card, EmptyState } from '@/components/ui';
 
 interface ClassItem {
   id: number;
@@ -590,31 +591,32 @@ export default function TrainerSchedule() {
       <header className="bg-gradient-to-br from-teal-600 to-emerald-600 px-5 pt-safe-top pb-4">
         <div className="pt-4 flex items-center justify-between">
           <h1 className="text-white text-lg font-bold">일정 관리</h1>
-          <button
+          <Button
+            variant="outline"
+            size="sm"
+            leftIcon={<Plus className="w-4 h-4" />}
             onClick={openAddModal}
-            className="flex items-center gap-1 bg-white/20 px-3 py-1.5 rounded-lg text-white text-sm"
+            className="bg-white/20 border-white/30 text-white hover:bg-white/30"
           >
-            <Plus className="w-4 h-4" /> 수업 추가
-          </button>
+            수업 추가
+          </Button>
         </div>
       </header>
 
       <div className="px-5 py-4 space-y-4 pb-24">
         {weekRequests.length > 0 && (
-          <section className="rounded-card bg-surface p-4 shadow-card">
+          <Card variant="soft" padding="md">
             <div className="mb-3 flex items-center justify-between">
               <div>
                 <p className="text-sm font-semibold">승인 대기 요청</p>
                 <p className="text-xs text-content-secondary">회원이 스케줄을 보고 보낸 예약 요청입니다.</p>
               </div>
-              <span className="rounded-full bg-state-warning/10 px-2 py-1 text-[11px] font-semibold text-state-warning">
-                {weekRequests.length}건
-              </span>
+              <Badge tone="warning" variant="soft">{weekRequests.length}건</Badge>
             </div>
 
             <div className="space-y-3">
               {weekRequests.map((request) => (
-                <div key={request.id} className="rounded-2xl border border-line bg-surface-secondary p-4">
+                <div key={request.id} className="rounded-card border border-line bg-surface p-4">
                   <div className="flex items-start justify-between gap-3">
                     <div>
                       <p className="text-sm font-semibold">{request.memberName}</p>
@@ -624,31 +626,35 @@ export default function TrainerSchedule() {
                         {request.room ? ` · ${request.room}` : ''}
                       </p>
                     </div>
-                    <span className="rounded-full bg-state-warning/10 px-2 py-1 text-[11px] font-semibold text-state-warning">
-                      승인 대기
-                    </span>
+                    <Badge tone="warning" variant="soft">승인 대기</Badge>
                   </div>
 
                   <div className="mt-3 grid grid-cols-2 gap-2">
-                    <button
+                    <Button
+                      variant="primary"
+                      size="sm"
+                      fullWidth
+                      leftIcon={<Check className="w-4 h-4" />}
                       onClick={() => void handleApproveRequest(request)}
                       disabled={processingRequestId === request.id}
-                      className="flex items-center justify-center gap-1 rounded-xl bg-teal-600 py-2.5 text-sm font-semibold text-white disabled:opacity-50"
                     >
-                      <Check className="w-4 h-4" /> 승인
-                    </button>
-                    <button
+                      승인
+                    </Button>
+                    <Button
+                      variant="tertiary"
+                      size="sm"
+                      fullWidth
+                      leftIcon={<Ban className="w-4 h-4" />}
                       onClick={() => handleRejectRequest(request)}
                       disabled={processingRequestId === request.id}
-                      className="flex items-center justify-center gap-1 rounded-xl bg-surface-tertiary py-2.5 text-sm font-semibold text-content-secondary disabled:opacity-50"
                     >
-                      <Ban className="w-4 h-4" /> 반려
-                    </button>
+                      반려
+                    </Button>
                   </div>
                 </div>
               ))}
             </div>
-          </section>
+          </Card>
         )}
 
         <div className="flex items-center justify-between">
@@ -667,9 +673,9 @@ export default function TrainerSchedule() {
               key={i}
               onClick={() => setSelectedDay(i)}
               className={cn(
-                'flex flex-col items-center py-2 rounded-xl transition-colors',
-                selectedDay === i ? 'bg-teal-600 text-white' : 'text-content-secondary',
-                isToday(d) && selectedDay !== i && 'ring-1 ring-teal-400'
+                'flex flex-col items-center py-2 rounded-card transition-colors',
+                selectedDay === i ? 'bg-primary text-white' : 'text-content-secondary',
+                isToday(d) && selectedDay !== i && 'ring-1 ring-primary'
               )}
             >
               <span className="text-[10px]">{dayNames[i]}</span>
@@ -679,9 +685,7 @@ export default function TrainerSchedule() {
         </div>
 
         {dayClasses.length === 0 ? (
-          <div className="py-12 text-center text-content-tertiary text-sm">
-            이 날에 예정된 수업이 없습니다
-          </div>
+          <EmptyState size="sm" title="예정된 수업이 없습니다" />
         ) : (
           <div className="space-y-3">
             {dayClasses.map((cls) => {
@@ -690,15 +694,15 @@ export default function TrainerSchedule() {
               const canComplete = Boolean(cls.memberId) && !isCompleted && new Date(cls.endTime) <= new Date();
 
               return (
-                <div key={cls.id} className="bg-surface rounded-card p-4 shadow-card">
+                <Card key={cls.id} variant="elevated" padding="md">
                   <div className="flex items-center gap-3">
                     <div className={cn(
-                      'w-10 h-10 rounded-lg flex items-center justify-center',
-                      cls.type === 'PT' ? 'bg-teal-50' : 'bg-emerald-50'
+                      'w-10 h-10 rounded-card flex items-center justify-center',
+                      cls.type === 'PT' ? 'bg-primary-light' : 'bg-surface-secondary'
                     )}>
                       <span className={cn(
                         'text-xs font-bold',
-                        cls.type === 'PT' ? 'text-teal-600' : 'text-emerald-600'
+                        cls.type === 'PT' ? 'text-primary' : 'text-content-secondary'
                       )}>
                         {cls.type}
                       </span>
@@ -707,18 +711,12 @@ export default function TrainerSchedule() {
                       <div className="flex items-center gap-2">
                         <p className="font-semibold text-sm truncate">{cls.title}</p>
                         {cls.type === 'PT' && (
-                          <span
-                            className={cn(
-                              'rounded-full px-2 py-0.5 text-[10px] font-semibold',
-                              isCompleted
-                                ? 'bg-state-info/10 text-state-info'
-                                : isOpenPtSlot
-                                ? 'bg-primary-light text-primary'
-                                : 'bg-state-success/10 text-state-success'
-                            )}
+                          <Badge
+                            tone={isCompleted ? 'info' : isOpenPtSlot ? 'primary' : 'success'}
+                            variant="soft"
                           >
                             {isCompleted ? '수업 완료' : isOpenPtSlot ? '오픈 슬롯' : '회원 배정'}
-                          </span>
+                          </Badge>
                         )}
                       </div>
                       <div className="flex items-center gap-3 mt-1 text-xs text-content-secondary">
@@ -734,7 +732,7 @@ export default function TrainerSchedule() {
                         )}
                       </div>
                       {cls.memberName && (
-                        <p className="mt-1 text-xs font-medium text-teal-700">회원: {cls.memberName}</p>
+                        <p className="mt-1 text-xs font-medium text-primary">회원: {cls.memberName}</p>
                       )}
                       {cls.memberId && (
                         <p className="mt-1 text-[11px] text-content-tertiary">
@@ -750,17 +748,11 @@ export default function TrainerSchedule() {
 
                   {cls.memberId && (
                     <div className="mt-3 flex justify-end">
-                      <button
+                      <Button
+                        variant={isCompleted ? 'secondary' : canComplete ? 'primary' : 'tertiary'}
+                        size="sm"
                         onClick={() => void handleCompleteClass(cls)}
                         disabled={!canComplete || completingClassId === cls.id}
-                        className={cn(
-                          'rounded-xl px-3 py-2 text-xs font-semibold transition-colors',
-                          isCompleted
-                            ? 'bg-state-info/10 text-state-info'
-                            : canComplete
-                              ? 'bg-teal-600 text-white'
-                              : 'bg-surface-tertiary text-content-tertiary'
-                        )}
                       >
                         {isCompleted
                           ? '완료됨'
@@ -769,10 +761,10 @@ export default function TrainerSchedule() {
                             : canComplete
                               ? '수업 완료 처리'
                               : '종료 시간 후 완료 가능'}
-                      </button>
+                      </Button>
                     </div>
                   )}
-                </div>
+                </Card>
               );
             })}
           </div>
@@ -799,8 +791,8 @@ export default function TrainerSchedule() {
                     if (t === 'GX') setFormMemberId('');
                   }}
                   className={cn(
-                    'flex-1 py-2.5 rounded-xl text-sm font-medium transition-colors',
-                    formType === t ? 'bg-teal-600 text-white' : 'bg-surface-secondary text-content-secondary'
+                    'flex-1 py-2.5 rounded-card text-sm font-medium transition-colors',
+                    formType === t ? 'bg-primary text-white' : 'bg-surface-secondary text-content-secondary'
                   )}
                 >
                   {t}
@@ -813,7 +805,7 @@ export default function TrainerSchedule() {
               value={formTitle}
               onChange={(e) => setFormTitle(e.target.value)}
               placeholder={formType === 'PT' ? '수업명 (비워두면 기본 제목 사용)' : '수업명'}
-              className="w-full px-3 py-3 rounded-xl border border-line text-sm focus:outline-none focus:border-teal-500"
+              className="w-full px-3 py-3 rounded-input border border-line text-sm focus:outline-none focus:border-primary"
             />
 
             {formType === 'PT' && (
@@ -822,7 +814,7 @@ export default function TrainerSchedule() {
                 <select
                   value={formMemberId}
                   onChange={(e) => setFormMemberId(e.target.value)}
-                  className="w-full px-3 py-3 rounded-xl border border-line text-sm focus:outline-none focus:border-teal-500 bg-surface"
+                  className="w-full px-3 py-3 rounded-input border border-line text-sm focus:outline-none focus:border-primary bg-surface"
                 >
                   <option value="">오픈 슬롯으로 등록</option>
                   {members.map((item) => (
@@ -841,7 +833,7 @@ export default function TrainerSchedule() {
               type="date"
               value={formDate}
               onChange={(e) => setFormDate(e.target.value)}
-              className="w-full px-3 py-3 rounded-xl border border-line text-sm focus:outline-none focus:border-teal-500"
+              className="w-full px-3 py-3 rounded-input border border-line text-sm focus:outline-none focus:border-primary"
             />
 
             <div className="flex gap-2">
@@ -851,7 +843,7 @@ export default function TrainerSchedule() {
                   type="time"
                   value={formStartTime}
                   onChange={(e) => setFormStartTime(e.target.value)}
-                  className="w-full px-3 py-3 rounded-xl border border-line text-sm focus:outline-none focus:border-teal-500"
+                  className="w-full px-3 py-3 rounded-input border border-line text-sm focus:outline-none focus:border-primary"
                 />
               </div>
               <div className="flex-1">
@@ -860,7 +852,7 @@ export default function TrainerSchedule() {
                   type="time"
                   value={formEndTime}
                   onChange={(e) => setFormEndTime(e.target.value)}
-                  className="w-full px-3 py-3 rounded-xl border border-line text-sm focus:outline-none focus:border-teal-500"
+                  className="w-full px-3 py-3 rounded-input border border-line text-sm focus:outline-none focus:border-primary"
                 />
               </div>
             </div>
@@ -870,7 +862,7 @@ export default function TrainerSchedule() {
               value={formRoom}
               onChange={(e) => setFormRoom(e.target.value)}
               placeholder="장소 (선택)"
-              className="w-full px-3 py-3 rounded-xl border border-line text-sm focus:outline-none focus:border-teal-500"
+              className="w-full px-3 py-3 rounded-input border border-line text-sm focus:outline-none focus:border-primary"
             />
 
             {formType === 'GX' && (
@@ -881,19 +873,18 @@ export default function TrainerSchedule() {
                   min={1}
                   value={formCapacity}
                   onChange={(e) => setFormCapacity(Number(e.target.value))}
-                  className="w-full px-3 py-3 rounded-xl border border-line text-sm focus:outline-none focus:border-teal-500"
+                  className="w-full px-3 py-3 rounded-input border border-line text-sm focus:outline-none focus:border-primary"
                 />
               </div>
             )}
 
-            <button
+            <Button
+              variant="primary"
+              size="lg"
+              fullWidth
               onClick={() => void submitClass()}
               disabled={submitting || !formDate}
-              className={cn(
-                'w-full py-3 rounded-xl font-semibold text-sm text-white',
-                'bg-teal-600 active:bg-teal-700 transition-colors',
-                'disabled:opacity-50 disabled:cursor-not-allowed'
-              )}
+              loading={submitting}
             >
               {submitting
                 ? '추가 중...'
@@ -902,7 +893,7 @@ export default function TrainerSchedule() {
                   : formType === 'PT'
                     ? '오픈 슬롯 추가'
                     : '수업 추가'}
-            </button>
+            </Button>
           </div>
         </div>
       )}

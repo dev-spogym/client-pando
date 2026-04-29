@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { ArrowLeft, X, AlertTriangle, Target, ChevronRight } from 'lucide-react';
+import { X, AlertTriangle, Target, ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { PageHeader, Chip } from '@/components/ui';
 
 type Category = '전체' | '가슴' | '등' | '어깨' | '하체' | '팔' | '코어';
 type Difficulty = '초급' | '중급' | '고급';
@@ -42,18 +43,18 @@ const EXERCISES: Exercise[] = [
 const TABS: Category[] = ['전체', '가슴', '등', '어깨', '하체', '팔', '코어'];
 
 const difficultyColor: Record<Difficulty, string> = {
-  '초급': 'bg-green-100 text-green-700',
-  '중급': 'bg-orange-100 text-orange-700',
-  '고급': 'bg-red-100 text-red-700',
+  '초급': 'bg-state-success/10 text-state-success',
+  '중급': 'bg-state-warning/10 text-state-warning',
+  '고급': 'bg-state-error/10 text-state-error',
 };
 
 const categoryTagColor: Record<string, string> = {
-  '가슴': 'bg-red-100 text-red-600',
-  '등': 'bg-blue-100 text-blue-600',
-  '어깨': 'bg-orange-100 text-orange-600',
-  '하체': 'bg-green-100 text-green-600',
-  '팔': 'bg-purple-100 text-purple-600',
-  '코어': 'bg-yellow-100 text-yellow-700',
+  '가슴': 'bg-state-error/10 text-state-error',
+  '등': 'bg-state-info/10 text-state-info',
+  '어깨': 'bg-state-warning/10 text-state-warning',
+  '하체': 'bg-state-success/10 text-state-success',
+  '팔': 'bg-primary-light text-primary',
+  '코어': 'bg-accent-light text-accent',
 };
 
 /** 운동가이드 페이지 */
@@ -79,23 +80,15 @@ export default function ExerciseGuide() {
 
   return (
     <div className="min-h-screen bg-surface-secondary">
-      {/* 헤더 */}
-      <header className="bg-surface sticky top-0 z-10 border-b border-line">
-        <div className="flex items-center px-4 pt-safe-top h-14">
-          <button onClick={() => navigate(-1)}>
-            <ArrowLeft className="w-6 h-6 text-content" />
-          </button>
-          <h1 className="flex-1 text-center font-semibold text-lg">운동 가이드</h1>
-          <div className="w-6" />
-        </div>
-      </header>
+      <PageHeader title="운동 가이드" onBack={() => navigate(-1)} />
 
       {/* 카테고리 탭 */}
       <div className="bg-surface overflow-x-auto no-scrollbar py-3 snap-x snap-proximity">
         <div className="flex w-max min-w-full gap-2 px-4">
           {TABS.map((tab) => (
-            <button
+            <Chip
               key={tab}
+              active={activeTab === tab}
               onClick={() => {
                 setActiveTab(tab);
                 const next = new URLSearchParams(searchParams);
@@ -103,15 +96,9 @@ export default function ExerciseGuide() {
                 else next.set('category', tab);
                 setSearchParams(next, { replace: true });
               }}
-              className={cn(
-                'snap-start px-4 py-1.5 rounded-full text-sm font-medium transition-colors whitespace-nowrap',
-                activeTab === tab
-                  ? 'bg-primary text-white'
-                  : 'bg-surface-tertiary text-content-secondary',
-              )}
             >
               {tab}
-            </button>
+            </Chip>
           ))}
         </div>
       </div>
@@ -122,7 +109,7 @@ export default function ExerciseGuide() {
           <div
             key={exercise.id}
             onClick={() => setSelectedExercise(exercise)}
-            className="bg-surface rounded-card p-4 shadow-card touch-card cursor-pointer"
+            className="bg-surface rounded-card p-4 shadow-card-soft touch-card cursor-pointer"
           >
             <div className="flex items-start gap-3">
               <div className="w-12 h-12 bg-primary-light rounded-xl flex items-center justify-center flex-shrink-0">
@@ -133,10 +120,10 @@ export default function ExerciseGuide() {
                   <h3 className="font-semibold text-base truncate">{exercise.name}</h3>
                 </div>
                 <div className="flex items-center gap-2 mb-2">
-                  <span className={cn('text-[10px] px-1.5 py-0.5 rounded-full font-medium', categoryTagColor[exercise.category])}>
+                  <span className={cn('text-[10px] px-1.5 py-0.5 rounded-pill font-medium', categoryTagColor[exercise.category])}>
                     {exercise.category}
                   </span>
-                  <span className={cn('text-[10px] px-1.5 py-0.5 rounded-full font-medium', difficultyColor[exercise.difficulty])}>
+                  <span className={cn('text-[10px] px-1.5 py-0.5 rounded-pill font-medium', difficultyColor[exercise.difficulty])}>
                     {exercise.difficulty}
                   </span>
                 </div>
@@ -163,10 +150,10 @@ export default function ExerciseGuide() {
             <div className="px-5 py-4 space-y-4">
               {/* 태그 */}
               <div className="flex items-center gap-2">
-                <span className={cn('text-xs px-2 py-0.5 rounded-full font-medium', categoryTagColor[selectedExercise.category])}>
+                <span className={cn('text-xs px-2 py-0.5 rounded-pill font-medium', categoryTagColor[selectedExercise.category])}>
                   {selectedExercise.category}
                 </span>
-                <span className={cn('text-xs px-2 py-0.5 rounded-full font-medium', difficultyColor[selectedExercise.difficulty])}>
+                <span className={cn('text-xs px-2 py-0.5 rounded-pill font-medium', difficultyColor[selectedExercise.difficulty])}>
                   {selectedExercise.difficulty}
                 </span>
               </div>
@@ -185,7 +172,7 @@ export default function ExerciseGuide() {
                 </h3>
                 <div className="space-y-2">
                   {selectedExercise.tips.map((tip, i) => (
-                    <div key={i} className="flex items-start gap-2 bg-surface-secondary rounded-lg p-3">
+                    <div key={i} className="flex items-start gap-2 bg-surface-secondary rounded-card p-3">
                       <span className="w-5 h-5 bg-primary text-white rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">
                         {i + 1}
                       </span>
@@ -196,7 +183,7 @@ export default function ExerciseGuide() {
               </div>
 
               {/* 주의사항 */}
-              <div className="bg-state-warning/5 border border-state-warning/20 rounded-xl p-4">
+              <div className="bg-state-warning/5 border border-state-warning/20 rounded-card p-4">
                 <div className="flex items-center gap-2 mb-2">
                   <AlertTriangle className="w-4 h-4 text-state-warning" />
                   <h3 className="font-semibold text-sm text-state-warning">주의사항</h3>

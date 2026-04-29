@@ -109,7 +109,7 @@ export default function StaffPublishingGallery() {
                   key={item}
                   onClick={() => setCategory(item)}
                   className={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${
-                    category === item ? 'bg-slate-700 text-white' : 'bg-slate-100 text-slate-700'
+                    category === item ? 'bg-primary text-white' : 'bg-primary-light text-primary'
                   }`}
                 >
                   {item}

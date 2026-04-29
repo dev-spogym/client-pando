@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { ArrowLeft, ChevronRight, Send, Star } from 'lucide-react';
+import { ChevronRight, Send, Star } from 'lucide-react';
 import { useAuthStore } from '@/stores/authStore';
 import {
   appendPreviewTrainerEvaluation,
@@ -12,6 +12,7 @@ import { supabase } from '@/lib/supabase';
 import { cn, formatTime, formatDateKo } from '@/lib/utils';
 import { toast } from 'sonner';
 import LoadingSpinner from '@/components/LoadingSpinner';
+import { Button, Card, Chip, Avatar, EmptyState } from '@/components/ui';
 
 interface ClassItem {
   id: number;
@@ -122,7 +123,6 @@ export default function TrainerFeedback() {
       return;
     }
 
-    // 해당 수업 시간대의 출석 회원 조회
     const { data } = await supabase
       .from('attendance')
       .select('memberId, memberName')
@@ -131,11 +131,9 @@ export default function TrainerFeedback() {
       .lte('checkInAt', cls.endTime);
 
     if (data) {
-      // 중복 제거
       const unique = Array.from(new Map(data.map((a) => [a.memberId, a])).values());
       setAttendees(unique);
 
-      // 초기 피드백 폼
       const map = new Map<number, FeedbackForm>();
       unique.forEach((a) => {
         map.set(a.memberId, {
@@ -225,7 +223,9 @@ export default function TrainerFeedback() {
         <div className="pt-4 flex items-center gap-3">
           {view === 'feedback' && (
             <button onClick={() => setView('list')} className="text-white">
-              <ArrowLeft className="w-6 h-6" />
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
             </button>
           )}
           <h1 className="text-white text-lg font-bold">
@@ -243,43 +243,38 @@ export default function TrainerFeedback() {
               { key: 'today' as const, label: '오늘' },
               { key: 'week' as const, label: '이번 주' },
             ]).map((p) => (
-              <button
+              <Chip
                 key={p.key}
+                active={filterPeriod === p.key}
                 onClick={() => setFilterPeriod(p.key)}
-                className={cn(
-                  'px-4 py-2 rounded-full text-sm font-medium transition-colors',
-                  filterPeriod === p.key
-                    ? 'bg-teal-600 text-white'
-                    : 'bg-surface-secondary text-content-secondary'
-                )}
               >
                 {p.label}
-              </button>
+              </Chip>
             ))}
           </div>
 
           {loading ? (
             <div className="py-12"><LoadingSpinner text="수업 로딩 중..." /></div>
           ) : classes.length === 0 ? (
-            <div className="py-12 text-center text-content-tertiary text-sm">
-              해당 기간에 수업이 없습니다
-            </div>
+            <EmptyState size="sm" title="해당 기간에 수업이 없습니다" />
           ) : (
             <div className="space-y-2">
               {classes.map((cls) => (
-                <div
+                <Card
                   key={cls.id}
+                  variant="elevated"
+                  padding="md"
+                  interactive
                   onClick={() => selectClass(cls)}
-                  className="bg-surface rounded-card p-4 shadow-card touch-card cursor-pointer"
                 >
                   <div className="flex items-center gap-3">
                     <div className={cn(
-                      'w-10 h-10 rounded-lg flex items-center justify-center',
-                      cls.type === 'PT' ? 'bg-teal-50' : 'bg-emerald-50'
+                      'w-10 h-10 rounded-card flex items-center justify-center',
+                      cls.type === 'PT' ? 'bg-primary-light' : 'bg-surface-secondary'
                     )}>
                       <span className={cn(
                         'text-xs font-bold',
-                        cls.type === 'PT' ? 'text-teal-600' : 'text-emerald-600'
+                        cls.type === 'PT' ? 'text-primary' : 'text-content-secondary'
                       )}>
                         {cls.type}
                       </span>
@@ -292,7 +287,7 @@ export default function TrainerFeedback() {
                     </div>
                     <ChevronRight className="w-5 h-5 text-content-tertiary" />
                   </div>
-                </div>
+                </Card>
               ))}
             </div>
           )}
@@ -303,9 +298,7 @@ export default function TrainerFeedback() {
       {view === 'feedback' && (
         <div className="px-5 py-4 space-y-4 pb-24">
           {attendees.length === 0 ? (
-            <div className="py-12 text-center text-content-tertiary text-sm">
-              이 수업에 출석한 회원이 없습니다
-            </div>
+            <EmptyState size="sm" title="이 수업에 출석한 회원이 없습니다" />
           ) : (
             <>
               <p className="text-sm text-content-secondary">
@@ -315,52 +308,51 @@ export default function TrainerFeedback() {
               {attendees.map((att) => {
                 const fb = feedbacks.get(att.memberId);
                 return (
-                  <div key={att.memberId} className="bg-surface rounded-card p-4 shadow-card space-y-3">
-                    <div className="flex items-center gap-2">
-                      <div className="w-8 h-8 bg-teal-50 rounded-full flex items-center justify-center">
-                        <span className="text-teal-600 font-bold text-xs">{att.memberName.slice(0, 1)}</span>
+                  <Card key={att.memberId} variant="elevated" padding="md">
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-2">
+                        <Avatar name={att.memberName} size="sm" />
+                        <p className="font-semibold text-sm">{att.memberName}</p>
                       </div>
-                      <p className="font-semibold text-sm">{att.memberName}</p>
-                    </div>
 
-                    <div className="flex items-center gap-2">
-                      <Star className="w-4 h-4 text-teal-600" />
-                      <input
-                        type="range"
-                        min={1}
-                        max={10}
-                        value={fb?.score || 5}
-                        onChange={(e) => updateFeedback(att.memberId, 'score', Number(e.target.value))}
-                        className="flex-1 accent-teal-600"
+                      <div className="flex items-center gap-2">
+                        <Star className="w-4 h-4 text-primary" />
+                        <input
+                          type="range"
+                          min={1}
+                          max={10}
+                          value={fb?.score || 5}
+                          onChange={(e) => updateFeedback(att.memberId, 'score', Number(e.target.value))}
+                          className="flex-1 accent-primary"
+                        />
+                        <span className="text-sm font-bold text-primary w-6 text-right">
+                          {fb?.score || 5}
+                        </span>
+                      </div>
+
+                      <textarea
+                        value={fb?.content || ''}
+                        onChange={(e) => updateFeedback(att.memberId, 'content', e.target.value)}
+                        placeholder="운동 피드백을 입력하세요"
+                        rows={2}
+                        className="w-full px-3 py-2 rounded-input border border-line text-sm focus:outline-none focus:border-primary resize-none"
                       />
-                      <span className="text-sm font-bold text-teal-600 w-6 text-right">
-                        {fb?.score || 5}
-                      </span>
                     </div>
-
-                    <textarea
-                      value={fb?.content || ''}
-                      onChange={(e) => updateFeedback(att.memberId, 'content', e.target.value)}
-                      placeholder="운동 피드백을 입력하세요"
-                      rows={2}
-                      className="w-full px-3 py-2 rounded-lg border border-line text-sm focus:outline-none focus:border-teal-500 resize-none"
-                    />
-                  </div>
+                  </Card>
                 );
               })}
 
-              <button
+              <Button
+                variant="primary"
+                size="lg"
+                fullWidth
+                leftIcon={<Send className="w-4 h-4" />}
                 onClick={submitFeedbacks}
                 disabled={submitting}
-                className={cn(
-                  'w-full py-3 rounded-xl font-semibold text-sm text-white flex items-center justify-center gap-2',
-                  'bg-teal-600 active:bg-teal-700 transition-colors',
-                  'disabled:opacity-50 disabled:cursor-not-allowed'
-                )}
+                loading={submitting}
               >
-                <Send className="w-4 h-4" />
-                {submitting ? '저장 중...' : '피드백 저장'}
-              </button>
+                피드백 저장
+              </Button>
             </>
           )}
         </div>

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
-  ArrowLeft, Dumbbell, Activity, Star, StickyNote, CalendarClock,
+  Dumbbell, Activity, Star, StickyNote, CalendarClock,
   Plus, Send,
 } from 'lucide-react';
 import { useAuthStore } from '@/stores/authStore';
@@ -26,6 +26,7 @@ import {
 import { supabase } from '@/lib/supabase';
 import { cn, formatPhone, formatDateKo } from '@/lib/utils';
 import LoadingSpinner from '@/components/LoadingSpinner';
+import { Avatar, Badge, Button, Card, EmptyState } from '@/components/ui';
 
 interface MemberInfo {
   id: number;
@@ -374,9 +375,7 @@ export default function TrainerMemberDetail() {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen gap-4">
         <p className="text-content-secondary">회원 정보를 찾을 수 없습니다</p>
-        <button onClick={() => navigate(-1)} className="text-primary text-sm font-medium">
-          뒤로 가기
-        </button>
+        <Button variant="ghost" onClick={() => navigate(-1)}>뒤로 가기</Button>
       </div>
     );
   }
@@ -401,7 +400,9 @@ export default function TrainerMemberDetail() {
       <header className="bg-gradient-to-br from-teal-600 to-emerald-600 px-5 pt-safe-top pb-4">
         <div className="pt-4 flex items-center gap-3">
           <button onClick={() => navigate(-1)} className="text-white">
-            <ArrowLeft className="w-6 h-6" />
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
           </button>
           <h1 className="text-white text-lg font-bold">회원 상세</h1>
         </div>
@@ -409,27 +410,25 @@ export default function TrainerMemberDetail() {
 
       {/* 회원 기본 정보 */}
       <div className="px-5 py-4">
-        <div className="bg-surface rounded-card p-4 shadow-card">
+        <Card variant="elevated" padding="md">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 bg-teal-50 rounded-full flex items-center justify-center">
-              <span className="text-teal-600 font-bold text-lg">{memberInfo.name.slice(0, 1)}</span>
-            </div>
+            <Avatar name={memberInfo.name} size="lg" />
             <div className="flex-1">
               <p className="font-bold text-base">{memberInfo.name}</p>
               <p className="text-sm text-content-secondary">{formatPhone(memberInfo.phone)}</p>
             </div>
-            <span className={cn(
-              'text-xs px-2 py-1 rounded-full font-medium',
-              memberInfo.status === 'ACTIVE' ? 'bg-green-50 text-green-600' : 'bg-gray-100 text-gray-500'
-            )}>
+            <Badge
+              tone={memberInfo.status === 'ACTIVE' ? 'success' : 'neutral'}
+              variant="soft"
+            >
               {memberInfo.status === 'ACTIVE' ? '이용중' : memberInfo.status}
-            </span>
+            </Badge>
           </div>
           <div className="mt-3 flex gap-4 text-xs text-content-secondary">
             {memberInfo.membershipType && <span>이용권: {memberInfo.membershipType}</span>}
             {memberInfo.membershipExpiry && <span>만료: {formatDateKo(memberInfo.membershipExpiry)}</span>}
           </div>
-        </div>
+        </Card>
       </div>
 
       {/* 탭 */}
@@ -442,7 +441,7 @@ export default function TrainerMemberDetail() {
               className={cn(
                 'flex-1 flex items-center justify-center gap-1 py-3 text-sm font-medium border-b-2 transition-colors',
                 tab === t.key
-                  ? 'border-teal-600 text-teal-600'
+                  ? 'border-primary text-primary'
                   : 'border-transparent text-content-tertiary'
               )}
             >
@@ -458,10 +457,10 @@ export default function TrainerMemberDetail() {
         {/* 운동기록 탭 */}
         {tab === 'exercise' && (
           exerciseLogs.length === 0 ? (
-            <p className="text-center text-content-tertiary text-sm py-8">운동 기록이 없습니다</p>
+            <EmptyState size="sm" title="운동 기록이 없습니다" />
           ) : (
             exerciseLogs.map((log) => (
-              <div key={log.id} className="bg-surface rounded-card p-3 shadow-card">
+              <Card key={log.id} variant="soft" padding="sm">
                 <div className="flex items-center justify-between">
                   <p className="font-semibold text-sm">{log.exerciseName}</p>
                   <span className="text-xs text-content-tertiary">{formatDateKo(log.loggedAt)}</span>
@@ -472,7 +471,7 @@ export default function TrainerMemberDetail() {
                   {log.weight && <span>{log.weight}kg</span>}
                   {log.duration && <span>{log.duration}분</span>}
                 </div>
-              </div>
+              </Card>
             ))
           )
         )}
@@ -480,10 +479,10 @@ export default function TrainerMemberDetail() {
         {/* 체성분 탭 */}
         {tab === 'body' && (
           bodyComps.length === 0 ? (
-            <p className="text-center text-content-tertiary text-sm py-8">체성분 기록이 없습니다</p>
+            <EmptyState size="sm" title="체성분 기록이 없습니다" />
           ) : (
             bodyComps.map((bc) => (
-              <div key={bc.id} className="bg-surface rounded-card p-3 shadow-card">
+              <Card key={bc.id} variant="soft" padding="sm">
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-xs text-content-tertiary">{formatDateKo(bc.createdAt)}</span>
                 </div>
@@ -509,7 +508,7 @@ export default function TrainerMemberDetail() {
                     <p className="text-sm font-bold">{bc.bmi ?? '-'}</p>
                   </div>
                 </div>
-              </div>
+              </Card>
             ))
           )
         )}
@@ -517,169 +516,168 @@ export default function TrainerMemberDetail() {
         {tab === 'lesson' && (
           <>
             {activeLessonCount && (
-              <div className="bg-surface rounded-card p-4 shadow-card space-y-3">
-                <div className="flex items-start justify-between gap-3">
-                  <div>
-                    <p className="text-xs text-content-tertiary">수강권 잔여 현황</p>
-                    <p className="mt-1 text-sm font-semibold">{activeLessonCount.productName}</p>
+              <Card variant="elevated" padding="md">
+                <div className="space-y-3">
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <p className="text-xs text-content-tertiary">수강권 잔여 현황</p>
+                      <p className="mt-1 text-sm font-semibold">{activeLessonCount.productName}</p>
+                    </div>
+                    <div className="rounded-card bg-primary-light px-3 py-2 text-right">
+                      <p className="text-[11px] text-primary">잔여 회차</p>
+                      <p className="text-lg font-bold text-primary">
+                        {Math.max(activeLessonCount.totalCount - activeLessonCount.usedCount, 0)}회
+                      </p>
+                    </div>
                   </div>
-                  <div className="rounded-xl bg-teal-50 px-3 py-2 text-right">
-                    <p className="text-[11px] text-teal-600">잔여 회차</p>
-                    <p className="text-lg font-bold text-teal-600">
-                      {Math.max(activeLessonCount.totalCount - activeLessonCount.usedCount, 0)}회
-                    </p>
+                  <div className="grid grid-cols-2 gap-2">
+                    <div className="rounded-card bg-surface-secondary px-3 py-3">
+                      <p className="text-[11px] text-content-tertiary">사용 회차</p>
+                      <p className="mt-1 text-sm font-semibold">
+                        {activeLessonCount.usedCount}/{activeLessonCount.totalCount}
+                      </p>
+                    </div>
+                    <div className="rounded-card bg-surface-secondary px-3 py-3">
+                      <p className="text-[11px] text-content-tertiary">사용 기간</p>
+                      <p className="mt-1 text-sm font-semibold">
+                        {formatDateKo(activeLessonCount.startDate)} ~ {formatDateKo(activeLessonCount.endDate)}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-2">
+                    <div className="rounded-card bg-surface-secondary px-3 py-3">
+                      <p className="text-[11px] text-content-tertiary">최근 차감</p>
+                      <p className="mt-1 text-sm font-semibold">
+                        {latestLessonHistory ? formatDateKo(latestLessonHistory.deductedAt) : '없음'}
+                      </p>
+                    </div>
+                    <div className="rounded-card bg-surface-secondary px-3 py-3">
+                      <p className="text-[11px] text-content-tertiary">다음 예약 예정</p>
+                      <p className="mt-1 text-sm font-semibold">
+                        {nextLessonSchedule ? formatDateKo(nextLessonSchedule.startTime) : '없음'}
+                      </p>
+                    </div>
                   </div>
                 </div>
-                <div className="grid grid-cols-2 gap-2">
-                  <div className="rounded-xl bg-surface-secondary px-3 py-3">
-                    <p className="text-[11px] text-content-tertiary">사용 회차</p>
-                    <p className="mt-1 text-sm font-semibold">
-                      {activeLessonCount.usedCount}/{activeLessonCount.totalCount}
-                    </p>
-                  </div>
-                  <div className="rounded-xl bg-surface-secondary px-3 py-3">
-                    <p className="text-[11px] text-content-tertiary">사용 기간</p>
-                    <p className="mt-1 text-sm font-semibold">
-                      {formatDateKo(activeLessonCount.startDate)} ~ {formatDateKo(activeLessonCount.endDate)}
-                    </p>
-                  </div>
-                </div>
-                <div className="grid grid-cols-2 gap-2">
-                  <div className="rounded-xl bg-surface-secondary px-3 py-3">
-                    <p className="text-[11px] text-content-tertiary">최근 차감</p>
-                    <p className="mt-1 text-sm font-semibold">
-                      {latestLessonHistory ? formatDateKo(latestLessonHistory.deductedAt) : '없음'}
-                    </p>
-                  </div>
-                  <div className="rounded-xl bg-surface-secondary px-3 py-3">
-                    <p className="text-[11px] text-content-tertiary">다음 예약 예정</p>
-                    <p className="mt-1 text-sm font-semibold">
-                      {nextLessonSchedule ? formatDateKo(nextLessonSchedule.startTime) : '없음'}
-                    </p>
-                  </div>
-                </div>
-              </div>
+              </Card>
             )}
 
-            <div className="bg-surface rounded-card p-4 shadow-card space-y-3">
-              <p className="font-semibold text-sm">수업 일정 / 이력</p>
+            <Card variant="elevated" padding="md">
+              <p className="font-semibold text-sm mb-3">수업 일정 / 이력</p>
               {lessonSchedules.length === 0 ? (
                 <p className="text-sm text-content-tertiary">등록된 수업 이력이 없습니다</p>
               ) : (
-                lessonSchedules.map((lesson) => (
-                  <div key={lesson.id} className="rounded-xl bg-surface-secondary px-3 py-3">
-                    <div className="flex items-center justify-between gap-3">
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <p className="text-sm font-semibold">{lesson.title}</p>
-                          <span
-                            className={cn(
-                              'rounded-full px-2 py-0.5 text-[10px] font-semibold',
-                              lesson.lessonStatus === 'completed'
-                                ? 'bg-state-info/10 text-state-info'
-                                : 'bg-state-success/10 text-state-success'
-                            )}
-                          >
-                            {lesson.lessonStatus === 'completed' ? '완료' : '예정'}
-                          </span>
+                <div className="space-y-3">
+                  {lessonSchedules.map((lesson) => (
+                    <div key={lesson.id} className="rounded-card bg-surface-secondary px-3 py-3">
+                      <div className="flex items-center justify-between gap-3">
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <p className="text-sm font-semibold">{lesson.title}</p>
+                            <Badge
+                              tone={lesson.lessonStatus === 'completed' ? 'info' : 'success'}
+                              variant="soft"
+                            >
+                              {lesson.lessonStatus === 'completed' ? '완료' : '예정'}
+                            </Badge>
+                          </div>
+                          <p className="mt-1 text-xs text-content-secondary">
+                            {formatDateKo(lesson.startTime)} · {lesson.type}{lesson.room ? ` · ${lesson.room}` : ''}
+                          </p>
                         </div>
-                        <p className="mt-1 text-xs text-content-secondary">
-                          {formatDateKo(lesson.startTime)} · {lesson.type}{lesson.room ? ` · ${lesson.room}` : ''}
-                        </p>
+                        <span className="text-xs text-content-tertiary">
+                          {formatDateKo(lesson.startTime)}
+                        </span>
                       </div>
-                      <span className="text-xs text-content-tertiary">
-                        {formatDateKo(lesson.startTime)}
-                      </span>
                     </div>
-                  </div>
-                ))
+                  ))}
+                </div>
               )}
-            </div>
+            </Card>
 
-            <div className="bg-surface rounded-card p-4 shadow-card space-y-3">
-              <p className="font-semibold text-sm">차감 이력</p>
+            <Card variant="elevated" padding="md">
+              <p className="font-semibold text-sm mb-3">차감 이력</p>
               {lessonCountHistories.length === 0 ? (
                 <p className="text-sm text-content-tertiary">차감 이력이 없습니다</p>
               ) : (
-                lessonCountHistories.map((history) => (
-                  <div key={history.id} className="rounded-xl bg-surface-secondary px-3 py-3">
-                    <div className="flex items-center justify-between gap-3">
-                      <p className="text-sm font-medium">{history.title}</p>
-                      <span className="text-xs text-content-tertiary">{formatDateKo(history.deductedAt)}</span>
+                <div className="space-y-3">
+                  {lessonCountHistories.map((history) => (
+                    <div key={history.id} className="rounded-card bg-surface-secondary px-3 py-3">
+                      <div className="flex items-center justify-between gap-3">
+                        <p className="text-sm font-medium">{history.title}</p>
+                        <span className="text-xs text-content-tertiary">{formatDateKo(history.deductedAt)}</span>
+                      </div>
+                      {history.note && <p className="mt-1 text-xs text-content-secondary">{history.note}</p>}
                     </div>
-                    {history.note && <p className="mt-1 text-xs text-content-secondary">{history.note}</p>}
-                  </div>
-                ))
+                  ))}
+                </div>
               )}
-            </div>
+            </Card>
           </>
         )}
 
         {/* 평가 탭 */}
         {tab === 'evaluation' && (
           <>
-            {/* 평가 작성 폼 */}
-            <div className="bg-surface rounded-card p-4 shadow-card space-y-3">
-              <p className="font-semibold text-sm flex items-center gap-1">
+            <Card variant="elevated" padding="md">
+              <p className="font-semibold text-sm flex items-center gap-1 mb-3">
                 <Plus className="w-4 h-4" /> 새 평가 작성
               </p>
-              <input
-                type="text"
-                value={evalCategory}
-                onChange={(e) => setEvalCategory(e.target.value)}
-                placeholder="평가 카테고리 (예: 체력, 자세, 식단)"
-                className="w-full px-3 py-2 rounded-lg border border-line text-sm focus:outline-none focus:border-teal-500"
-              />
-              <div className="flex items-center gap-2">
-                <span className="text-sm text-content-secondary">점수:</span>
+              <div className="space-y-3">
                 <input
-                  type="range"
-                  min={1}
-                  max={10}
-                  value={evalScore}
-                  onChange={(e) => setEvalScore(Number(e.target.value))}
-                  className="flex-1 accent-teal-600"
+                  type="text"
+                  value={evalCategory}
+                  onChange={(e) => setEvalCategory(e.target.value)}
+                  placeholder="평가 카테고리 (예: 체력, 자세, 식단)"
+                  className="w-full px-3 py-2 rounded-input border border-line text-sm focus:outline-none focus:border-primary"
                 />
-                <span className="text-sm font-bold text-teal-600 w-6 text-right">{evalScore}</span>
+                <div className="flex items-center gap-2">
+                  <span className="text-sm text-content-secondary">점수:</span>
+                  <input
+                    type="range"
+                    min={1}
+                    max={10}
+                    value={evalScore}
+                    onChange={(e) => setEvalScore(Number(e.target.value))}
+                    className="flex-1 accent-primary"
+                  />
+                  <span className="text-sm font-bold text-primary w-6 text-right">{evalScore}</span>
+                </div>
+                <textarea
+                  value={evalContent}
+                  onChange={(e) => setEvalContent(e.target.value)}
+                  placeholder="평가 내용을 입력하세요"
+                  rows={3}
+                  className="w-full px-3 py-2 rounded-input border border-line text-sm focus:outline-none focus:border-primary resize-none"
+                />
+                <Button
+                  variant="primary"
+                  size="md"
+                  fullWidth
+                  onClick={submitEvaluation}
+                  disabled={evalSubmitting || !evalContent}
+                  loading={evalSubmitting}
+                >
+                  평가 저장
+                </Button>
               </div>
-              <textarea
-                value={evalContent}
-                onChange={(e) => setEvalContent(e.target.value)}
-                placeholder="평가 내용을 입력하세요"
-                rows={3}
-                className="w-full px-3 py-2 rounded-lg border border-line text-sm focus:outline-none focus:border-teal-500 resize-none"
-              />
-              <button
-                onClick={submitEvaluation}
-                disabled={evalSubmitting || !evalContent}
-                className={cn(
-                  'w-full py-2.5 rounded-lg font-semibold text-sm text-white',
-                  'bg-teal-600 active:bg-teal-700 transition-colors',
-                  'disabled:opacity-50 disabled:cursor-not-allowed'
-                )}
-              >
-                {evalSubmitting ? '저장 중...' : '평가 저장'}
-              </button>
-            </div>
+            </Card>
 
-            {/* 평가 목록 */}
             {evaluations.length === 0 ? (
-              <p className="text-center text-content-tertiary text-sm py-4">평가 기록이 없습니다</p>
+              <EmptyState size="sm" title="평가 기록이 없습니다" />
             ) : (
               evaluations.map((ev) => (
-                <div key={ev.id} className="bg-surface rounded-card p-3 shadow-card">
+                <Card key={ev.id} variant="soft" padding="sm">
                   <div className="flex items-center justify-between mb-1">
                     <div className="flex items-center gap-2">
-                      <span className="text-xs bg-teal-50 text-teal-600 px-2 py-0.5 rounded-full">
-                        {ev.category}
-                      </span>
-                      <span className="text-xs font-bold text-teal-600">{ev.score}/10</span>
+                      <Badge tone="primary" variant="soft">{ev.category}</Badge>
+                      <span className="text-xs font-bold text-primary">{ev.score}/10</span>
                     </div>
                     <span className="text-xs text-content-tertiary">{formatDateKo(ev.createdAt)}</span>
                   </div>
                   <p className="text-sm text-content">{ev.content}</p>
                   <p className="text-xs text-content-tertiary mt-1">- {ev.staffName}</p>
-                </div>
+                </Card>
               ))
             )}
           </>
@@ -688,41 +686,36 @@ export default function TrainerMemberDetail() {
         {/* 메모 탭 */}
         {tab === 'memo' && (
           <>
-            {/* 메모 입력 */}
             <div className="flex gap-2">
               <input
                 type="text"
                 value={memoContent}
                 onChange={(e) => setMemoContent(e.target.value)}
                 placeholder="메모를 입력하세요"
-                className="flex-1 px-3 py-2.5 rounded-lg border border-line text-sm focus:outline-none focus:border-teal-500"
+                className="flex-1 px-3 py-2.5 rounded-input border border-line text-sm focus:outline-none focus:border-primary"
                 onKeyDown={(e) => e.key === 'Enter' && submitMemo()}
               />
-              <button
+              <Button
+                variant="primary"
+                size="md"
                 onClick={submitMemo}
                 disabled={memoSubmitting || !memoContent}
-                className={cn(
-                  'px-4 py-2.5 rounded-lg text-white',
-                  'bg-teal-600 active:bg-teal-700 transition-colors',
-                  'disabled:opacity-50'
-                )}
               >
                 <Send className="w-4 h-4" />
-              </button>
+              </Button>
             </div>
 
-            {/* 메모 목록 */}
             {memos.length === 0 ? (
-              <p className="text-center text-content-tertiary text-sm py-4">메모가 없습니다</p>
+              <EmptyState size="sm" title="메모가 없습니다" />
             ) : (
               memos.map((memo) => (
-                <div key={memo.id} className="bg-surface rounded-card p-3 shadow-card">
+                <Card key={memo.id} variant="soft" padding="sm">
                   <p className="text-sm text-content">{memo.content}</p>
                   <div className="flex justify-between mt-1">
                     <span className="text-xs text-content-tertiary">{memo.author}</span>
                     <span className="text-xs text-content-tertiary">{formatDateKo(memo.createdAt)}</span>
                   </div>
-                </div>
+                </Card>
               ))
             )}
           </>

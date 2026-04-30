@@ -77,7 +77,10 @@ export default function Notifications() {
               <button
                 key={item.id}
                 onClick={() => handleOpen(item)}
-                className="w-full bg-surface rounded-card p-4 shadow-card-soft text-left"
+                className={cn(
+                  'w-full bg-surface rounded-card p-4 shadow-card-soft text-left active:bg-surface-secondary transition-colors',
+                  !item.read && 'ring-1 ring-primary/15'
+                )}
               >
                 <div className="flex items-start gap-3">
                   <div className={cn(
@@ -92,19 +95,26 @@ export default function Notifications() {
                   </div>
 
                   <div className="flex-1 min-w-0">
-                    <div className="flex flex-col gap-1 sm:flex-row sm:items-start sm:justify-between">
-                      <div className="min-w-0 flex items-start gap-2">
-                        <h3 className="min-w-0 text-sm font-semibold leading-5 break-keep">{item.title}</h3>
-                        {!item.read && <span className="w-2 h-2 bg-state-error rounded-full flex-shrink-0" />}
+                    {/* 제목 + 시간 (한 줄, 항상 row) */}
+                    <div className="flex items-baseline justify-between gap-2">
+                      <div className="min-w-0 flex items-center gap-1.5">
+                        <h3 className="min-w-0 text-body font-semibold text-content truncate">{item.title}</h3>
+                        {!item.read && (
+                          <span className="w-1.5 h-1.5 bg-state-sale rounded-full flex-shrink-0" aria-label="미읽음" />
+                        )}
                       </div>
-                      <span className="text-[11px] leading-none text-content-tertiary flex-shrink-0 whitespace-nowrap">
+                      <span className="text-caption text-content-tertiary flex-shrink-0 whitespace-nowrap">
                         {formatDateKo(item.createdAt)}
                       </span>
                     </div>
-                    <p className="text-sm text-content-secondary mt-1 leading-relaxed break-keep">{item.body}</p>
-                    <div className="mt-3 flex items-center justify-between text-xs text-primary font-medium">
+                    {/* 본문 — 2줄 line-clamp */}
+                    <p className="text-body-sm text-content-secondary mt-1 leading-relaxed line-clamp-2 break-keep">
+                      {item.body}
+                    </p>
+                    {/* 액션 라벨 — 우측 정렬 */}
+                    <div className="mt-2.5 flex items-center justify-end gap-0.5 text-caption text-primary font-medium">
                       <span>{item.actionLabel}</span>
-                      <ChevronRight className="w-4 h-4" />
+                      <ChevronRight className="w-3.5 h-3.5" />
                     </div>
                   </div>
                 </div>

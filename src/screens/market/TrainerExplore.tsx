@@ -344,7 +344,7 @@ function GridView({
               <button
                 onClick={(e) => { e.stopPropagation(); toggleScrap('trainer', trainer.id); }}
                 className="absolute top-2 right-2 w-8 h-8 rounded-full bg-black/30 backdrop-blur-sm flex items-center justify-center"
-                aria-label="스크랩"
+                aria-label="찜"
               >
                 <Heart
                   className={`w-4 h-4 transition-colors ${scrapped ? 'fill-state-sale text-state-sale' : 'text-white'}`}
@@ -414,7 +414,7 @@ function ListView({
             <button
               onClick={(e) => { e.stopPropagation(); toggleScrap('trainer', trainer.id); }}
               className="shrink-0 w-9 h-9 rounded-full flex items-center justify-center active:bg-surface-tertiary"
-              aria-label="스크랩"
+              aria-label="찜"
             >
               <Heart
                 className={`w-5 h-5 transition-colors ${scrapped ? 'fill-state-sale text-state-sale' : 'text-content-tertiary'}`}

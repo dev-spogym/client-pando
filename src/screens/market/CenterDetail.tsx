@@ -666,7 +666,7 @@ export default function CenterDetail() {
             </button>
             <button
               type="button"
-              aria-label={scrapped ? '스크랩 취소' : '스크랩'}
+              aria-label={scrapped ? '찜 취소' : '찜'}
               onClick={() => toggleScrap('center', center.id)}
               className="w-9 h-9 rounded-full bg-black/30 backdrop-blur-sm flex items-center justify-center"
             >
@@ -862,10 +862,10 @@ export default function CenterDetail() {
 
       {/* ── Bottom Action Bar ── (모바일 프레임 폭) */}
       <div className="bottom-action-bar flex items-center gap-3">
-        {/* 스크랩 토글 */}
+        {/* 찜 토글 */}
         <button
           type="button"
-          aria-label={scrapped ? '스크랩 취소' : '스크랩'}
+          aria-label={scrapped ? '찜 취소' : '찜'}
           onClick={() => toggleScrap('center', center.id)}
           className={`w-12 h-12 rounded-button border flex items-center justify-center shrink-0 transition-colors ${
             scrapped

@@ -1,5 +1,5 @@
 /**
- * 마켓플레이스 클라이언트 상태 (스크랩, 위치, 검색 기록)
+ * 마켓플레이스 클라이언트 상태 (찜, 위치, 검색 기록)
  * 회원 단위 영구 저장은 추후 supabase로. 현재는 localStorage 기반.
  */
 import { create } from 'zustand';
@@ -13,7 +13,7 @@ import {
 } from '@/lib/marketplace';
 
 interface MarketState {
-  /** 스크랩 컬렉션 */
+  /** 찜 컬렉션 */
   scraps: ScrapItem[];
   /** 검색 기록 (최근 검색어) */
   recentKeywords: string[];

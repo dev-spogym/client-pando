@@ -45,7 +45,7 @@ export default function ScrapList() {
   return (
     <div className="min-h-screen bg-surface-secondary pb-10">
       <PageHeader
-        title="스크랩"
+        title="찜"
         showBack
         sticky
         rightSlot={
@@ -129,8 +129,8 @@ function CenterTab({
     return (
       <EmptyState
         icon={<Heart className="w-8 h-8" />}
-        title="스크랩한 항목이 없습니다"
-        description="마음에 드는 센터를 스크랩해보세요."
+        title="찜한 항목이 없습니다"
+        description="마음에 드는 센터를 찜해보세요."
         action={
           <Button variant="primary" size="md" onClick={() => navigate('/centers')}>
             센터 둘러보기
@@ -221,8 +221,8 @@ function TrainerTab({
     return (
       <EmptyState
         icon={<Heart className="w-8 h-8" />}
-        title="스크랩한 항목이 없습니다"
-        description="마음에 드는 강사를 스크랩해보세요."
+        title="찜한 항목이 없습니다"
+        description="마음에 드는 강사를 찜해보세요."
         action={
           <Button variant="primary" size="md" onClick={() => navigate('/trainers')}>
             강사 둘러보기
@@ -292,8 +292,8 @@ function ProductTab({
     return (
       <EmptyState
         icon={<Package className="w-8 h-8" />}
-        title="스크랩한 항목이 없습니다"
-        description="마음에 드는 상품을 스크랩해보세요."
+        title="찜한 항목이 없습니다"
+        description="마음에 드는 상품을 찜해보세요."
         action={
           <Button variant="primary" size="md" onClick={() => navigate('/centers')}>
             상품 둘러보기
@@ -354,8 +354,8 @@ function ProductTab({
 function ClassTab({ navigate }: { navigate: ReturnType<typeof useNavigate> }) {
   return (
     <EmptyState
-      title="수업 스크랩은 곧 제공됩니다"
-      description="업데이트 후 이용 가능해집니다. 먼저 센터나 강사를 스크랩해보세요."
+      title="수업 찜은 곧 제공됩니다"
+      description="업데이트 후 이용 가능해집니다. 먼저 센터나 강사를 찜해보세요."
       action={
         <Button variant="secondary" size="md" onClick={() => navigate('/centers')}>
           센터 둘러보기

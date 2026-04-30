@@ -84,7 +84,7 @@ export default function TrainerDetail() {
             type="button"
             onClick={() => toggleScrap('trainer', trainer.id)}
             className="w-10 h-10 inline-flex items-center justify-center rounded-full active:bg-white/20"
-            aria-label="스크랩"
+            aria-label="찜"
           >
             <Heart
               className={`w-5 h-5 transition-colors ${scrapped ? 'fill-state-sale text-state-sale' : 'text-white'}`}
@@ -298,7 +298,7 @@ export default function TrainerDetail() {
         <button
           onClick={() => toggleScrap('trainer', trainer.id)}
           className="w-12 h-12 shrink-0 rounded-button border border-line-strong flex items-center justify-center active:bg-surface-tertiary"
-          aria-label="스크랩"
+          aria-label="찜"
         >
           <Heart
             className={`w-5 h-5 ${scrapped ? 'fill-state-sale text-state-sale' : 'text-content-secondary'}`}

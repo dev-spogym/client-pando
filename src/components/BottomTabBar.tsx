@@ -7,7 +7,7 @@ const tabs = [
   { path: '/', label: '홈', icon: Home, exact: true },
   { path: '/centers', label: '센터', icon: Building2 },
   { path: '/trainers', label: '강사', icon: UserSquare2 },
-  { path: '/scrap', label: '스크랩', icon: Heart, useScrapBadge: true },
+  { path: '/scrap', label: '찜', icon: Heart, useScrapBadge: true },
   { path: '/profile', label: 'MY', icon: User },
 ];
 

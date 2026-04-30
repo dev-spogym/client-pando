@@ -10,7 +10,7 @@ interface LoginGateModalProps {
   open: boolean;
   /** 닫기 콜백 */
   onClose: () => void;
-  /** 시도한 액션 라벨 (예: '결제하기', '스크랩하기') */
+  /** 시도한 액션 라벨 (예: '결제하기', '찜하기') */
   action?: string;
   /** 로그인 후 돌아올 경로 (선택) */
   redirectTo?: string;
@@ -19,7 +19,7 @@ interface LoginGateModalProps {
 /**
  * 비로그인 게이트 모달
  *
- * 비로그인 회원이 결제/스크랩/메신저/리뷰 등 보호된 액션을
+ * 비로그인 회원이 결제/찜/메신저/리뷰 등 보호된 액션을
  * 시도할 때 표시되는 바텀시트 형태 모달.
  */
 export default function LoginGateModal({

@@ -1029,7 +1029,7 @@ export const MOCK_MESSAGES: Record<number, MarketMessage[]> = {
 };
 
 // ─────────────────────────────────────────────────────────────
-// 스크랩 mock
+// 찜 mock
 // ─────────────────────────────────────────────────────────────
 
 export type ScrapTargetType = 'center' | 'trainer' | 'product' | 'class';

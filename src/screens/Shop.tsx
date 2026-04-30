@@ -57,44 +57,52 @@ export default function Shop() {
           <Card
             key={product.id}
             variant="soft"
-            padding="lg"
+            padding="none"
             interactive
+            className="overflow-hidden"
             onClick={() => navigate(`/shop/${product.id}`)}
           >
-            <div className="flex items-start justify-between gap-3">
-              <div className="flex-1">
-                <div className="flex items-center gap-2 mb-2">
-                  {product.recommended && (
-                    <Badge tone="primary" size="sm">추천</Badge>
-                  )}
-                  <Badge tone="neutral" size="sm">
-                    {product.category === 'gym' ? '헬스장'
-                      : product.category === 'golf' ? '골프장'
-                      : product.category === 'pt' ? 'PT'
-                      : product.category === 'golf_lesson' ? '골프 레슨'
-                      : '기타'}
-                  </Badge>
-                </div>
-                <h2 className="text-h3 text-content">{product.name}</h2>
-                <p className="text-body-sm text-content-secondary mt-2 leading-relaxed">{product.subtitle}</p>
-                <div className="mt-3 flex flex-wrap gap-2">
-                  {product.tags.map((tag) => (
-                    <Badge key={tag} tone="info" size="sm">{tag}</Badge>
-                  ))}
-                </div>
+            {/* 16:9 썸네일 */}
+            <div className="relative aspect-video bg-surface-tertiary overflow-hidden">
+              <img
+                src={`https://picsum.photos/seed/shop-${product.category}-${product.id}/800/450`}
+                alt={product.name}
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute top-3 left-3 flex gap-1.5">
+                {product.recommended && (
+                  <Badge tone="warning" variant="solid" size="sm">추천</Badge>
+                )}
+                <Badge tone="primary" variant="solid" size="sm">
+                  {product.category === 'gym' ? '헬스장'
+                    : product.category === 'golf' ? '골프장'
+                    : product.category === 'pt' ? 'PT'
+                    : product.category === 'golf_lesson' ? '골프 레슨'
+                    : '기타'}
+                </Badge>
               </div>
             </div>
 
-            <div className="mt-4 flex items-end justify-between">
-              <PriceTag
-                price={product.price}
-                originalPrice={product.originalPrice}
-                showDiscountPercent
-                size="md"
-              />
-              <div className="text-right text-caption text-content-secondary">
-                <p>{product.durationText}</p>
-                {product.sessionsText && <p>{product.sessionsText}</p>}
+            {/* 본문 */}
+            <div className="p-4">
+              <h2 className="text-h3 text-content">{product.name}</h2>
+              <p className="text-body-sm text-content-secondary mt-1.5 leading-relaxed">{product.subtitle}</p>
+              <div className="mt-3 flex flex-wrap gap-1.5">
+                {product.tags.map((tag) => (
+                  <Badge key={tag} tone="neutral" variant="soft" size="sm">{tag}</Badge>
+                ))}
+              </div>
+              <div className="mt-4 flex items-end justify-between">
+                <PriceTag
+                  price={product.price}
+                  originalPrice={product.originalPrice}
+                  showDiscountPercent
+                  size="md"
+                />
+                <div className="text-right text-caption text-content-tertiary">
+                  <p>{product.durationText}</p>
+                  {product.sessionsText && <p>{product.sessionsText}</p>}
+                </div>
               </div>
             </div>
           </Card>

@@ -218,15 +218,17 @@ export default function CenterExplore() {
         )}
       </div>
 
-      {/* 지도보기 FAB */}
-      <button
-        type="button"
-        onClick={() => navigate('/centers/map')}
-        className="fixed bottom-24 right-5 z-30 flex items-center gap-2 bg-primary text-white rounded-pill px-4 h-11 shadow-fab font-semibold text-body-sm active:bg-primary-dark"
-      >
-        <MapPin className="w-4 h-4" />
-        지도보기
-      </button>
+      {/* 지도보기 FAB — 모바일 프레임 우측 안쪽 */}
+      <div className="mobile-fixed-width fixed bottom-24 z-30 px-5 pointer-events-none flex justify-end">
+        <button
+          type="button"
+          onClick={() => navigate('/centers/map')}
+          className="pointer-events-auto inline-flex items-center gap-2 bg-primary text-white rounded-pill px-4 h-11 shadow-fab font-semibold text-body-sm active:bg-primary-dark"
+        >
+          <MapPin className="w-4 h-4" />
+          지도보기
+        </button>
+      </div>
     </div>
   );
 }

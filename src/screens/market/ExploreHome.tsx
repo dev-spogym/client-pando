@@ -448,9 +448,11 @@ export default function ExploreHome() {
         <button
           type="button"
           onClick={() => setDistrictOpen(!districtOpen)}
-          className="flex items-center gap-1 text-content font-bold text-h4"
+          aria-label="지역 변경"
+          className="flex items-center gap-1.5 text-content font-bold text-body-lg active:opacity-70"
         >
-          {district}
+          <MapPin className="w-4 h-4 text-primary" />
+          <span>{district}</span>
           <ChevronDown className={`w-4 h-4 text-content-secondary transition-transform ${districtOpen ? 'rotate-180' : ''}`} />
         </button>
         <div className="flex-1" />
@@ -479,32 +481,37 @@ export default function ExploreHome() {
         </div>
       </header>
 
-      {/* 행정구역 드롭다운 (간단 오버레이) */}
+      {/* 행정구역 드롭다운 — backdrop은 viewport 전체, 시트는 모바일 프레임 폭 */}
       {districtOpen && (
-        <div
-          className="fixed inset-0 z-20 bg-black/20"
-          onClick={() => setDistrictOpen(false)}
-        >
+        <>
+          <button
+            type="button"
+            aria-label="지역 선택 닫기"
+            className="fixed inset-0 z-30 bg-black/20"
+            onClick={() => setDistrictOpen(false)}
+          />
           <div
-            className="absolute top-14 left-5 right-5 bg-surface rounded-card-lg shadow-card-elevated p-4"
+            className="mobile-fixed-width fixed top-14 z-40 px-3"
             onClick={(e) => e.stopPropagation()}
           >
-            <p className="text-body-sm text-content-tertiary mb-3">지역 선택</p>
-            {['강남구 논현동', '강남구 역삼동', '서초구 서초동', '송파구 잠실동', '마포구 홍대입구'].map((d) => (
-              <button
-                key={d}
-                type="button"
-                className="w-full text-left py-2.5 px-2 text-body text-content rounded-button hover:bg-surface-secondary active:bg-surface-tertiary"
-                onClick={() => {
-                  useMarketStore.getState().setDistrict(d);
-                  setDistrictOpen(false);
-                }}
-              >
-                {d}
-              </button>
-            ))}
+            <div className="bg-surface rounded-card-lg shadow-card-elevated p-4">
+              <p className="text-body-sm text-content-tertiary mb-3">지역 선택</p>
+              {['강남구 논현동', '강남구 역삼동', '서초구 서초동', '송파구 잠실동', '마포구 홍대입구'].map((d) => (
+                <button
+                  key={d}
+                  type="button"
+                  className="w-full text-left py-2.5 px-2 text-body text-content rounded-button hover:bg-surface-secondary active:bg-surface-tertiary"
+                  onClick={() => {
+                    useMarketStore.getState().setDistrict(d);
+                    setDistrictOpen(false);
+                  }}
+                >
+                  {d}
+                </button>
+              ))}
+            </div>
           </div>
-        </div>
+        </>
       )}
 
       <div className="space-y-5 pt-3">

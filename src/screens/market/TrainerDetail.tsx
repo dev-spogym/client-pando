@@ -285,34 +285,32 @@ export default function TrainerDetail() {
         )}
       </div>
 
-      {/* Bottom action bar */}
-      <div className="fixed bottom-0 left-0 right-0 z-30 bg-surface border-t border-line px-4 pt-3 pb-safe-bottom">
-        <div className="pb-4 flex items-center gap-3">
-          <button
-            onClick={() => toggleScrap('trainer', trainer.id)}
-            className="w-12 h-12 shrink-0 rounded-button border border-line-strong flex items-center justify-center active:bg-surface-tertiary"
-            aria-label="스크랩"
-          >
-            <Heart
-              className={`w-5 h-5 ${scrapped ? 'fill-state-sale text-state-sale' : 'text-content-secondary'}`}
-            />
-          </button>
-          <Button
-            variant="outline"
-            size="lg"
-            className="flex-1"
-            onClick={() => navigate('/messages')}
-          >
-            1:1 톡
-          </Button>
-          <Button
-            variant="primary"
-            size="lg"
-            className="flex-1"
-          >
-            예약 요청
-          </Button>
-        </div>
+      {/* Bottom action bar — 모바일 프레임 폭 */}
+      <div className="bottom-action-bar flex items-center gap-3">
+        <button
+          onClick={() => toggleScrap('trainer', trainer.id)}
+          className="w-12 h-12 shrink-0 rounded-button border border-line-strong flex items-center justify-center active:bg-surface-tertiary"
+          aria-label="스크랩"
+        >
+          <Heart
+            className={`w-5 h-5 ${scrapped ? 'fill-state-sale text-state-sale' : 'text-content-secondary'}`}
+          />
+        </button>
+        <Button
+          variant="outline"
+          size="lg"
+          className="flex-1"
+          onClick={() => navigate('/messages')}
+        >
+          1:1 톡
+        </Button>
+        <Button
+          variant="primary"
+          size="lg"
+          className="flex-1"
+        >
+          예약 요청
+        </Button>
       </div>
     </div>
   );

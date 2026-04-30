@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Bell, SlidersHorizontal, LayoutGrid, List, Heart, Star } from 'lucide-react';
+import { Bell, SlidersHorizontal, LayoutGrid, List, Heart, Star, X } from 'lucide-react';
 import {
   SearchBar,
   Chip,
@@ -37,6 +37,7 @@ export default function TrainerExplore() {
   const [sortKey, setSortKey] = useState<SortKey>('리뷰순');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [showSort, setShowSort] = useState(false);
+  const [showFilterSheet, setShowFilterSheet] = useState(false);
 
   const toggleFilter = (f: SecondaryFilter) => {
     setSelectedFilters((prev) => {
@@ -133,6 +134,7 @@ export default function TrainerExplore() {
           <button
             type="button"
             aria-label="필터"
+            onClick={() => setShowFilterSheet(true)}
             className="shrink-0 w-9 h-9 inline-flex items-center justify-center rounded-chip border border-line-strong bg-surface text-content-secondary active:bg-surface-tertiary relative"
           >
             <SlidersHorizontal className="w-4 h-4" />
@@ -214,6 +216,93 @@ export default function TrainerExplore() {
         <GridView trainers={filtered} isScrapped={isScrapped} toggleScrap={toggleScrap} navigate={navigate} />
       ) : (
         <ListView trainers={filtered} isScrapped={isScrapped} toggleScrap={toggleScrap} navigate={navigate} />
+      )}
+
+      {/* 필터 바텀시트 */}
+      {showFilterSheet && (
+        <div className="fixed inset-0 z-50 flex items-end justify-center">
+          <button
+            type="button"
+            aria-label="닫기"
+            className="absolute inset-0 bg-black/40"
+            onClick={() => setShowFilterSheet(false)}
+          />
+          <div className="mobile-bottom-sheet relative bg-surface rounded-t-2xl pb-8 pt-4 px-5 max-h-[85vh] overflow-y-auto">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-h3 font-bold text-content">필터 · 정렬</h3>
+              <button
+                type="button"
+                onClick={() => setShowFilterSheet(false)}
+                aria-label="닫기"
+                className="w-8 h-8 inline-flex items-center justify-center rounded-full active:bg-surface-tertiary text-content-secondary"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* 정렬 */}
+            <p className="text-body-sm font-semibold text-content mb-2">정렬</p>
+            <div className="flex gap-2 flex-wrap mb-5">
+              {(['리뷰순', '평점순', '경력순'] as SortKey[]).map((opt) => (
+                <Chip key={opt} active={sortKey === opt} size="md" onClick={() => setSortKey(opt)}>
+                  {opt}
+                </Chip>
+              ))}
+            </div>
+
+            {/* 카테고리 */}
+            <p className="text-body-sm font-semibold text-content mb-2">카테고리</p>
+            <div className="flex gap-2 flex-wrap mb-5">
+              {categoryChips.map((cat) => (
+                <Chip
+                  key={cat.id}
+                  active={selectedCategory === cat.id}
+                  size="md"
+                  onClick={() => setSelectedCategory(cat.id)}
+                >
+                  {cat.icon} {cat.label}
+                </Chip>
+              ))}
+            </div>
+
+            {/* 보조 필터 */}
+            <p className="text-body-sm font-semibold text-content mb-2">조건</p>
+            <div className="flex gap-2 flex-wrap mb-6">
+              {SECONDARY_FILTERS.map((f) => (
+                <Chip
+                  key={f}
+                  active={selectedFilters.has(f)}
+                  size="md"
+                  variant="outline"
+                  onClick={() => toggleFilter(f)}
+                >
+                  {f}
+                </Chip>
+              ))}
+            </div>
+
+            <div className="flex gap-2 pt-3 border-t border-line">
+              <button
+                type="button"
+                onClick={() => {
+                  setSelectedCategory('all');
+                  setSelectedFilters(new Set());
+                  setSortKey('리뷰순');
+                }}
+                className="flex-1 h-12 rounded-button border border-line-strong text-content-secondary font-medium active:bg-surface-tertiary"
+              >
+                초기화
+              </button>
+              <button
+                type="button"
+                onClick={() => setShowFilterSheet(false)}
+                className="flex-[2] h-12 rounded-button bg-primary text-white font-semibold active:bg-primary-dark"
+              >
+                {filtered.length}명 보기
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

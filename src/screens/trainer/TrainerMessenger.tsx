@@ -333,24 +333,28 @@ export default function TrainerMessenger() {
         )}
       </div>
 
-      {/* 새 메시지 FAB */}
-      <button
-        type="button"
-        onClick={() => setShowNewMsgModal(true)}
-        aria-label="새 메시지 작성"
-        className="fixed bottom-24 right-5 w-14 h-14 bg-primary text-white rounded-full shadow-card-elevated flex items-center justify-center active:bg-primary-dark transition-colors z-30"
-      >
-        <Plus className="w-6 h-6" />
-      </button>
+      {/* 새 메시지 FAB — 모바일 프레임 우측 안쪽 */}
+      <div className="mobile-fixed-width fixed bottom-24 z-30 px-5 pointer-events-none flex justify-end">
+        <button
+          type="button"
+          onClick={() => setShowNewMsgModal(true)}
+          aria-label="새 메시지 작성"
+          className="pointer-events-auto w-14 h-14 bg-primary text-white rounded-full shadow-card-elevated flex items-center justify-center active:bg-primary-dark transition-colors"
+        >
+          <Plus className="w-6 h-6" />
+        </button>
+      </div>
 
-      {/* 새 메시지 모달 */}
+      {/* 새 메시지 모달 — 모바일 프레임 폭 */}
       {showNewMsgModal && (
-        <div className="fixed inset-0 z-50 flex items-end">
-          <div
+        <div className="fixed inset-0 z-50 flex items-end justify-center">
+          <button
+            type="button"
+            aria-label="닫기"
             className="absolute inset-0 bg-black/40"
             onClick={() => setShowNewMsgModal(false)}
           />
-          <div className="relative w-full bg-surface rounded-t-2xl px-4 pt-4 pb-safe-bottom max-h-[80vh] flex flex-col">
+          <div className="mobile-bottom-sheet relative bg-surface rounded-t-2xl px-4 pt-4 pb-safe-bottom max-h-[80vh] flex flex-col">
             {/* 모달 헤더 */}
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-h4 font-semibold text-content">새 메시지 보내기</h3>

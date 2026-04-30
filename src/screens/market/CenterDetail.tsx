@@ -837,8 +837,8 @@ export default function CenterDetail() {
 
       {activeTab === '위치' && <LocationTab center={center} />}
 
-      {/* ── Bottom Action Bar ── */}
-      <div className="bottom-action-bar fixed bottom-0 inset-x-0 z-30 bg-surface border-t border-line flex items-center gap-3 px-4 py-3 safe-area-bottom">
+      {/* ── Bottom Action Bar ── (모바일 프레임 폭) */}
+      <div className="bottom-action-bar flex items-center gap-3">
         {/* 스크랩 토글 */}
         <button
           type="button"

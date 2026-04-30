@@ -194,9 +194,14 @@ function NoteModal({ onClose, onSend }: NoteModalProps) {
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end">
-      <div className="absolute inset-0 bg-black/40" onClick={onClose} />
-      <div className="relative w-full bg-surface rounded-t-2xl px-4 pt-4 pb-8 max-h-[85vh] flex flex-col overflow-y-auto">
+    <div className="fixed inset-0 z-50 flex items-end justify-center">
+      <button
+        type="button"
+        aria-label="닫기"
+        className="absolute inset-0 bg-black/40"
+        onClick={onClose}
+      />
+      <div className="mobile-bottom-sheet relative bg-surface rounded-t-2xl px-4 pt-4 pb-8 max-h-[85vh] flex flex-col overflow-y-auto">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-h4 font-semibold text-content">강의노트 작성</h3>
           <button

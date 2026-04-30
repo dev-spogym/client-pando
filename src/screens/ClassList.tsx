@@ -20,7 +20,33 @@ interface ClassItem {
   booked: number;
 }
 
-type ClassFilter = 'ALL' | 'PT' | 'GX';
+type ClassFilter = 'ALL' | 'PT' | 'GX' | 'PILATES' | 'YOGA' | 'GOLF' | 'CROSSFIT' | 'SPINNING';
+
+const FILTER_OPTIONS: readonly ClassFilter[] = ['ALL', 'PT', 'GX', 'PILATES', 'YOGA', 'GOLF', 'CROSSFIT', 'SPINNING'];
+
+const FILTER_LABELS: Record<ClassFilter, string> = {
+  ALL: '전체',
+  PT: 'PT',
+  GX: 'GX',
+  PILATES: '필라테스',
+  YOGA: '요가',
+  GOLF: '골프',
+  CROSSFIT: '크로스핏',
+  SPINNING: '스피닝',
+};
+
+/** 수업 type을 ClassFilter로 매핑 (supabase의 GX 안에 필라테스/요가/스피닝 등이 섞여 들어오는 경우 title 기반 추론) */
+function inferFilterFromClass(cls: ClassItem): ClassFilter {
+  const upper = cls.type?.toUpperCase() || '';
+  if (FILTER_OPTIONS.includes(upper as ClassFilter)) return upper as ClassFilter;
+  const title = cls.title || '';
+  if (title.includes('필라테스')) return 'PILATES';
+  if (title.includes('요가')) return 'YOGA';
+  if (title.includes('골프')) return 'GOLF';
+  if (title.includes('크로스')) return 'CROSSFIT';
+  if (title.includes('스피닝')) return 'SPINNING';
+  return upper === 'PT' ? 'PT' : 'GX';
+}
 
 /** 수업 목록 / 예약 페이지 */
 export default function ClassList() {
@@ -32,9 +58,10 @@ export default function ClassList() {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [classes, setClasses] = useState<ClassItem[]>([]);
   const [loading, setLoading] = useState(true);
-  const filterOptions: readonly ClassFilter[] = ['ALL', 'PT', 'GX'];
   const searchType = searchParams.get('type')?.toUpperCase();
-  const filter = filterOptions.includes(searchType as ClassFilter) ? (searchType as ClassFilter) : 'ALL';
+  const filter: ClassFilter = FILTER_OPTIONS.includes(searchType as ClassFilter)
+    ? (searchType as ClassFilter)
+    : 'ALL';
   const ptInstructors = useMemo(() => getInstructorProfiles('PT'), []);
 
   const weekDates = Array.from({ length: 8 }, (_, i) => {
@@ -57,7 +84,13 @@ export default function ClassList() {
     const dateStr = selectedDate.toISOString().split('T')[0];
 
     if (isPreviewMode()) {
-      setClasses(getPreviewClassesForDate(dateStr, filter));
+      // preview는 PT/GX만 직접 매칭. 그 외 종목은 ALL로 가져온 뒤 클라이언트 필터링
+      const previewFilter = filter === 'PT' || filter === 'GX' ? filter : 'ALL';
+      const list = getPreviewClassesForDate(dateStr, previewFilter);
+      const finalList = filter === 'ALL' || filter === 'PT' || filter === 'GX'
+        ? list
+        : list.filter((c) => inferFilterFromClass(c) === filter);
+      setClasses(finalList);
       setLoading(false);
       return;
     }
@@ -70,12 +103,18 @@ export default function ClassList() {
       .lte('startTime', `${dateStr}T23:59:59`)
       .order('startTime');
 
-    if (filter !== 'ALL') {
+    // supabase classes.type은 PT / GX 만 저장. 그 외 종목은 GX 안에서 클라이언트 필터링
+    if (filter === 'PT' || filter === 'GX') {
       query = query.eq('type', filter);
+    } else if (filter !== 'ALL') {
+      query = query.eq('type', 'GX');
     }
 
     const { data } = await query;
-    setClasses(data || []);
+    const filtered = filter === 'ALL' || filter === 'PT' || filter === 'GX'
+      ? (data || [])
+      : (data || []).filter((c) => inferFilterFromClass(c as ClassItem) === filter);
+    setClasses(filtered);
     setLoading(false);
   };
 
@@ -127,11 +166,11 @@ export default function ClassList() {
           })}
         </div>
 
-        {/* 필터 칩 */}
-        <div className="flex gap-2 px-4 pb-3">
-          {filterOptions.map((f) => (
+        {/* 필터 칩 (가로 스크롤) */}
+        <div className="flex gap-2 px-4 pb-3 overflow-x-auto no-scrollbar">
+          {FILTER_OPTIONS.map((f) => (
             <Chip key={f} active={filter === f} size="md" onClick={() => handleFilterChange(f)}>
-              {f === 'ALL' ? '전체' : f}
+              {FILTER_LABELS[f]}
             </Chip>
           ))}
         </div>

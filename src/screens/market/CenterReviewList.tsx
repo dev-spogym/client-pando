@@ -286,8 +286,8 @@ export default function CenterReviewList() {
         </div>
       </div>
 
-      {/* Bottom action */}
-      <div className="fixed bottom-0 left-0 right-0 bg-surface border-t border-line px-4 pt-3 pb-safe z-20">
+      {/* Bottom action — 모바일 프레임 폭 */}
+      <div className="bottom-action-bar">
         <Button
           variant="primary"
           size="lg"

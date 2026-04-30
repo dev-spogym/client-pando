@@ -233,8 +233,8 @@ export default function CenterReviewWrite() {
         </Card>
       </div>
 
-      {/* Bottom action bar */}
-      <div className="fixed bottom-0 left-0 right-0 bg-surface border-t border-line px-4 pt-3 pb-safe z-20">
+      {/* Bottom action bar — 모바일 프레임 폭에 맞춰 fixed */}
+      <div className="bottom-action-bar">
         <Button
           variant="primary"
           size="xl"

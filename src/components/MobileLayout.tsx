@@ -14,9 +14,21 @@ const HIDE_TAB_PREFIXES = ['/classes/', '/shop/', '/centers/', '/trainers/', '/m
 
 /** 트레이너 탭바를 숨길 경로 */
 const HIDE_TRAINER_TAB_PATHS = ['/login', '/register'];
-const HIDE_TRAINER_TAB_PREFIXES = ['/trainer/members/', '/trainer/classes/', '/trainer/certificates/'];
+const HIDE_TRAINER_TAB_PREFIXES = [
+  '/trainer/members/',
+  '/trainer/classes/',
+  '/trainer/certificates/',
+  '/trainer/messages/',
+  '/trainer/profile/market',
+];
 const HIDE_FC_TAB_PREFIXES = ['/fc/leads/new', '/fc/leads/', '/fc/members/', '/fc/renewals/new', '/fc/notifications'];
 const HIDE_STAFF_TAB_PREFIXES = ['/staff/members/', '/staff/notifications'];
+
+/** path가 정확히 prefix(예: '/trainer')이거나 그 하위 경로(`/trainer/...`)인지 확인.
+ * '/trainers' 같은 회원 측 라우트가 잘못 매칭되는 것을 방지. */
+function matchesRolePath(pathname: string, rolePath: string): boolean {
+  return pathname === rolePath || pathname.startsWith(`${rolePath}/`);
+}
 
 /** 모바일 레이아웃 (헤더 + 탭바) */
 export default function MobileLayout({ children }: { children: React.ReactNode }) {
@@ -24,9 +36,9 @@ export default function MobileLayout({ children }: { children: React.ReactNode }
   const { userRole } = useAuthStore();
 
   const isTrainerView = isTrainerRole(userRole);
-  const isTrainerPath = location.pathname.startsWith('/trainer');
-  const isFcPath = location.pathname.startsWith('/fc');
-  const isStaffPath = location.pathname.startsWith('/staff');
+  const isTrainerPath = matchesRolePath(location.pathname, '/trainer');
+  const isFcPath = matchesRolePath(location.pathname, '/fc');
+  const isStaffPath = matchesRolePath(location.pathname, '/staff');
   const showTrainerTab = isTrainerPath || (isTrainerView && location.pathname === '/profile');
   const hideTrainerTab = HIDE_TRAINER_TAB_PATHS.some((p) => location.pathname.startsWith(p))
     || HIDE_TRAINER_TAB_PREFIXES.some((p) => location.pathname.startsWith(p));

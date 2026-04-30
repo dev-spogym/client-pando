@@ -25,6 +25,9 @@ interface ClassRecord {
   room: string | null;
   type: string;
   lesson_status: string | null;
+  signature_url: string | null;
+  signature_at: string | null;
+  completed_at: string | null;
 }
 
 type TimelineItem =
@@ -75,11 +78,14 @@ export default function LessonHistory() {
           ...item,
           staffId: item.staffId ?? null,
           lesson_status: item.lesson_status ?? null,
+          signature_url: null,
+          signature_at: null,
+          completed_at: item.lesson_status === 'completed' ? item.endTime : null,
         }));
       } else {
         const { data: myClasses } = await supabase
           .from('classes')
-          .select('id, title, staffId, staffName, startTime, endTime, room, type, lesson_status')
+          .select('id, title, staffId, staffName, startTime, endTime, room, type, lesson_status, signature_url, signature_at, completed_at')
           .eq('member_id', member.id)
           .order('startTime', { ascending: false })
           .limit(50);
@@ -87,7 +93,7 @@ export default function LessonHistory() {
         const now = new Date().toISOString();
         const { data: gxClasses } = await supabase
           .from('classes')
-          .select('id, title, staffId, staffName, startTime, endTime, room, type, lesson_status')
+          .select('id, title, staffId, staffName, startTime, endTime, room, type, lesson_status, signature_url, signature_at, completed_at')
           .eq('branchId', member.branchId)
           .neq('type', 'PT')
           .is('member_id', null)
@@ -140,6 +146,9 @@ export default function LessonHistory() {
           room: reservation.room,
           type: reservation.type,
           lesson_status: reservation.status === 'completed' ? 'completed' : 'reserved',
+          signature_url: null,
+          signature_at: null,
+          completed_at: reservation.status === 'completed' ? reservation.endTime : null,
         });
       });
 
@@ -240,6 +249,7 @@ export default function LessonHistory() {
               const feedback = member && item.kind === 'class' ? getFeedbackByClass(member.id, item.id) : null;
               const reserved = member && item.kind === 'class' ? getReservation(member.id, item.id) : null;
               const waitlist = member && item.kind === 'class' ? getWaitlistEntry(member.id, item.id) : null;
+              const needsSignature = item.kind === 'class' && !item.signature_url && ['in_progress', 'completed'].includes(item.lesson_status ?? '');
 
               return (
                 <div key={item.key} className="p-4 rounded-card border border-line bg-surface shadow-card-soft">
@@ -267,6 +277,16 @@ export default function LessonHistory() {
                         {item.kind === 'class' && item.lesson_status === 'completed' && (
                           <span className="text-[11px] px-2 py-0.5 rounded-pill bg-state-info/10 text-state-info font-medium">
                             수업 완료
+                          </span>
+                        )}
+                        {item.kind === 'class' && needsSignature && (
+                          <span className="text-[11px] px-2 py-0.5 rounded-pill bg-state-warning/10 text-state-warning font-medium">
+                            서명 대기
+                          </span>
+                        )}
+                        {item.kind === 'class' && item.signature_url && (
+                          <span className="text-[11px] px-2 py-0.5 rounded-pill bg-state-success/10 text-state-success font-medium">
+                            서명 완료
                           </span>
                         )}
                         {waitlist && (
@@ -332,6 +352,15 @@ export default function LessonHistory() {
                           >
                             대기 현황
                           </Button>
+                        ) : needsSignature ? (
+                          <Button
+                            size="sm"
+                            variant="primary"
+                            fullWidth
+                            onClick={() => navigate(`/lesson-sign/${item.id}`)}
+                          >
+                            완료 서명
+                          </Button>
                         ) : (
                           <Button
                             size="sm"
@@ -355,11 +384,11 @@ export default function LessonHistory() {
                         </Button>
                         <Button
                           size="sm"
-                          variant={feedback ? 'secondary' : 'primary'}
+                          variant={needsSignature ? 'primary' : feedback ? 'secondary' : 'primary'}
                           fullWidth
-                          onClick={() => navigate(`/classes/${item.id}/feedback`)}
+                          onClick={() => navigate(needsSignature ? `/lesson-sign/${item.id}` : `/classes/${item.id}/feedback`)}
                         >
-                          {feedback ? '후기 확인' : '후기 작성'}
+                          {needsSignature ? '완료 서명' : feedback ? '후기 확인' : '후기 작성'}
                         </Button>
                       </>
                     )}

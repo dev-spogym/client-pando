@@ -4,6 +4,7 @@ import { Check, RotateCcw, AlertTriangle } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase } from '../lib/supabase';
 import { getPreviewClassById, isPreviewMode } from '@/lib/preview';
+import { useAuthStore } from '@/stores/authStore';
 import { Button } from '@/components/ui';
 
 // ─── 수업 정보 타입 ─────────────────────────────────────────
@@ -13,6 +14,10 @@ interface ClassInfo {
   staffName: string;
   startTime: string;
   endTime: string;
+  lesson_status: string | null;
+  signature_url: string | null;
+  signature_at: string | null;
+  completed_at: string | null;
 }
 
 // ─── 서명 캔버스 컴포넌트 ───────────────────────────────────
@@ -120,24 +125,12 @@ function SignatureCanvas({ onSign }: { onSign: (dataUrl: string) => void }) {
 export default function LessonSignature() {
   const { classId } = useParams();
   const navigate = useNavigate();
+  const member = useAuthStore((state) => state.member);
   const [classInfo, setClassInfo] = useState<ClassInfo | null>(null);
   const [loading, setLoading] = useState(true);
   const [signatureDataUrl, setSignatureDataUrl] = useState('');
   const [saving, setSaving] = useState(false);
   const [done, setDone] = useState(false);
-
-  // localStorage에 저장된 서명 확인
-  const storageKey = classId ? `lesson_signature_${classId}` : null;
-  const [savedSignature, setSavedSignature] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (!storageKey || typeof window === 'undefined') {
-      setSavedSignature(null);
-      return;
-    }
-
-    setSavedSignature(localStorage.getItem(storageKey));
-  }, [storageKey]);
 
   // 수업 정보 로드
   useEffect(() => {
@@ -155,6 +148,10 @@ export default function LessonSignature() {
                 staffName: previewClass.staffName,
                 startTime: previewClass.startTime,
                 endTime: previewClass.endTime,
+                lesson_status: previewClass.lesson_status ?? null,
+                signature_url: null,
+                signature_at: null,
+                completed_at: null,
               }
             : null
         );
@@ -164,7 +161,7 @@ export default function LessonSignature() {
 
       const { data } = await supabase
         .from('classes')
-        .select('id, title, staffName, startTime, endTime')
+        .select('id, title, staffName, startTime, endTime, lesson_status, signature_url, signature_at, completed_at')
         .eq('id', classId)
         .single();
       if (data) setClassInfo(data as ClassInfo);
@@ -173,8 +170,20 @@ export default function LessonSignature() {
     fetchClass();
   }, [classId]);
 
-  // 서명 제출 (localStorage에 임시 저장)
-  const handleSubmit = useCallback(() => {
+  const uploadSignature = async (dataUrl: string) => {
+    const blob = await (await fetch(dataUrl)).blob();
+    const fileName = `signatures/member_class_${classInfo?.id}_${Date.now()}.png`;
+    const { error } = await supabase.storage
+      .from('files')
+      .upload(fileName, blob, { contentType: 'image/png', upsert: true });
+
+    if (error) return dataUrl;
+    const { data } = supabase.storage.from('files').getPublicUrl(fileName);
+    return data.publicUrl || dataUrl;
+  };
+
+  // 서명 제출: classes 완료/서명 컬럼에 저장
+  const handleSubmit = useCallback(async () => {
     if (!signatureDataUrl || !classInfo) {
       toast.error('서명을 해주세요.');
       return;
@@ -182,21 +191,66 @@ export default function LessonSignature() {
 
     setSaving(true);
     try {
-      if (storageKey) {
-        localStorage.setItem(storageKey, JSON.stringify({
-          classId: classInfo.id,
-          signatureDataUrl,
-          signedAt: new Date().toISOString(),
-        }));
+      if (isPreviewMode()) {
+        setDone(true);
+        toast.success('서명이 완료되었습니다!');
+        setTimeout(() => navigate('/lessons', { replace: true }), 2000);
+        return;
       }
+
+      const signedAt = new Date().toISOString();
+      const signatureUrl = await uploadSignature(signatureDataUrl);
+      const { error } = await supabase
+        .from('classes')
+        .update({
+          lesson_status: 'completed',
+          signature_url: signatureUrl,
+          signature_at: signedAt,
+          completed_at: signedAt,
+        })
+        .eq('id', classInfo.id);
+
+      if (error) throw error;
+
+      await supabase.from('audit_log').insert({
+        tenantId: 1,
+        userId: member?.id ?? 0,
+        action: 'UPDATE',
+        targetType: 'lesson',
+        targetId: classInfo.id,
+        beforeValue: {
+          status: classInfo.lesson_status,
+          signatureUrl: classInfo.signature_url,
+        },
+        afterValue: {
+          status: 'completed',
+          signatureUrl,
+          completedAt: signedAt,
+        },
+        detail: {
+          message: '모바일 레슨 완료 서명 저장됨',
+          memberId: member?.id ?? null,
+          mobileSignatureLinked: true,
+        },
+        userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : null,
+      });
+
+      setClassInfo((prev) => prev ? {
+        ...prev,
+        lesson_status: 'completed',
+        signature_url: signatureUrl,
+        signature_at: signedAt,
+        completed_at: signedAt,
+      } : prev);
       setDone(true);
       toast.success('서명이 완료되었습니다!');
       setTimeout(() => navigate('/lessons', { replace: true }), 2000);
     } catch {
-      toast.error('오류가 발생했습니다.');
+      toast.error('서명 저장 중 오류가 발생했습니다.');
+    } finally {
+      setSaving(false);
     }
-    setSaving(false);
-  }, [signatureDataUrl, classInfo, navigate, storageKey]);
+  }, [signatureDataUrl, classInfo, navigate, member?.id]);
 
   const fmtDateTime = (iso: string) => {
     const d = new Date(iso);
@@ -219,8 +273,8 @@ export default function LessonSignature() {
     );
   }
 
-  // 이미 서명 완료 (localStorage 기준)
-  if (savedSignature) {
+  // 이미 서명 완료
+  if (classInfo.signature_url) {
     return (
       <div className="min-h-screen bg-surface-secondary">
         <div className="px-4 pt-8 text-center">

@@ -179,7 +179,7 @@ export default function Checkout() {
           {paymentMethod === 'TRANSFER' && (
             <div className="mt-4 bg-state-warning/10 rounded-xl p-4">
               <p className="text-body-sm font-semibold text-state-warning">계좌이체 안내</p>
-              <p className="text-body-sm text-content-secondary mt-2">국민은행 123-456-789012 / 예금주 스포짐</p>
+              <p className="text-body-sm text-content-secondary mt-2">국민은행 123-456-789012 / 예금주 FitGenie</p>
             </div>
           )}
         </Card>

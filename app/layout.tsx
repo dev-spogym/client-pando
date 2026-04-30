@@ -2,8 +2,8 @@ import type { Metadata, Viewport } from 'next';
 import '@/index.css';
 import Providers from './providers';
 
-const title = '스포짐 - 회원 전용 앱';
-const description = '스포짐 회원 전용 앱. QR 출석체크, 수업 예약, 이용권 관리를 한 곳에서.';
+const title = 'FitGenie - 회원 전용 앱';
+const description = 'FitGenie 회원 전용 앱. QR 출석체크, 수업 예약, 이용권 관리를 한 곳에서.';
 
 export const metadata: Metadata = {
   title,
@@ -16,7 +16,7 @@ export const metadata: Metadata = {
   appleWebApp: {
     capable: true,
     statusBarStyle: 'black-translucent',
-    title: '스포짐',
+    title: 'FitGenie',
   },
   openGraph: {
     type: 'website',

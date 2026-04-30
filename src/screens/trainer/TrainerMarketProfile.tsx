@@ -213,7 +213,7 @@ export default function TrainerMarketProfile() {
                 className="w-full h-11 px-3 rounded-card border border-line bg-surface-tertiary flex items-center justify-between"
               >
                 <span className="text-body text-content-secondary">
-                  {marketTrainer?.centerName ?? '스포짐 광화문점'}
+                  {marketTrainer?.centerName ?? 'FitGenie 광화문점'}
                 </span>
                 <ChevronRight className="w-4 h-4 text-content-tertiary" />
               </button>

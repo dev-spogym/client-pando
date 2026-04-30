@@ -55,7 +55,7 @@ export default function PwaInstallBanner() {
           <span className="text-white font-bold text-caption">스포</span>
         </div>
         <div className="flex-1 min-w-0">
-          <p className="text-body-sm font-semibold text-content">스포짐 앱 설치</p>
+          <p className="text-body-sm font-semibold text-content">FitGenie 앱 설치</p>
           <p className="text-caption text-content-secondary">홈 화면에 추가하면 더 빠르게!</p>
         </div>
         <Button variant="primary" size="sm" onClick={handleInstall}>

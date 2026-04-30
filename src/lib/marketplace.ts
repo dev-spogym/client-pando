@@ -214,7 +214,7 @@ export function avatarImg(seed: string, size = 200): string {
 export const MOCK_CENTERS: MarketCenter[] = [
   {
     id: 1,
-    name: '스포짐 광화문점',
+    name: 'FitGenie 광화문점',
     category: 'fitness',
     subCategories: ['pt', 'pilates', 'yoga', 'spinning'],
     district: '종로구',
@@ -238,7 +238,7 @@ export const MOCK_CENTERS: MarketCenter[] = [
   },
   {
     id: 2,
-    name: '스포짐 을지로점',
+    name: 'FitGenie 을지로점',
     category: 'fitness',
     subCategories: ['pt', 'spinning'],
     district: '중구',
@@ -261,7 +261,7 @@ export const MOCK_CENTERS: MarketCenter[] = [
   },
   {
     id: 3,
-    name: '스포짐 종각점',
+    name: 'FitGenie 종각점',
     category: 'fitness',
     subCategories: ['pt', 'yoga', 'pilates'],
     district: '종로구',
@@ -284,7 +284,7 @@ export const MOCK_CENTERS: MarketCenter[] = [
   },
   {
     id: 4,
-    name: '스포짐 종로점',
+    name: 'FitGenie 종로점',
     category: 'fitness',
     subCategories: ['pt', 'pilates'],
     district: '종로구',
@@ -307,7 +307,7 @@ export const MOCK_CENTERS: MarketCenter[] = [
   },
   {
     id: 5,
-    name: '스포짐 서교점',
+    name: 'FitGenie 서교점',
     category: 'fitness',
     subCategories: ['pt', 'crossfit', 'yoga'],
     district: '마포구',
@@ -331,7 +331,7 @@ export const MOCK_CENTERS: MarketCenter[] = [
   },
   {
     id: 6,
-    name: '스포짐 신당점',
+    name: 'FitGenie 신당점',
     category: 'fitness',
     subCategories: ['pt', 'spinning'],
     district: '중구',
@@ -354,7 +354,7 @@ export const MOCK_CENTERS: MarketCenter[] = [
   },
   {
     id: 7,
-    name: '스포짐 가양점',
+    name: 'FitGenie 가양점',
     category: 'fitness',
     subCategories: ['pt', 'pilates', 'yoga', 'spinning'],
     district: '강서구',
@@ -377,7 +377,7 @@ export const MOCK_CENTERS: MarketCenter[] = [
   },
   {
     id: 8,
-    name: '스포짐 고덕역점',
+    name: 'FitGenie 고덕역점',
     category: 'fitness',
     subCategories: ['pt', 'pilates'],
     district: '강동구',
@@ -401,7 +401,7 @@ export const MOCK_CENTERS: MarketCenter[] = [
   },
   {
     id: 9,
-    name: '스포짐 양천향교점',
+    name: 'FitGenie 양천향교점',
     category: 'fitness',
     subCategories: ['pt', 'spinning'],
     district: '양천구',
@@ -424,7 +424,7 @@ export const MOCK_CENTERS: MarketCenter[] = [
   },
   {
     id: 10,
-    name: '스포짐 용산점',
+    name: 'FitGenie 용산점',
     category: 'fitness',
     subCategories: ['pt', 'pilates', 'yoga'],
     district: '용산구',
@@ -447,7 +447,7 @@ export const MOCK_CENTERS: MarketCenter[] = [
   },
   {
     id: 11,
-    name: '스포짐 판교점',
+    name: 'FitGenie 판교점',
     category: 'fitness',
     subCategories: ['pt', 'pilates', 'yoga', 'golf', 'spinning'],
     district: '분당구',
@@ -479,7 +479,7 @@ export const MOCK_CENTERS: MarketCenter[] = [
   },
   {
     id: 12,
-    name: '스포짐 판교역점',
+    name: 'FitGenie 판교역점',
     category: 'fitness',
     subCategories: ['pt', 'golf'],
     district: '분당구',
@@ -503,7 +503,7 @@ export const MOCK_CENTERS: MarketCenter[] = [
   },
   {
     id: 13,
-    name: '스포짐 대치점',
+    name: 'FitGenie 대치점',
     category: 'fitness',
     subCategories: ['pt', 'pilates', 'yoga', 'golf'],
     district: '강남구',
@@ -535,7 +535,7 @@ export const MOCK_CENTERS: MarketCenter[] = [
   },
   {
     id: 14,
-    name: '스포짐 고척점',
+    name: 'FitGenie 고척점',
     category: 'fitness',
     subCategories: ['pt', 'spinning'],
     district: '구로구',
@@ -558,7 +558,7 @@ export const MOCK_CENTERS: MarketCenter[] = [
   },
   {
     id: 15,
-    name: '스포짐 부천점',
+    name: 'FitGenie 부천점',
     category: 'fitness',
     subCategories: ['pt', 'pilates', 'swimming'],
     district: '부천시',
@@ -581,7 +581,7 @@ export const MOCK_CENTERS: MarketCenter[] = [
   },
   {
     id: 16,
-    name: '스포짐 목동점',
+    name: 'FitGenie 목동점',
     category: 'fitness',
     subCategories: ['pt', 'pilates', 'yoga', 'golf'],
     district: '양천구',
@@ -617,80 +617,80 @@ export const MOCK_CENTERS: MarketCenter[] = [
 
 export const MOCK_TRAINERS: MarketTrainer[] = [
   // 광화문점 (id 1) — 5명
-  { id: 1, name: '김도윤', centerId: 1, centerName: '스포짐 광화문점', category: 'pt', rating: 4.9, reviewCount: 142, totalLessons: 1240, experienceYears: 8, specialties: ['다이어트', '근력', '바디프로필'], certifications: ['NSCA-CPT', '생활스포츠지도사 2급'], bio: '광화문 직장인 PT 다수 케어. 점심·퇴근 시간 클래스 인기.', profileUrl: avatarImg('trainer-1', 400), gender: 'M' },
-  { id: 2, name: '박지민', centerId: 1, centerName: '스포짐 광화문점', category: 'pilates', rating: 5.0, reviewCount: 198, totalLessons: 1080, experienceYears: 7, specialties: ['재활', '체형교정', '필라테스 강사 양성'], certifications: ['BASI 마스터', 'STOTT PILATES'], bio: 'BASI 마스터 강사. 재활 필라테스 전문. 디스크/거북목 호전 사례 다수.', profileUrl: avatarImg('trainer-2', 400), gender: 'F' },
-  { id: 3, name: '이서윤', centerId: 1, centerName: '스포짐 광화문점', category: 'yoga', rating: 4.8, reviewCount: 113, totalLessons: 760, experienceYears: 6, specialties: ['스트레칭', '유연성', '코어'], certifications: ['RYT-500', '인도 정통 요가 학교 수료'], bio: '인도 리시케시 7년 수련. 빈야사·하타·아쉬탕가 모두 가능.', profileUrl: avatarImg('trainer-3', 400), gender: 'F' },
-  { id: 4, name: '강민준', centerId: 1, centerName: '스포짐 광화문점', category: 'pt', rating: 4.8, reviewCount: 89, totalLessons: 920, experienceYears: 6, specialties: ['근력', '시니어', '재활'], certifications: ['NSCA-CPT', 'FMS Level 2'], bio: '시니어·재활 PT 특화. 60대 이상 회원의 통증 완화 다수 사례.', profileUrl: avatarImg('trainer-4', 400), gender: 'M' },
-  { id: 5, name: '정혜원', centerId: 1, centerName: '스포짐 광화문점', category: 'spinning', rating: 4.9, reviewCount: 154, totalLessons: 1340, experienceYears: 5, specialties: ['다이어트', '유연성'], certifications: ['Schwinn Spinning', 'Les Mills RPM'], bio: '광화문점 인기 스피닝 강사. 점심시간 라이브 DJ 클래스 매주 진행.', profileUrl: avatarImg('trainer-5', 400), gender: 'F' },
+  { id: 1, name: '김도윤', centerId: 1, centerName: 'FitGenie 광화문점', category: 'pt', rating: 4.9, reviewCount: 142, totalLessons: 1240, experienceYears: 8, specialties: ['다이어트', '근력', '바디프로필'], certifications: ['NSCA-CPT', '생활스포츠지도사 2급'], bio: '광화문 직장인 PT 다수 케어. 점심·퇴근 시간 클래스 인기.', profileUrl: avatarImg('trainer-1', 400), gender: 'M' },
+  { id: 2, name: '박지민', centerId: 1, centerName: 'FitGenie 광화문점', category: 'pilates', rating: 5.0, reviewCount: 198, totalLessons: 1080, experienceYears: 7, specialties: ['재활', '체형교정', '필라테스 강사 양성'], certifications: ['BASI 마스터', 'STOTT PILATES'], bio: 'BASI 마스터 강사. 재활 필라테스 전문. 디스크/거북목 호전 사례 다수.', profileUrl: avatarImg('trainer-2', 400), gender: 'F' },
+  { id: 3, name: '이서윤', centerId: 1, centerName: 'FitGenie 광화문점', category: 'yoga', rating: 4.8, reviewCount: 113, totalLessons: 760, experienceYears: 6, specialties: ['스트레칭', '유연성', '코어'], certifications: ['RYT-500', '인도 정통 요가 학교 수료'], bio: '인도 리시케시 7년 수련. 빈야사·하타·아쉬탕가 모두 가능.', profileUrl: avatarImg('trainer-3', 400), gender: 'F' },
+  { id: 4, name: '강민준', centerId: 1, centerName: 'FitGenie 광화문점', category: 'pt', rating: 4.8, reviewCount: 89, totalLessons: 920, experienceYears: 6, specialties: ['근력', '시니어', '재활'], certifications: ['NSCA-CPT', 'FMS Level 2'], bio: '시니어·재활 PT 특화. 60대 이상 회원의 통증 완화 다수 사례.', profileUrl: avatarImg('trainer-4', 400), gender: 'M' },
+  { id: 5, name: '정혜원', centerId: 1, centerName: 'FitGenie 광화문점', category: 'spinning', rating: 4.9, reviewCount: 154, totalLessons: 1340, experienceYears: 5, specialties: ['다이어트', '유연성'], certifications: ['Schwinn Spinning', 'Les Mills RPM'], bio: '광화문점 인기 스피닝 강사. 점심시간 라이브 DJ 클래스 매주 진행.', profileUrl: avatarImg('trainer-5', 400), gender: 'F' },
 
   // 을지로점 (id 2) — 1명
-  { id: 6, name: '이효리', centerId: 2, centerName: '스포짐 을지로점', category: 'pt', rating: 4.7, reviewCount: 64, totalLessons: 580, experienceYears: 5, specialties: ['다이어트', '근력'], certifications: ['NSCA-CPT'], bio: '을지로 직장인 PT 전문. 30분/60분 클래스 운영.', profileUrl: avatarImg('trainer-6', 400), gender: 'F' },
+  { id: 6, name: '이효리', centerId: 2, centerName: 'FitGenie 을지로점', category: 'pt', rating: 4.7, reviewCount: 64, totalLessons: 580, experienceYears: 5, specialties: ['다이어트', '근력'], certifications: ['NSCA-CPT'], bio: '을지로 직장인 PT 전문. 30분/60분 클래스 운영.', profileUrl: avatarImg('trainer-6', 400), gender: 'F' },
 
   // 종각점 (id 3) — 2명
-  { id: 7, name: '정지훈', centerId: 3, centerName: '스포짐 종각점', category: 'pt', rating: 4.6, reviewCount: 47, totalLessons: 520, experienceYears: 4, specialties: ['다이어트', '근력', '주니어'], certifications: ['NSCA-CPT'], bio: '입문자 환영. 친절한 코칭으로 6개월 다이어트 성공 회원 다수.', profileUrl: avatarImg('trainer-7', 400), gender: 'M' },
-  { id: 8, name: '신소연', centerId: 3, centerName: '스포짐 종각점', category: 'yoga', rating: 4.8, reviewCount: 87, totalLessons: 720, experienceYears: 6, specialties: ['스트레칭', '유연성', '임산부'], certifications: ['RYT-200', '임산부 요가 지도자'], bio: '임산부 요가 전문. 출산 전후 회원 케어 다수.', profileUrl: avatarImg('trainer-8', 400), gender: 'F' },
+  { id: 7, name: '정지훈', centerId: 3, centerName: 'FitGenie 종각점', category: 'pt', rating: 4.6, reviewCount: 47, totalLessons: 520, experienceYears: 4, specialties: ['다이어트', '근력', '주니어'], certifications: ['NSCA-CPT'], bio: '입문자 환영. 친절한 코칭으로 6개월 다이어트 성공 회원 다수.', profileUrl: avatarImg('trainer-7', 400), gender: 'M' },
+  { id: 8, name: '신소연', centerId: 3, centerName: 'FitGenie 종각점', category: 'yoga', rating: 4.8, reviewCount: 87, totalLessons: 720, experienceYears: 6, specialties: ['스트레칭', '유연성', '임산부'], certifications: ['RYT-200', '임산부 요가 지도자'], bio: '임산부 요가 전문. 출산 전후 회원 케어 다수.', profileUrl: avatarImg('trainer-8', 400), gender: 'F' },
 
   // 종로점 (id 4) — 1명
-  { id: 9, name: '박재범', centerId: 4, centerName: '스포짐 종로점', category: 'pt', rating: 4.5, reviewCount: 32, totalLessons: 420, experienceYears: 4, specialties: ['바디프로필', '다이어트'], certifications: ['NSCA-CPT'], bio: '바디프로필 8주 챌린지 운영.', profileUrl: avatarImg('trainer-9', 400), gender: 'M' },
+  { id: 9, name: '박재범', centerId: 4, centerName: 'FitGenie 종로점', category: 'pt', rating: 4.5, reviewCount: 32, totalLessons: 420, experienceYears: 4, specialties: ['바디프로필', '다이어트'], certifications: ['NSCA-CPT'], bio: '바디프로필 8주 챌린지 운영.', profileUrl: avatarImg('trainer-9', 400), gender: 'M' },
 
   // 서교점 (id 5) — 3명
-  { id: 10, name: '한지우', centerId: 5, centerName: '스포짐 서교점', category: 'crossfit', rating: 4.8, reviewCount: 102, totalLessons: 980, experienceYears: 6, specialties: ['근력', '코어', '주니어'], certifications: ['CrossFit L2', 'CrossFit Mobility'], bio: 'CrossFit Games 지역 출전 경력. 주니어 클래스 인기.', profileUrl: avatarImg('trainer-10', 400), gender: 'F' },
-  { id: 11, name: '윤성호', centerId: 5, centerName: '스포짐 서교점', category: 'pt', rating: 4.7, reviewCount: 78, totalLessons: 720, experienceYears: 7, specialties: ['근력', '바디프로필'], certifications: ['NSCA-CSCS', 'Precision Nutrition L1'], bio: '식단 컨설팅 동시 제공. 매크로 영양 기반 코칭.', profileUrl: avatarImg('trainer-11', 400), gender: 'M' },
-  { id: 12, name: '오나라', centerId: 5, centerName: '스포짐 서교점', category: 'yoga', rating: 4.6, reviewCount: 53, totalLessons: 460, experienceYears: 4, specialties: ['스트레칭', '유연성'], certifications: ['RYT-200'], bio: '홍대 인근 직장인 요가 클래스 운영.', profileUrl: avatarImg('trainer-12', 400), gender: 'F' },
+  { id: 10, name: '한지우', centerId: 5, centerName: 'FitGenie 서교점', category: 'crossfit', rating: 4.8, reviewCount: 102, totalLessons: 980, experienceYears: 6, specialties: ['근력', '코어', '주니어'], certifications: ['CrossFit L2', 'CrossFit Mobility'], bio: 'CrossFit Games 지역 출전 경력. 주니어 클래스 인기.', profileUrl: avatarImg('trainer-10', 400), gender: 'F' },
+  { id: 11, name: '윤성호', centerId: 5, centerName: 'FitGenie 서교점', category: 'pt', rating: 4.7, reviewCount: 78, totalLessons: 720, experienceYears: 7, specialties: ['근력', '바디프로필'], certifications: ['NSCA-CSCS', 'Precision Nutrition L1'], bio: '식단 컨설팅 동시 제공. 매크로 영양 기반 코칭.', profileUrl: avatarImg('trainer-11', 400), gender: 'M' },
+  { id: 12, name: '오나라', centerId: 5, centerName: 'FitGenie 서교점', category: 'yoga', rating: 4.6, reviewCount: 53, totalLessons: 460, experienceYears: 4, specialties: ['스트레칭', '유연성'], certifications: ['RYT-200'], bio: '홍대 인근 직장인 요가 클래스 운영.', profileUrl: avatarImg('trainer-12', 400), gender: 'F' },
 
   // 신당점 (id 6) — 1명
-  { id: 13, name: '송지효', centerId: 6, centerName: '스포짐 신당점', category: 'spinning', rating: 4.5, reviewCount: 42, totalLessons: 580, experienceYears: 5, specialties: ['다이어트'], certifications: ['Les Mills RPM'], bio: '24시간 운영 신당점 스피닝 매니저. 새벽·심야 클래스 인기.', profileUrl: avatarImg('trainer-13', 400), gender: 'F' },
+  { id: 13, name: '송지효', centerId: 6, centerName: 'FitGenie 신당점', category: 'spinning', rating: 4.5, reviewCount: 42, totalLessons: 580, experienceYears: 5, specialties: ['다이어트'], certifications: ['Les Mills RPM'], bio: '24시간 운영 신당점 스피닝 매니저. 새벽·심야 클래스 인기.', profileUrl: avatarImg('trainer-13', 400), gender: 'F' },
 
   // 가양점 (id 7) — 3명
-  { id: 14, name: '남주혁', centerId: 7, centerName: '스포짐 가양점', category: 'pt', rating: 4.6, reviewCount: 49, totalLessons: 520, experienceYears: 4, specialties: ['다이어트', '근력', '주니어'], certifications: ['NSCA-CPT'], bio: '강서권 가성비 PT. 입문자 친절 코칭.', profileUrl: avatarImg('trainer-14', 400), gender: 'M' },
-  { id: 15, name: '강예진', centerId: 7, centerName: '스포짐 가양점', category: 'pilates', rating: 4.7, reviewCount: 67, totalLessons: 620, experienceYears: 5, specialties: ['재활', '체형교정', '임산부'], certifications: ['BASI', 'NASM-CES'], bio: '재활 필라테스 전문. 디스크·허리 통증 회원 다수.', profileUrl: avatarImg('trainer-15', 400), gender: 'F' },
-  { id: 16, name: '한가람', centerId: 7, centerName: '스포짐 가양점', category: 'yoga', rating: 4.5, reviewCount: 38, totalLessons: 410, experienceYears: 3, specialties: ['스트레칭', '코어'], certifications: ['RYT-200'], bio: '하타 · 빈야사 요가 그룹 클래스.', profileUrl: avatarImg('trainer-16', 400), gender: 'F' },
+  { id: 14, name: '남주혁', centerId: 7, centerName: 'FitGenie 가양점', category: 'pt', rating: 4.6, reviewCount: 49, totalLessons: 520, experienceYears: 4, specialties: ['다이어트', '근력', '주니어'], certifications: ['NSCA-CPT'], bio: '강서권 가성비 PT. 입문자 친절 코칭.', profileUrl: avatarImg('trainer-14', 400), gender: 'M' },
+  { id: 15, name: '강예진', centerId: 7, centerName: 'FitGenie 가양점', category: 'pilates', rating: 4.7, reviewCount: 67, totalLessons: 620, experienceYears: 5, specialties: ['재활', '체형교정', '임산부'], certifications: ['BASI', 'NASM-CES'], bio: '재활 필라테스 전문. 디스크·허리 통증 회원 다수.', profileUrl: avatarImg('trainer-15', 400), gender: 'F' },
+  { id: 16, name: '한가람', centerId: 7, centerName: 'FitGenie 가양점', category: 'yoga', rating: 4.5, reviewCount: 38, totalLessons: 410, experienceYears: 3, specialties: ['스트레칭', '코어'], certifications: ['RYT-200'], bio: '하타 · 빈야사 요가 그룹 클래스.', profileUrl: avatarImg('trainer-16', 400), gender: 'F' },
 
   // 고덕역점 (id 8) — 2명
-  { id: 17, name: '신민아', centerId: 8, centerName: '스포짐 고덕역점', category: 'pt', rating: 4.8, reviewCount: 71, totalLessons: 680, experienceYears: 5, specialties: ['바디프로필', '재활'], certifications: ['NSCA-CPT', 'NASM-CES'], bio: '고덕역 1:1 PT 전문. 8주 바디프로필 챌린지.', profileUrl: avatarImg('trainer-17', 400), gender: 'F' },
-  { id: 18, name: '백승현', centerId: 8, centerName: '스포짐 고덕역점', category: 'pilates', rating: 4.6, reviewCount: 47, totalLessons: 420, experienceYears: 4, specialties: ['재활', '체형교정'], certifications: ['BASI', 'Polestar Mat'], bio: '재활 필라테스 1:1 프라이빗.', profileUrl: avatarImg('trainer-18', 400), gender: 'M' },
+  { id: 17, name: '신민아', centerId: 8, centerName: 'FitGenie 고덕역점', category: 'pt', rating: 4.8, reviewCount: 71, totalLessons: 680, experienceYears: 5, specialties: ['바디프로필', '재활'], certifications: ['NSCA-CPT', 'NASM-CES'], bio: '고덕역 1:1 PT 전문. 8주 바디프로필 챌린지.', profileUrl: avatarImg('trainer-17', 400), gender: 'F' },
+  { id: 18, name: '백승현', centerId: 8, centerName: 'FitGenie 고덕역점', category: 'pilates', rating: 4.6, reviewCount: 47, totalLessons: 420, experienceYears: 4, specialties: ['재활', '체형교정'], certifications: ['BASI', 'Polestar Mat'], bio: '재활 필라테스 1:1 프라이빗.', profileUrl: avatarImg('trainer-18', 400), gender: 'M' },
 
   // 양천향교점 (id 9) — 1명
-  { id: 19, name: '이준기', centerId: 9, centerName: '스포짐 양천향교점', category: 'pt', rating: 4.3, reviewCount: 28, totalLessons: 320, experienceYears: 3, specialties: ['다이어트', '근력'], certifications: ['NSCA-CPT'], bio: '입문자 PT 전문. 친절한 코칭.', profileUrl: avatarImg('trainer-19', 400), gender: 'M' },
+  { id: 19, name: '이준기', centerId: 9, centerName: 'FitGenie 양천향교점', category: 'pt', rating: 4.3, reviewCount: 28, totalLessons: 320, experienceYears: 3, specialties: ['다이어트', '근력'], certifications: ['NSCA-CPT'], bio: '입문자 PT 전문. 친절한 코칭.', profileUrl: avatarImg('trainer-19', 400), gender: 'M' },
 
   // 용산점 (id 10) — 3명
-  { id: 20, name: '한가인', centerId: 10, centerName: '스포짐 용산점', category: 'pt', rating: 4.8, reviewCount: 124, totalLessons: 1080, experienceYears: 8, specialties: ['바디프로필', '근력'], certifications: ['NSCA-CSCS', 'TRX'], bio: '용산점 인기 PT. 보디빌더 출신 트레이너.', profileUrl: avatarImg('trainer-20', 400), gender: 'F' },
-  { id: 21, name: '문서진', centerId: 10, centerName: '스포짐 용산점', category: 'pilates', rating: 4.9, reviewCount: 95, totalLessons: 720, experienceYears: 6, specialties: ['바디프로필', '체형교정'], certifications: ['BASI', 'Polestar'], bio: '용산점 필라테스 그룹 클래스 정원 즉시 마감.', profileUrl: avatarImg('trainer-21', 400), gender: 'F' },
-  { id: 22, name: '조태웅', centerId: 10, centerName: '스포짐 용산점', category: 'yoga', rating: 4.7, reviewCount: 78, totalLessons: 640, experienceYears: 5, specialties: ['스트레칭', '유연성', '코어'], certifications: ['RYT-200'], bio: '용산권 직장인 요가 인기 강사.', profileUrl: avatarImg('trainer-22', 400), gender: 'M' },
+  { id: 20, name: '한가인', centerId: 10, centerName: 'FitGenie 용산점', category: 'pt', rating: 4.8, reviewCount: 124, totalLessons: 1080, experienceYears: 8, specialties: ['바디프로필', '근력'], certifications: ['NSCA-CSCS', 'TRX'], bio: '용산점 인기 PT. 보디빌더 출신 트레이너.', profileUrl: avatarImg('trainer-20', 400), gender: 'F' },
+  { id: 21, name: '문서진', centerId: 10, centerName: 'FitGenie 용산점', category: 'pilates', rating: 4.9, reviewCount: 95, totalLessons: 720, experienceYears: 6, specialties: ['바디프로필', '체형교정'], certifications: ['BASI', 'Polestar'], bio: '용산점 필라테스 그룹 클래스 정원 즉시 마감.', profileUrl: avatarImg('trainer-21', 400), gender: 'F' },
+  { id: 22, name: '조태웅', centerId: 10, centerName: 'FitGenie 용산점', category: 'yoga', rating: 4.7, reviewCount: 78, totalLessons: 640, experienceYears: 5, specialties: ['스트레칭', '유연성', '코어'], certifications: ['RYT-200'], bio: '용산권 직장인 요가 인기 강사.', profileUrl: avatarImg('trainer-22', 400), gender: 'M' },
 
   // 판교점 (id 11) — 5명
-  { id: 23, name: '원빈', centerId: 11, centerName: '스포짐 판교점', category: 'pt', rating: 5.0, reviewCount: 218, totalLessons: 1860, experienceYears: 12, specialties: ['근력', '바디프로필', '재활'], certifications: ['NSCA-CSCS', 'FMS Level 2', 'TRX'], bio: '판교 IT 직장인 PT 1순위. 8주 바디프로필 다수 성공.', profileUrl: avatarImg('trainer-23', 400), gender: 'M' },
-  { id: 24, name: '김유나', centerId: 11, centerName: '스포짐 판교점', category: 'pilates', rating: 4.9, reviewCount: 187, totalLessons: 1340, experienceYears: 7, specialties: ['바디프로필', '재활', '체형교정'], certifications: ['BASI 마스터', 'Polestar Mat'], bio: '판교점 필라테스 8주 챌린지 정원 즉시 마감.', profileUrl: avatarImg('trainer-24', 400), gender: 'F' },
-  { id: 25, name: '이수민', centerId: 11, centerName: '스포짐 판교점', category: 'yoga', rating: 4.8, reviewCount: 142, totalLessons: 980, experienceYears: 6, specialties: ['스트레칭', '유연성', '명상'] as Specialty[], certifications: ['RYT-500'], bio: '판교 직장인 요가/명상 전문. 점심시간 클래스 인기.', profileUrl: avatarImg('trainer-25', 400), gender: 'F' },
-  { id: 26, name: '정현우', centerId: 11, centerName: '스포짐 판교점', category: 'golf', rating: 4.9, reviewCount: 156, totalLessons: 1240, experienceYears: 10, specialties: ['주니어', '시니어'], certifications: ['KPGA 정회원', 'TPI Golf Fitness'], bio: 'KPGA 출신. 판교 IT 직장인 골프 입문자 1순위.', profileUrl: avatarImg('trainer-26', 400), gender: 'M' },
-  { id: 27, name: '박서연', centerId: 11, centerName: '스포짐 판교점', category: 'spinning', rating: 4.7, reviewCount: 98, totalLessons: 760, experienceYears: 5, specialties: ['다이어트'], certifications: ['Schwinn Spinning'], bio: '판교점 라이브 DJ 스피닝 클래스.', profileUrl: avatarImg('trainer-27', 400), gender: 'F' },
+  { id: 23, name: '원빈', centerId: 11, centerName: 'FitGenie 판교점', category: 'pt', rating: 5.0, reviewCount: 218, totalLessons: 1860, experienceYears: 12, specialties: ['근력', '바디프로필', '재활'], certifications: ['NSCA-CSCS', 'FMS Level 2', 'TRX'], bio: '판교 IT 직장인 PT 1순위. 8주 바디프로필 다수 성공.', profileUrl: avatarImg('trainer-23', 400), gender: 'M' },
+  { id: 24, name: '김유나', centerId: 11, centerName: 'FitGenie 판교점', category: 'pilates', rating: 4.9, reviewCount: 187, totalLessons: 1340, experienceYears: 7, specialties: ['바디프로필', '재활', '체형교정'], certifications: ['BASI 마스터', 'Polestar Mat'], bio: '판교점 필라테스 8주 챌린지 정원 즉시 마감.', profileUrl: avatarImg('trainer-24', 400), gender: 'F' },
+  { id: 25, name: '이수민', centerId: 11, centerName: 'FitGenie 판교점', category: 'yoga', rating: 4.8, reviewCount: 142, totalLessons: 980, experienceYears: 6, specialties: ['스트레칭', '유연성', '명상'] as Specialty[], certifications: ['RYT-500'], bio: '판교 직장인 요가/명상 전문. 점심시간 클래스 인기.', profileUrl: avatarImg('trainer-25', 400), gender: 'F' },
+  { id: 26, name: '정현우', centerId: 11, centerName: 'FitGenie 판교점', category: 'golf', rating: 4.9, reviewCount: 156, totalLessons: 1240, experienceYears: 10, specialties: ['주니어', '시니어'], certifications: ['KPGA 정회원', 'TPI Golf Fitness'], bio: 'KPGA 출신. 판교 IT 직장인 골프 입문자 1순위.', profileUrl: avatarImg('trainer-26', 400), gender: 'M' },
+  { id: 27, name: '박서연', centerId: 11, centerName: 'FitGenie 판교점', category: 'spinning', rating: 4.7, reviewCount: 98, totalLessons: 760, experienceYears: 5, specialties: ['다이어트'], certifications: ['Schwinn Spinning'], bio: '판교점 라이브 DJ 스피닝 클래스.', profileUrl: avatarImg('trainer-27', 400), gender: 'F' },
 
   // 판교역점 (id 12) — 2명
-  { id: 28, name: '고준희', centerId: 12, centerName: '스포짐 판교역점', category: 'golf', rating: 4.6, reviewCount: 67, totalLessons: 620, experienceYears: 6, specialties: ['주니어'], certifications: ['KPGA 준회원', 'PGA Junior Coach'], bio: '판교역 도보 1분 골프 전문. 점심시간 1:1 레슨.', profileUrl: avatarImg('trainer-28', 400), gender: 'F' },
-  { id: 29, name: '강승원', centerId: 12, centerName: '스포짐 판교역점', category: 'pt', rating: 4.5, reviewCount: 42, totalLessons: 380, experienceYears: 4, specialties: ['근력', '다이어트'], certifications: ['NSCA-CPT'], bio: 'IT 직장인 PT. 30분 단위 점심 PT 운영.', profileUrl: avatarImg('trainer-29', 400), gender: 'M' },
+  { id: 28, name: '고준희', centerId: 12, centerName: 'FitGenie 판교역점', category: 'golf', rating: 4.6, reviewCount: 67, totalLessons: 620, experienceYears: 6, specialties: ['주니어'], certifications: ['KPGA 준회원', 'PGA Junior Coach'], bio: '판교역 도보 1분 골프 전문. 점심시간 1:1 레슨.', profileUrl: avatarImg('trainer-28', 400), gender: 'F' },
+  { id: 29, name: '강승원', centerId: 12, centerName: 'FitGenie 판교역점', category: 'pt', rating: 4.5, reviewCount: 42, totalLessons: 380, experienceYears: 4, specialties: ['근력', '다이어트'], certifications: ['NSCA-CPT'], bio: 'IT 직장인 PT. 30분 단위 점심 PT 운영.', profileUrl: avatarImg('trainer-29', 400), gender: 'M' },
 
   // 대치점 (id 13) — 4명
-  { id: 30, name: '박서준', centerId: 13, centerName: '스포짐 대치점', category: 'pt', rating: 4.9, reviewCount: 256, totalLessons: 1680, experienceYears: 10, specialties: ['바디프로필', '근력', '재활'], certifications: ['NSCA-CSCS', 'FMS Level 2'], bio: '대치 학부모/학생 다수 케어. 주말 패밀리 PT 인기.', profileUrl: avatarImg('trainer-30', 400), gender: 'M' },
-  { id: 31, name: '최예린', centerId: 13, centerName: '스포짐 대치점', category: 'pilates', rating: 5.0, reviewCount: 187, totalLessons: 1240, experienceYears: 7, specialties: ['바디프로필', '체형교정', '임산부'], certifications: ['Polestar 마스터', 'BASI'], bio: '대치동 1:1 프라이빗 필라테스 전문. 산전·산후 케어.', profileUrl: avatarImg('trainer-31', 400), gender: 'F' },
-  { id: 32, name: '안유진', centerId: 13, centerName: '스포짐 대치점', category: 'yoga', rating: 4.8, reviewCount: 123, totalLessons: 920, experienceYears: 6, specialties: ['스트레칭', '코어'], certifications: ['RYT-500'], bio: '대치 학부모 요가 인기 강사.', profileUrl: avatarImg('trainer-32', 400), gender: 'F' },
-  { id: 33, name: '백승준', centerId: 13, centerName: '스포짐 대치점', category: 'golf', rating: 4.8, reviewCount: 142, totalLessons: 1120, experienceYears: 9, specialties: ['주니어'], certifications: ['KPGA 정회원'], bio: '대치 학생 골프 입문 다수. 주말 패밀리 골프.', profileUrl: avatarImg('trainer-33', 400), gender: 'M' },
+  { id: 30, name: '박서준', centerId: 13, centerName: 'FitGenie 대치점', category: 'pt', rating: 4.9, reviewCount: 256, totalLessons: 1680, experienceYears: 10, specialties: ['바디프로필', '근력', '재활'], certifications: ['NSCA-CSCS', 'FMS Level 2'], bio: '대치 학부모/학생 다수 케어. 주말 패밀리 PT 인기.', profileUrl: avatarImg('trainer-30', 400), gender: 'M' },
+  { id: 31, name: '최예린', centerId: 13, centerName: 'FitGenie 대치점', category: 'pilates', rating: 5.0, reviewCount: 187, totalLessons: 1240, experienceYears: 7, specialties: ['바디프로필', '체형교정', '임산부'], certifications: ['Polestar 마스터', 'BASI'], bio: '대치동 1:1 프라이빗 필라테스 전문. 산전·산후 케어.', profileUrl: avatarImg('trainer-31', 400), gender: 'F' },
+  { id: 32, name: '안유진', centerId: 13, centerName: 'FitGenie 대치점', category: 'yoga', rating: 4.8, reviewCount: 123, totalLessons: 920, experienceYears: 6, specialties: ['스트레칭', '코어'], certifications: ['RYT-500'], bio: '대치 학부모 요가 인기 강사.', profileUrl: avatarImg('trainer-32', 400), gender: 'F' },
+  { id: 33, name: '백승준', centerId: 13, centerName: 'FitGenie 대치점', category: 'golf', rating: 4.8, reviewCount: 142, totalLessons: 1120, experienceYears: 9, specialties: ['주니어'], certifications: ['KPGA 정회원'], bio: '대치 학생 골프 입문 다수. 주말 패밀리 골프.', profileUrl: avatarImg('trainer-33', 400), gender: 'M' },
 
   // 고척점 (id 14) — 1명
-  { id: 34, name: '김지원', centerId: 14, centerName: '스포짐 고척점', category: 'pt', rating: 4.4, reviewCount: 38, totalLessons: 340, experienceYears: 3, specialties: ['다이어트', '근력'], certifications: ['NSCA-CPT'], bio: '고척돔 인근 PT. 입문자 환영.', profileUrl: avatarImg('trainer-34', 400), gender: 'F' },
+  { id: 34, name: '김지원', centerId: 14, centerName: 'FitGenie 고척점', category: 'pt', rating: 4.4, reviewCount: 38, totalLessons: 340, experienceYears: 3, specialties: ['다이어트', '근력'], certifications: ['NSCA-CPT'], bio: '고척돔 인근 PT. 입문자 환영.', profileUrl: avatarImg('trainer-34', 400), gender: 'F' },
 
   // 부천점 (id 15) — 2명
-  { id: 35, name: '이서진', centerId: 15, centerName: '스포짐 부천점', category: 'swimming', rating: 4.7, reviewCount: 87, totalLessons: 920, experienceYears: 8, specialties: ['주니어', '시니어'], certifications: ['생활체육 수영지도자', 'KCSF 마스터'], bio: '부천 25m 수영장. 입문자~마스터즈, 주니어반 인기.', profileUrl: avatarImg('trainer-35', 400), gender: 'M' },
-  { id: 36, name: '추예원', centerId: 15, centerName: '스포짐 부천점', category: 'pilates', rating: 4.6, reviewCount: 54, totalLessons: 510, experienceYears: 5, specialties: ['재활', '체형교정'], certifications: ['BASI'], bio: '부천 필라테스 그룹·1:1.', profileUrl: avatarImg('trainer-36', 400), gender: 'F' },
+  { id: 35, name: '이서진', centerId: 15, centerName: 'FitGenie 부천점', category: 'swimming', rating: 4.7, reviewCount: 87, totalLessons: 920, experienceYears: 8, specialties: ['주니어', '시니어'], certifications: ['생활체육 수영지도자', 'KCSF 마스터'], bio: '부천 25m 수영장. 입문자~마스터즈, 주니어반 인기.', profileUrl: avatarImg('trainer-35', 400), gender: 'M' },
+  { id: 36, name: '추예원', centerId: 15, centerName: 'FitGenie 부천점', category: 'pilates', rating: 4.6, reviewCount: 54, totalLessons: 510, experienceYears: 5, specialties: ['재활', '체형교정'], certifications: ['BASI'], bio: '부천 필라테스 그룹·1:1.', profileUrl: avatarImg('trainer-36', 400), gender: 'F' },
 
   // 목동점 (id 16) — 3명
-  { id: 37, name: '최우식', centerId: 16, centerName: '스포짐 목동점', category: 'pt', rating: 4.8, reviewCount: 156, totalLessons: 1180, experienceYears: 8, specialties: ['바디프로필', '근력', '시니어'], certifications: ['NSCA-CPT', 'NASM-CES'], bio: '목동 학원가 학부모 PT 다수. 주말 패밀리 PT 인기.', profileUrl: avatarImg('trainer-37', 400), gender: 'M' },
-  { id: 38, name: '정아름', centerId: 16, centerName: '스포짐 목동점', category: 'pilates', rating: 4.7, reviewCount: 98, totalLessons: 720, experienceYears: 6, specialties: ['체형교정', '다이어트'], certifications: ['BASI'], bio: '목동 직장 여성 필라테스 그룹.', profileUrl: avatarImg('trainer-38', 400), gender: 'F' },
-  { id: 39, name: '김태형', centerId: 16, centerName: '스포짐 목동점', category: 'golf', rating: 4.7, reviewCount: 78, totalLessons: 640, experienceYears: 7, specialties: ['주니어'], certifications: ['KPGA 준회원'], bio: '목동 학생 골프 입문/주니어 클래스.', profileUrl: avatarImg('trainer-39', 400), gender: 'M' },
+  { id: 37, name: '최우식', centerId: 16, centerName: 'FitGenie 목동점', category: 'pt', rating: 4.8, reviewCount: 156, totalLessons: 1180, experienceYears: 8, specialties: ['바디프로필', '근력', '시니어'], certifications: ['NSCA-CPT', 'NASM-CES'], bio: '목동 학원가 학부모 PT 다수. 주말 패밀리 PT 인기.', profileUrl: avatarImg('trainer-37', 400), gender: 'M' },
+  { id: 38, name: '정아름', centerId: 16, centerName: 'FitGenie 목동점', category: 'pilates', rating: 4.7, reviewCount: 98, totalLessons: 720, experienceYears: 6, specialties: ['체형교정', '다이어트'], certifications: ['BASI'], bio: '목동 직장 여성 필라테스 그룹.', profileUrl: avatarImg('trainer-38', 400), gender: 'F' },
+  { id: 39, name: '김태형', centerId: 16, centerName: 'FitGenie 목동점', category: 'golf', rating: 4.7, reviewCount: 78, totalLessons: 640, experienceYears: 7, specialties: ['주니어'], certifications: ['KPGA 준회원'], bio: '목동 학생 골프 입문/주니어 클래스.', profileUrl: avatarImg('trainer-39', 400), gender: 'M' },
 
   // 골프 보강 — 판교점에 1명 더, 대치점에 1명 더, 목동점에 1명 더
-  { id: 40, name: '정유진', centerId: 11, centerName: '스포짐 판교점', category: 'golf', rating: 4.8, reviewCount: 132, totalLessons: 1080, experienceYears: 9, specialties: ['바디프로필', '시니어'] as Specialty[], certifications: ['LPGA Class A', 'TPI Golf Fitness'], bio: 'LPGA 출신 여성 골프 전문 강사. 여성·시니어 회원 인기.', profileUrl: avatarImg('trainer-40', 400), gender: 'F' },
-  { id: 41, name: '하성진', centerId: 13, centerName: '스포짐 대치점', category: 'golf', rating: 4.9, reviewCount: 167, totalLessons: 1340, experienceYears: 11, specialties: ['바디프로필', '주니어'] as Specialty[], certifications: ['KPGA 정회원', 'PGA Certified'], bio: '대치동 KPGA 정회원. 입문부터 싱글 진입까지 단계별 커리큘럼.', profileUrl: avatarImg('trainer-41', 400), gender: 'M' },
-  { id: 42, name: '오세린', centerId: 16, centerName: '스포짐 목동점', category: 'golf', rating: 4.6, reviewCount: 64, totalLessons: 540, experienceYears: 5, specialties: ['주니어', '체형교정'], certifications: ['KLPGA 준회원'], bio: '목동 학원가 학부모/학생 골프 가족 클래스.', profileUrl: avatarImg('trainer-42', 400), gender: 'F' },
+  { id: 40, name: '정유진', centerId: 11, centerName: 'FitGenie 판교점', category: 'golf', rating: 4.8, reviewCount: 132, totalLessons: 1080, experienceYears: 9, specialties: ['바디프로필', '시니어'] as Specialty[], certifications: ['LPGA Class A', 'TPI Golf Fitness'], bio: 'LPGA 출신 여성 골프 전문 강사. 여성·시니어 회원 인기.', profileUrl: avatarImg('trainer-40', 400), gender: 'F' },
+  { id: 41, name: '하성진', centerId: 13, centerName: 'FitGenie 대치점', category: 'golf', rating: 4.9, reviewCount: 167, totalLessons: 1340, experienceYears: 11, specialties: ['바디프로필', '주니어'] as Specialty[], certifications: ['KPGA 정회원', 'PGA Certified'], bio: '대치동 KPGA 정회원. 입문부터 싱글 진입까지 단계별 커리큘럼.', profileUrl: avatarImg('trainer-41', 400), gender: 'M' },
+  { id: 42, name: '오세린', centerId: 16, centerName: 'FitGenie 목동점', category: 'golf', rating: 4.6, reviewCount: 64, totalLessons: 540, experienceYears: 5, specialties: ['주니어', '체형교정'], certifications: ['KLPGA 준회원'], bio: '목동 학원가 학부모/학생 골프 가족 클래스.', profileUrl: avatarImg('trainer-42', 400), gender: 'F' },
 ];
 
 // ─────────────────────────────────────────────────────────────
@@ -992,17 +992,17 @@ export const MOCK_REVIEWS: CenterReview[] = [
 // ─────────────────────────────────────────────────────────────
 
 export const MOCK_CONVERSATIONS: MarketConversation[] = [
-  { id: 1, type: 'center', participantName: '스포짐 광화문점', participantAvatar: avatarImg('branch-1', 100), centerId: 1, lastMessage: '문의주신 PT 패키지 안내드립니다. 이번주 주말 상담 가능하실까요?', lastMessageAt: '2026-04-29T14:23:00', unreadCount: 2 },
+  { id: 1, type: 'center', participantName: 'FitGenie 광화문점', participantAvatar: avatarImg('branch-1', 100), centerId: 1, lastMessage: '문의주신 PT 패키지 안내드립니다. 이번주 주말 상담 가능하실까요?', lastMessageAt: '2026-04-29T14:23:00', unreadCount: 2 },
   { id: 2, type: 'trainer', participantName: '김도윤 트레이너', participantAvatar: avatarImg('trainer-1', 100), trainerId: 1, lastMessage: '내일 10시 시간 가능합니다. 컨디션 어떠세요?', lastMessageAt: '2026-04-29T11:05:00', unreadCount: 1 },
   { id: 3, type: 'trainer', participantName: '박지민 트레이너', participantAvatar: avatarImg('trainer-2', 100), trainerId: 2, lastMessage: '오늘 수업 후기 작성 부탁드려요!', lastMessageAt: '2026-04-28T19:48:00', unreadCount: 0 },
-  { id: 4, type: 'center', participantName: '스포짐 판교점', participantAvatar: avatarImg('branch-11', 100), centerId: 11, lastMessage: '환영합니다! 첫 방문 안내문 보내드렸어요.', lastMessageAt: '2026-04-28T10:12:00', unreadCount: 0 },
+  { id: 4, type: 'center', participantName: 'FitGenie 판교점', participantAvatar: avatarImg('branch-11', 100), centerId: 11, lastMessage: '환영합니다! 첫 방문 안내문 보내드렸어요.', lastMessageAt: '2026-04-28T10:12:00', unreadCount: 0 },
   { id: 5, type: 'note', participantName: '원빈 트레이너 — 강의노트', participantAvatar: avatarImg('trainer-23', 100), trainerId: 23, lastMessage: '[강의노트] 4주차 중간 점검 — 데드리프트 자세 교정', lastMessageAt: '2026-04-27T20:30:00', unreadCount: 1 },
   { id: 6, type: 'note', participantName: '김유나 강사 — 강의노트', participantAvatar: avatarImg('trainer-24', 100), trainerId: 24, lastMessage: '[강의노트] 필라테스 챌린지 5주차 동작 영상', lastMessageAt: '2026-04-26T15:00:00', unreadCount: 0 },
 ];
 
 export const MOCK_MESSAGES: Record<number, MarketMessage[]> = {
   1: [
-    { id: 1, conversationId: 1, senderId: 'them', senderName: '센터 매니저', type: 'text', content: '안녕하세요, 스포짐 광화문점입니다. 문의 감사드립니다.', sentAt: '2026-04-29T14:10:00', isRead: true },
+    { id: 1, conversationId: 1, senderId: 'them', senderName: '센터 매니저', type: 'text', content: '안녕하세요, FitGenie 광화문점입니다. 문의 감사드립니다.', sentAt: '2026-04-29T14:10:00', isRead: true },
     { id: 2, conversationId: 1, senderId: 'me', type: 'text', content: 'PT 30회 패키지 가격이 궁금해요. 식단 컨설팅도 같이 되나요?', sentAt: '2026-04-29T14:12:00', isRead: true },
     { id: 3, conversationId: 1, senderId: 'them', senderName: '센터 매니저', type: 'text', content: 'PT 30회 + 식단 컨설팅 패키지 240만원입니다. 첫 달 인바디 측정과 8주 챌린지 프로그램 포함이에요.', sentAt: '2026-04-29T14:18:00', isRead: false },
     { id: 4, conversationId: 1, senderId: 'them', senderName: '센터 매니저', type: 'text', content: '문의주신 PT 패키지 안내드립니다. 이번주 주말 상담 가능하실까요?', sentAt: '2026-04-29T14:23:00', isRead: false },

@@ -360,9 +360,9 @@ export const MOCK_EVENTS: DiscoverEvent[] = [
   }),
   buildEvent({
     id: 9,
-    title: '신규 오픈 — 스포짐 고덕역점',
+    title: '신규 오픈 — FitGenie 고덕역점',
     subtitle: '오픈 기념 회원권 25% 할인',
-    description: '스포짐 고덕역점 오픈 기념 회원권 전품목 25% 할인.',
+    description: 'FitGenie 고덕역점 오픈 기념 회원권 전품목 25% 할인.',
     heroSeed: 'event-9-hero',
     startsAt: '2026-04-05',
     endsAt: '2026-04-28',

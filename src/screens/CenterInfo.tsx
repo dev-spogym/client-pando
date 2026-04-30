@@ -76,7 +76,7 @@ export default function CenterInfo() {
               <span className="text-white font-bold text-h4">스포</span>
             </div>
             <div>
-              <h2 className="text-h4 font-bold">스포짐 피트니스</h2>
+              <h2 className="text-h4 font-bold">FitGenie 피트니스</h2>
               <p className="text-body text-content-secondary">건강한 라이프스타일의 시작</p>
             </div>
           </div>
@@ -86,7 +86,7 @@ export default function CenterInfo() {
               <MapPin className="w-5 h-5 text-content-tertiary flex-shrink-0 mt-0.5" />
               <div>
                 <p className="text-body">서울특별시 강남구 테헤란로 123</p>
-                <p className="text-caption text-content-tertiary">스포짐빌딩 2~3층</p>
+                <p className="text-caption text-content-tertiary">FitGenie빌딩 2~3층</p>
               </div>
             </div>
             <div className="flex items-center gap-3">

@@ -7,6 +7,7 @@ import {
   CreditCard,
   FileText,
   Gift,
+  Heart,
   LogOut,
   MessageSquare,
   Scale,
@@ -15,6 +16,7 @@ import {
   Users,
   ShoppingBag,
 } from 'lucide-react';
+import { useMarketStore } from '@/stores/marketStore';
 import { toast } from 'sonner';
 import { useAuthStore } from '@/stores/authStore';
 import {
@@ -31,6 +33,7 @@ import { Avatar, Badge, Card, ListItem } from '@/components/ui';
 export default function Profile() {
   const navigate = useNavigate();
   const { member, trainer, logout } = useAuthStore();
+  const scrapCount = useMarketStore((s) => s.scraps.length);
 
   const handleLogout = async () => {
     await logout();
@@ -131,6 +134,7 @@ export default function Profile() {
     {
       title: '내 정보',
       items: [
+        { icon: Heart, label: '찜한 항목', path: '/scrap', badge: scrapCount > 0 ? `${scrapCount}` : undefined, color: 'text-state-sale' },
         { icon: Scale, label: '체성분 / FMS', path: '/body-composition', color: 'text-primary' },
         { icon: Gift, label: '리워드 센터', path: '/coupons?tab=mileage', badge: `${member.mileage.toLocaleString()}P`, color: 'text-state-warning' },
         { icon: CreditCard, label: '재등록 추천', path: '/renewal', color: 'text-state-info' },

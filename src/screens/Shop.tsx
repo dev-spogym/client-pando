@@ -28,7 +28,7 @@ export default function Shop() {
 
   return (
     <div className="min-h-screen bg-surface-secondary">
-      <div className="bg-surface sticky top-0 z-30 border-b border-line">
+      <div className="bg-surface sticky top-0 z-30 border-b border-line pt-safe-top">
         <PageHeader title="상품 스토어" showBack sticky={false} />
         <div className="overflow-x-auto no-scrollbar pb-3 snap-x snap-proximity">
           <div className="flex w-max min-w-full gap-2 px-4">

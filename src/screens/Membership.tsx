@@ -149,7 +149,7 @@ export default function Membership() {
   return (
     <div className="min-h-screen bg-surface-secondary">
       {/* 헤더 */}
-      <header className="bg-surface sticky top-0 z-10">
+      <header className="bg-surface sticky top-0 z-10 pt-safe-top">
         <div className="px-5 pt-safe-top">
           <h1 className="text-xl font-bold py-4">이용권</h1>
         </div>

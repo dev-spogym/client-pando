@@ -133,7 +133,7 @@ export default function ClassList() {
   return (
     <div className="min-h-screen bg-surface-secondary">
       {/* 헤더 */}
-      <header className="bg-surface sticky top-0 z-20 border-b border-line">
+      <header className="bg-surface sticky top-0 z-20 border-b border-line pt-safe-top">
         <div className="px-5 pt-safe-top">
           <h1 className="text-h2 py-4">수업 예약</h1>
         </div>

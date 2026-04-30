@@ -51,7 +51,7 @@ export default function PageHeader({
   return (
     <header
       className={cn(
-        'flex items-center gap-2 px-4 h-14',
+        'flex items-center gap-2 px-4 min-h-14 pt-safe-top',
         sticky && 'sticky top-0 z-30',
         baseClass,
         className

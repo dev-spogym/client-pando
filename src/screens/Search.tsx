@@ -356,7 +356,7 @@ export default function Search() {
   return (
     <div className="flex flex-col min-h-screen bg-surface-secondary">
       {/* Sticky 헤더 + 검색바 */}
-      <header className="sticky top-0 z-30 bg-surface border-b border-line">
+      <header className="sticky top-0 z-30 bg-surface border-b border-line pt-safe-top">
         <div className="flex items-center gap-2 px-3 h-14">
           <button
             type="button"

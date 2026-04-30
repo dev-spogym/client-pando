@@ -37,7 +37,7 @@ export default function Notifications() {
 
   return (
     <div className="min-h-screen bg-surface-secondary">
-      <header className="bg-surface sticky top-0 z-10 border-b border-line">
+      <header className="bg-surface sticky top-0 z-10 border-b border-line pt-safe-top">
         <PageHeader title="알림센터" showBack sticky={false} />
 
         <div className="px-5 pb-3 flex gap-2">

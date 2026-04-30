@@ -10,7 +10,7 @@ import StaffTabBar from './StaffTabBar';
 const HIDE_TAB_PATHS = ['/login', '/register', '/lesson-sign', '/onboarding', '/checkout', '/renewal', '/withdrawal'];
 
 /** 상세 화면 중 탭바를 숨길 prefix */
-const HIDE_TAB_PREFIXES = ['/classes/', '/shop/'];
+const HIDE_TAB_PREFIXES = ['/classes/', '/shop/', '/centers/', '/trainers/', '/messages/'];
 
 /** 트레이너 탭바를 숨길 경로 */
 const HIDE_TRAINER_TAB_PATHS = ['/login', '/register'];

@@ -209,6 +209,7 @@ export default function TrainerMarketProfile() {
               <label className="text-caption text-content-secondary block mb-1">소속 센터</label>
               <button
                 type="button"
+                onClick={() => toast.info('소속 센터 변경은 운영팀을 통해 가능합니다.')}
                 className="w-full h-11 px-3 rounded-card border border-line bg-surface-tertiary flex items-center justify-between"
               >
                 <span className="text-body text-content-secondary">

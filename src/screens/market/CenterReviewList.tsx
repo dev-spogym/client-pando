@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ThumbsUp, AlertCircle, Star, ChevronDown, ChevronUp } from 'lucide-react';
 import { BarChart, Bar, XAxis, Cell, ResponsiveContainer } from 'recharts';
+import { toast } from 'sonner';
 import { PageHeader, Card, Avatar, Badge, Chip, Button, EmptyState } from '@/components/ui';
 import {
   getCenterById,
@@ -40,9 +41,25 @@ function StarDisplay({ rating, size = 'sm' }: { rating: number; size?: 'sm' | 'l
 
 function ReviewCard({ review }: { review: CenterReview }) {
   const [expanded, setExpanded] = useState(false);
+  const [helpful, setHelpful] = useState(false);
+  const [helpfulCount, setHelpfulCount] = useState(review.helpfulCount);
   const isLong = review.body.length > 100;
 
   const compactScores = review.facilityScores.slice(0, 3);
+
+  const handleHelpful = () => {
+    if (helpful) {
+      setHelpful(false);
+      setHelpfulCount((c) => Math.max(0, c - 1));
+      return;
+    }
+    setHelpful(true);
+    setHelpfulCount((c) => c + 1);
+  };
+
+  const handleReport = () => {
+    toast.info('신고가 접수되었습니다. 운영팀이 검토합니다.');
+  };
 
   return (
     <Card variant="soft" padding="md" className="mb-3">
@@ -116,14 +133,19 @@ function ReviewCard({ review }: { review: CenterReview }) {
       <div className="flex items-center justify-between pt-2 border-t border-line">
         <button
           type="button"
-          className="flex items-center gap-1.5 text-caption text-content-secondary active:text-primary transition-colors"
+          onClick={handleHelpful}
+          aria-pressed={helpful}
+          className={`flex items-center gap-1.5 text-caption transition-colors ${
+            helpful ? 'text-primary' : 'text-content-secondary active:text-primary'
+          }`}
         >
-          <ThumbsUp className="w-4 h-4" />
-          <span>도움됐어요 {review.helpfulCount > 0 ? review.helpfulCount : ''}</span>
+          <ThumbsUp className={`w-4 h-4 ${helpful ? 'fill-primary' : ''}`} />
+          <span>도움됐어요 {helpfulCount > 0 ? helpfulCount : ''}</span>
         </button>
         <button
           type="button"
-          className="flex items-center gap-1 text-caption text-content-tertiary"
+          onClick={handleReport}
+          className="flex items-center gap-1 text-caption text-content-tertiary active:text-state-error transition-colors"
         >
           <AlertCircle className="w-3.5 h-3.5" />
           신고

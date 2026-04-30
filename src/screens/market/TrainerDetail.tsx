@@ -2,6 +2,7 @@
 
 import { useNavigate, useParams } from 'react-router-dom';
 import { Heart, Star, CheckCircle2, Clock, ChevronRight } from 'lucide-react';
+import { toast } from 'sonner';
 import {
   PageHeader,
   Button,
@@ -75,10 +76,12 @@ export default function TrainerDetail() {
       <PageHeader
         showBack
         showNotification
+        onNotification={() => navigate('/notifications')}
         variant="transparent"
         className="absolute top-0 left-0 right-0 z-30"
         rightSlot={
           <button
+            type="button"
             onClick={() => toggleScrap('trainer', trainer.id)}
             className="w-10 h-10 inline-flex items-center justify-center rounded-full active:bg-white/20"
             aria-label="스크랩"
@@ -173,7 +176,12 @@ export default function TrainerDetail() {
         <div className="bg-surface rounded-card shadow-card-soft p-4">
           <div className="flex items-center justify-between mb-3">
             <SectionTitle>수업 후기</SectionTitle>
-            <Button variant="ghost" size="sm" rightIcon={<ChevronRight className="w-4 h-4" />}>
+            <Button
+              variant="ghost"
+              size="sm"
+              rightIcon={<ChevronRight className="w-4 h-4" />}
+              onClick={() => center && navigate(`/centers/${center.id}/reviews`)}
+            >
               더 보기
             </Button>
           </div>
@@ -308,6 +316,10 @@ export default function TrainerDetail() {
           variant="primary"
           size="lg"
           className="flex-1"
+          onClick={() => {
+            toast.info('예약 요청을 보냈습니다. 강사 확인 후 메신저로 회신됩니다.');
+            navigate('/messages');
+          }}
         >
           예약 요청
         </Button>

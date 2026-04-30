@@ -216,10 +216,11 @@ export default function CenterCategorySearch() {
           <ArrowLeft className="w-5 h-5" />
         </button>
 
-        {/* 지역 드롭다운 (클릭 시 추후 변경) */}
+        {/* 지역 드롭다운 — 둘러보기 홈에서 변경 */}
         <button
           type="button"
-          className="flex items-center gap-1 text-body font-semibold text-content"
+          onClick={() => navigate('/centers')}
+          className="flex items-center gap-1 text-body font-semibold text-content active:opacity-70"
           aria-label="지역 변경"
         >
           {district}
@@ -231,6 +232,7 @@ export default function CenterCategorySearch() {
         <button
           type="button"
           aria-label="알림"
+          onClick={() => navigate('/notifications')}
           className="shrink-0 w-9 h-9 flex items-center justify-center rounded-full hover:bg-surface-secondary text-content-secondary"
         >
           <Bell className="w-5 h-5" />

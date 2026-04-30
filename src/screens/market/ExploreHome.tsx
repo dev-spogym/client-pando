@@ -460,20 +460,23 @@ export default function ExploreHome() {
           <button
             type="button"
             aria-label="알림"
+            onClick={() => navigate('/notifications')}
             className="w-10 h-10 flex items-center justify-center rounded-full active:bg-surface-secondary text-content"
           >
             <Bell className="w-5 h-5" />
           </button>
           <button
             type="button"
-            aria-label="QR 스캔"
+            aria-label="QR 체크인"
+            onClick={() => navigate('/qr')}
             className="w-10 h-10 flex items-center justify-center rounded-full active:bg-surface-secondary text-content"
           >
             <QrCode className="w-5 h-5" />
           </button>
           <button
             type="button"
-            aria-label="스캔"
+            aria-label="센터 검색"
+            onClick={() => navigate('/centers/search')}
             className="w-10 h-10 flex items-center justify-center rounded-full active:bg-surface-secondary text-content"
           >
             <ScanLine className="w-5 h-5" />

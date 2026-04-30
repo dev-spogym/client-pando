@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, MoreVertical, Paperclip, Send, ClipboardList } from 'lucide-react';
+import { toast } from 'sonner';
 import { Avatar, Card, Chip } from '@/components/ui';
 import { getConversationById, getMessagesByConversation } from '@/lib/marketplace';
 import { useMarketStore } from '@/stores/marketStore';
@@ -84,6 +85,7 @@ export default function MessengerRoom() {
         <button
           type="button"
           aria-label="옵션"
+          onClick={() => toast.info('대화방 옵션은 곧 제공됩니다.')}
           className="w-10 h-10 inline-flex items-center justify-center rounded-full active:bg-surface-tertiary text-content shrink-0"
         >
           <MoreVertical className="w-5 h-5" />
@@ -235,6 +237,7 @@ export default function MessengerRoom() {
           <button
             type="button"
             aria-label="첨부"
+            onClick={() => toast.info('파일 첨부는 곧 제공됩니다.')}
             className="w-10 h-10 inline-flex items-center justify-center rounded-full active:bg-surface-tertiary text-content-secondary shrink-0"
           >
             <Paperclip className="w-5 h-5" />

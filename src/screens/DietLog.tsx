@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
   ChevronLeft, ChevronRight, Plus, X, Flame, Camera, Trash2,
 } from 'lucide-react';
+import { toast } from 'sonner';
 import { PageHeader, Button, EmptyState } from '@/components/ui';
 
 type MealType = '아침' | '점심' | '저녁' | '간식';
@@ -298,7 +299,11 @@ export default function DietLog() {
               {/* 사진 첨부 (placeholder) */}
               <div>
                 <label className="text-sm font-medium text-content-secondary mb-2 block">사진 첨부</label>
-                <button className="w-full py-8 border-2 border-dashed border-line rounded-card flex flex-col items-center gap-2 text-content-tertiary active:bg-surface-secondary">
+                <button
+                  type="button"
+                  onClick={() => toast.info('식단 사진 업로드는 곧 제공됩니다.')}
+                  className="w-full py-8 border-2 border-dashed border-line rounded-card flex flex-col items-center gap-2 text-content-tertiary active:bg-surface-secondary"
+                >
                   <Camera className="w-8 h-8" />
                   <span className="text-sm">사진을 추가하세요</span>
                   <span className="text-xs">(준비 중)</span>

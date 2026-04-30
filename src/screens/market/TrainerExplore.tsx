@@ -87,6 +87,8 @@ export default function TrainerExplore() {
           <h1 className="text-h4 text-content font-bold">강사 둘러보기</h1>
           <div className="flex items-center gap-1">
             <button
+              type="button"
+              onClick={() => navigate('/notifications')}
               className="w-10 h-10 inline-flex items-center justify-center rounded-full active:bg-surface-tertiary text-content-secondary"
               aria-label="알림"
             >

@@ -1,8 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { Star, X } from 'lucide-react';
+import { toast } from 'sonner';
 import { PageHeader, Card, Button, Badge } from '@/components/ui';
 import { getCenterById, img } from '@/lib/marketplace';
 import { cn } from '@/lib/utils';
@@ -61,6 +62,7 @@ function StarInput({
 
 export default function CenterReviewWrite() {
   const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
   const center = getCenterById(Number(id));
 
   const [overallRating, setOverallRating] = useState(0);
@@ -70,6 +72,7 @@ export default function CenterReviewWrite() {
   const [body, setBody] = useState('');
   const [agreed, setAgreed] = useState(false);
   const [photos, setPhotos] = useState<string[]>(SAMPLE_PHOTOS);
+  const [submitting, setSubmitting] = useState(false);
 
   const isValid = overallRating > 0 && body.length >= 30 && agreed;
 
@@ -78,6 +81,24 @@ export default function CenterReviewWrite() {
 
   const removePhoto = (idx: number) =>
     setPhotos((prev) => prev.filter((_, i) => i !== idx));
+
+  const addSamplePhoto = () => {
+    if (photos.length >= 5) {
+      toast.info('사진은 최대 5장까지 첨부할 수 있습니다.');
+      return;
+    }
+    const next = img(`review-extra-${Date.now()}`, 400, 400);
+    setPhotos((prev) => [...prev, next]);
+  };
+
+  const handleSubmit = () => {
+    if (!isValid || submitting) return;
+    setSubmitting(true);
+    toast.success('리뷰가 등록되었습니다.');
+    setTimeout(() => {
+      navigate(`/centers/${id}/reviews`);
+    }, 300);
+  };
 
   if (!center) {
     return (
@@ -197,6 +218,7 @@ export default function CenterReviewWrite() {
               <button
                 type="button"
                 aria-label="사진 추가"
+                onClick={addSamplePhoto}
                 className="aspect-square rounded-card border-2 border-dashed border-line-strong flex flex-col items-center justify-center gap-1 text-content-tertiary active:bg-surface-tertiary"
               >
                 <span className="text-h3 leading-none">+</span>
@@ -240,6 +262,8 @@ export default function CenterReviewWrite() {
           size="xl"
           fullWidth
           disabled={!isValid}
+          loading={submitting}
+          onClick={handleSubmit}
         >
           리뷰 등록
         </Button>

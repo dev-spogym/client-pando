@@ -57,6 +57,7 @@ export default function MessengerHub() {
           <button
             type="button"
             aria-label="알림"
+            onClick={() => navigate('/notifications')}
             className="relative w-10 h-10 inline-flex items-center justify-center rounded-full active:bg-surface-tertiary text-content"
           >
             <Bell className="w-5 h-5" />

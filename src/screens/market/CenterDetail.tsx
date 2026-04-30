@@ -14,6 +14,7 @@ import {
   ChevronRight,
   CheckCircle2,
 } from 'lucide-react';
+import { toast } from 'sonner';
 import {
   BarChart,
   Bar,
@@ -559,6 +560,17 @@ function LocationTab({
   );
 }
 
+/* ── 결제 경로 빌더 (제품 정보를 쿼리스트링으로 전달) ── */
+function buildCheckoutPath(p: MarketProduct): string {
+  const params = new URLSearchParams({
+    name: p.name,
+    price: String(p.price),
+    category: 'gym',
+    subtitle: `${p.centerName} · ${p.duration}${p.sessions ? ` · ${p.sessions}회` : ''}`,
+  });
+  return `/checkout/manual?${params.toString()}`;
+}
+
 /* ── 메인 컴포넌트 ── */
 export default function CenterDetail() {
   const navigate = useNavigate();
@@ -638,6 +650,16 @@ export default function CenterDetail() {
             <button
               type="button"
               aria-label="공유"
+              onClick={() => {
+                const url = typeof window !== 'undefined' ? window.location.href : '';
+                if (typeof navigator !== 'undefined' && navigator.share) {
+                  navigator.share({ title: center.name, url }).catch(() => undefined);
+                } else if (url && typeof navigator !== 'undefined' && navigator.clipboard) {
+                  navigator.clipboard.writeText(url).then(() => toast.success('링크가 복사되었습니다.'));
+                } else {
+                  toast.info('공유 기능을 사용할 수 없는 환경입니다.');
+                }
+              }}
               className="w-9 h-9 rounded-full bg-black/30 backdrop-blur-sm flex items-center justify-center text-white"
             >
               <Share2 className="w-4 h-4" />
@@ -657,6 +679,7 @@ export default function CenterDetail() {
             <button
               type="button"
               aria-label="알림"
+              onClick={() => navigate('/notifications')}
               className="w-9 h-9 rounded-full bg-black/30 backdrop-blur-sm flex items-center justify-center text-white"
             >
               <Bell className="w-4 h-4" />
@@ -793,7 +816,7 @@ export default function CenterDetail() {
           trainers={trainers}
           onMoreReviews={() => setActiveTab('리뷰')}
           onMoreTrainers={() => setActiveTab('강사')}
-          onBuyProduct={() => navigate(`/checkout?centerId=${center.id}`)}
+          onBuyProduct={(p) => navigate(buildCheckoutPath(p))}
           onNavigateProduct={() => setActiveTab('상품')}
         />
       )}
@@ -807,7 +830,7 @@ export default function CenterDetail() {
           ) : (
             <ProductGroupSection
               products={products}
-              onBuy={() => navigate(`/checkout?centerId=${center.id}`)}
+              onBuy={(p) => navigate(buildCheckoutPath(p))}
             />
           )}
         </div>
@@ -867,12 +890,19 @@ export default function CenterDetail() {
           센터에 문의
         </Button>
 
-        {/* 결제 버튼 */}
+        {/* 결제 버튼 — 대표 상품이 있으면 바로 결제, 없으면 상품 탭으로 이동 */}
         <Button
           variant="primary"
           size="lg"
           className="flex-1"
-          onClick={() => navigate(`/checkout?centerId=${center.id}`)}
+          onClick={() => {
+            const rep = products.find((p) => p.isRepresentative) ?? products[0];
+            if (rep) {
+              navigate(buildCheckoutPath(rep));
+            } else {
+              setActiveTab('상품');
+            }
+          }}
         >
           결제하기
         </Button>

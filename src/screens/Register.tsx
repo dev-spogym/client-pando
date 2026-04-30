@@ -126,8 +126,8 @@ export default function Register() {
 
       <div className="flex-1 px-6 pt-8">
         <div className="bg-primary-light rounded-card p-4 mb-6">
-          <p className="text-sm font-semibold text-primary">진행 방식 안내</p>
-          <p className="text-xs text-content-secondary mt-2 leading-relaxed">
+          <p className="text-body font-semibold text-primary">진행 방식 안내</p>
+          <p className="text-caption text-content-secondary mt-2 leading-relaxed">
             회원 기본 정보는 CRM에서 먼저 등록되고, 앱에서는 휴대폰 인증 후 비밀번호를 설정해 연동을 완료합니다.
           </p>
         </div>
@@ -138,7 +138,7 @@ export default function Register() {
             return (
               <div key={label} className="flex-1">
                 <div className={cn('h-1 rounded-full mb-2', index <= stepIndex ? 'bg-primary' : 'bg-line')} />
-                <span className={cn('text-xs', index <= stepIndex ? 'text-primary font-medium' : 'text-content-tertiary')}>
+                <span className={cn('text-caption', index <= stepIndex ? 'text-primary font-medium' : 'text-content-tertiary')}>
                   {label}
                 </span>
               </div>
@@ -149,8 +149,8 @@ export default function Register() {
         {step === 'phone' && (
           <div className="space-y-6">
             <div>
-              <h2 className="text-xl font-bold mb-2">센터에 등록된 회원 정보를 확인합니다</h2>
-              <p className="text-sm text-content-secondary">이름은 선택 입력이지만, 입력하면 CRM 회원 매칭 정확도가 높아집니다.</p>
+              <h2 className="text-h2 font-bold mb-2">센터에 등록된 회원 정보를 확인합니다</h2>
+              <p className="text-body text-content-secondary">이름은 선택 입력이지만, 입력하면 CRM 회원 매칭 정확도가 높아집니다.</p>
             </div>
 
             <div className="space-y-3">
@@ -160,7 +160,7 @@ export default function Register() {
                   value={name}
                   onChange={(event) => setName(event.target.value)}
                   placeholder="이름 (선택)"
-                  className="w-full pl-12 pr-4 py-4 rounded-input border border-line bg-surface text-content placeholder:text-content-tertiary focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary text-base"
+                  className="w-full pl-12 pr-4 py-4 rounded-input border border-line bg-surface text-content placeholder:text-content-tertiary focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary text-body-lg"
                 />
               </div>
               <div className="relative">
@@ -170,7 +170,7 @@ export default function Register() {
                   value={phone}
                   onChange={(event) => handlePhoneChange(event.target.value)}
                   placeholder="010-0000-0000"
-                  className="w-full pl-12 pr-4 py-4 rounded-input border border-line bg-surface text-content placeholder:text-content-tertiary focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary text-base"
+                  className="w-full pl-12 pr-4 py-4 rounded-input border border-line bg-surface text-content placeholder:text-content-tertiary focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary text-body-lg"
                 />
               </div>
             </div>
@@ -191,8 +191,8 @@ export default function Register() {
         {step === 'verify' && (
           <div className="space-y-6">
             <div>
-              <h2 className="text-xl font-bold mb-2">휴대폰 인증을 진행해 주세요</h2>
-              <p className="text-sm text-content-secondary">{phone}로 전송된 4자리 코드를 입력하세요.</p>
+              <h2 className="text-h2 font-bold mb-2">휴대폰 인증을 진행해 주세요</h2>
+              <p className="text-body text-content-secondary">{phone}로 전송된 4자리 코드를 입력하세요.</p>
             </div>
             <div className="relative">
               <ShieldCheck className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-content-tertiary" />
@@ -201,7 +201,7 @@ export default function Register() {
                 value={verifyCode}
                 onChange={(event) => setVerifyCode(event.target.value.slice(0, 4))}
                 placeholder="인증번호 4자리"
-                className="w-full pl-12 pr-4 py-4 rounded-input border border-line bg-surface text-content placeholder:text-content-tertiary focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary text-base tracking-widest"
+                className="w-full pl-12 pr-4 py-4 rounded-input border border-line bg-surface text-content placeholder:text-content-tertiary focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary text-body-lg tracking-widest"
                 inputMode="numeric"
               />
             </div>
@@ -220,8 +220,8 @@ export default function Register() {
         {step === 'password' && (
           <div className="space-y-6">
             <div>
-              <h2 className="text-xl font-bold mb-2">앱 비밀번호를 설정해 주세요</h2>
-              <p className="text-sm text-content-secondary">설정 후 로그인하면 운동 온보딩과 첫 루틴 추천을 이어서 진행할 수 있습니다.</p>
+              <h2 className="text-h2 font-bold mb-2">앱 비밀번호를 설정해 주세요</h2>
+              <p className="text-body text-content-secondary">설정 후 로그인하면 운동 온보딩과 첫 루틴 추천을 이어서 진행할 수 있습니다.</p>
             </div>
             <div className="space-y-3">
               <div className="relative">
@@ -231,7 +231,7 @@ export default function Register() {
                   value={password}
                   onChange={(event) => setPassword(event.target.value)}
                   placeholder="비밀번호"
-                  className="w-full pl-12 pr-4 py-4 rounded-input border border-line bg-surface text-content placeholder:text-content-tertiary focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary text-base"
+                  className="w-full pl-12 pr-4 py-4 rounded-input border border-line bg-surface text-content placeholder:text-content-tertiary focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary text-body-lg"
                 />
               </div>
               <div className="relative">
@@ -241,7 +241,7 @@ export default function Register() {
                   value={confirmPassword}
                   onChange={(event) => setConfirmPassword(event.target.value)}
                   placeholder="비밀번호 확인"
-                  className="w-full pl-12 pr-4 py-4 rounded-input border border-line bg-surface text-content placeholder:text-content-tertiary focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary text-base"
+                  className="w-full pl-12 pr-4 py-4 rounded-input border border-line bg-surface text-content placeholder:text-content-tertiary focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary text-body-lg"
                 />
               </div>
             </div>
@@ -259,7 +259,7 @@ export default function Register() {
         )}
 
         <div className="mt-8 text-center">
-          <Link to="/login" className="text-sm text-content-secondary">
+          <Link to="/login" className="text-body text-content-secondary">
             이미 연동하셨나요? <span className="text-primary font-medium">로그인</span>
           </Link>
         </div>

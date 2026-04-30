@@ -10,8 +10,8 @@ export default function StaffMembers() {
     <div className="min-h-screen bg-surface-secondary">
       <header className="bg-surface px-5 pt-safe-top pb-4 shadow-sm">
         <div className="pt-4">
-          <p className="text-xs text-content-tertiary">MA-510</p>
-          <h1 className="text-lg font-bold">회원 검색 / 조회</h1>
+          <p className="text-caption text-content-tertiary">MA-510</p>
+          <h1 className="text-h4 font-bold">회원 검색 / 조회</h1>
         </div>
       </header>
 
@@ -23,9 +23,9 @@ export default function StaffMembers() {
             className="w-full text-left"
           >
             <Card interactive>
-              <p className="text-sm font-semibold">{member.name}</p>
-              <p className="mt-1 text-xs text-content-secondary">{member.phone} · {member.membershipName}</p>
-              <p className="mt-2 text-xs text-content-tertiary">상태 {member.status}</p>
+              <p className="text-body font-semibold">{member.name}</p>
+              <p className="mt-1 text-caption text-content-secondary">{member.phone} · {member.membershipName}</p>
+              <p className="mt-2 text-caption text-content-tertiary">상태 {member.status}</p>
             </Card>
           </button>
         ))}

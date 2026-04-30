@@ -89,7 +89,7 @@ export default function AttendanceHistory() {
         <button onClick={prevMonth} className="p-2">
           <ChevronLeft className="w-5 h-5 text-content-secondary" />
         </button>
-        <span className="font-semibold text-base">
+        <span className="font-semibold text-body-lg">
           {year}년 {month + 1}월
         </span>
         <button onClick={nextMonth} className="p-2">
@@ -102,7 +102,7 @@ export default function AttendanceHistory() {
         <div className="grid grid-cols-7 gap-1">
           {['일', '월', '화', '수', '목', '금', '토'].map((day, i) => (
             <div key={day} className={cn(
-              'text-center text-xs py-2 font-medium',
+              'text-center text-caption py-2 font-medium',
               i === 0 ? 'text-state-error' : i === 6 ? 'text-primary' : 'text-content-secondary'
             )}>{day}</div>
           ))}
@@ -119,7 +119,7 @@ export default function AttendanceHistory() {
               <div
                 key={day}
                 className={cn(
-                  'aspect-square flex flex-col items-center justify-center rounded-lg text-sm relative',
+                  'aspect-square flex flex-col items-center justify-center rounded-lg text-body relative',
                   hasAttendance && 'bg-primary text-white font-bold',
                   isToday && !hasAttendance && 'ring-2 ring-primary',
                   !hasAttendance && dayOfWeek === 0 && 'text-state-error/60',
@@ -135,7 +135,7 @@ export default function AttendanceHistory() {
           })}
         </div>
 
-        <div className="mt-3 flex items-center justify-center gap-4 text-xs text-content-secondary">
+        <div className="mt-3 flex items-center justify-center gap-4 text-caption text-content-secondary">
           <span className="flex items-center gap-1">
             <div className="w-3 h-3 bg-primary rounded" /> 출석
           </span>
@@ -145,9 +145,9 @@ export default function AttendanceHistory() {
 
       {/* 출석 리스트 */}
       <div className="px-4 mt-2 pb-4">
-        <h3 className="font-semibold text-sm mb-3 text-content-secondary">출석 기록</h3>
+        <h3 className="font-semibold text-body mb-3 text-content-secondary">출석 기록</h3>
         {loading ? (
-          <div className="text-center py-8 text-content-tertiary text-sm">불러오는 중...</div>
+          <div className="text-center py-8 text-content-tertiary text-body">불러오는 중...</div>
         ) : records.length === 0 ? (
           <EmptyState
             size="sm"
@@ -166,11 +166,11 @@ export default function AttendanceHistory() {
               return (
                 <div key={record.id} className="bg-surface rounded-card shadow-card-soft p-3 flex items-center gap-3">
                   <div className="w-10 h-10 bg-primary-light rounded-lg flex items-center justify-center">
-                    <span className="text-primary font-bold text-sm">{checkIn.getDate()}</span>
+                    <span className="text-primary font-bold text-body">{checkIn.getDate()}</span>
                   </div>
                   <div className="flex-1">
                     <div className="flex items-center gap-2">
-                      <span className="text-sm font-medium">
+                      <span className="text-body font-medium">
                         {formatTime(record.checkInAt)}
                         {checkOut && ` - ${formatTime(record.checkOutAt!)}`}
                       </span>
@@ -178,7 +178,7 @@ export default function AttendanceHistory() {
                         {typeLabel[record.type] || record.type}
                       </span>
                     </div>
-                    <div className="flex items-center gap-2 text-xs text-content-tertiary mt-0.5">
+                    <div className="flex items-center gap-2 text-caption text-content-tertiary mt-0.5">
                       <span>{methodLabel[record.checkInMethod] || record.checkInMethod}</span>
                       {duration && (
                         <span className="flex items-center gap-0.5">

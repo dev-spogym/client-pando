@@ -18,7 +18,7 @@ export default function TrainerNotifications() {
               markAllNotificationsRead('trainer');
               toast.success('모든 알림을 읽음 처리했습니다.');
             }}
-            className="text-sm font-medium text-primary"
+            className="text-body font-medium text-primary"
           >
             모두 읽음
           </button>
@@ -39,9 +39,9 @@ export default function TrainerNotifications() {
           >
             <div className="flex items-start justify-between gap-3">
               <div>
-                <p className="text-sm font-semibold">{item.title}</p>
-                <p className="mt-2 text-sm text-content-secondary">{item.body}</p>
-                <p className="mt-2 text-xs text-content-tertiary">{formatDateKo(item.createdAt)} · {item.category}</p>
+                <p className="text-body font-semibold">{item.title}</p>
+                <p className="mt-2 text-body text-content-secondary">{item.body}</p>
+                <p className="mt-2 text-caption text-content-tertiary">{formatDateKo(item.createdAt)} · {item.category}</p>
               </div>
               {!item.read ? (
                 <span className="mt-1 h-2.5 w-2.5 rounded-full bg-primary flex-shrink-0" />

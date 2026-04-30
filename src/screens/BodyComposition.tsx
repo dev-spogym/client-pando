@@ -107,7 +107,7 @@ export default function BodyComposition() {
         <>
           {latest && (
             <div className="bg-surface px-4 py-5">
-              <p className="text-xs text-content-tertiary mb-3">최근 측정: {formatDateKo(latest.date)}</p>
+              <p className="text-caption text-content-tertiary mb-3">최근 측정: {formatDateKo(latest.date)}</p>
               <div className="grid grid-cols-2 gap-3">
                 <MetricCard
                   label="체중"
@@ -122,26 +122,26 @@ export default function BodyComposition() {
                   unit="kg"
                   diff={getDiff(latest.muscle, previous?.muscle ?? null)}
                   good="up"
-                  icon={<div className="text-lg">💪</div>}
+                  icon={<div className="text-h4">💪</div>}
                 />
                 <MetricCard
                   label="체지방량"
                   value={latest.fat}
                   unit="kg"
                   diff={getDiff(latest.fat, previous?.fat ?? null)}
-                  icon={<div className="text-lg">🔥</div>}
+                  icon={<div className="text-h4">🔥</div>}
                 />
                 <MetricCard
                   label="체지방률"
                   value={latest.fatRate}
                   unit="%"
                   diff={getDiff(latest.fatRate, previous?.fatRate ?? null)}
-                  icon={<div className="text-lg">📊</div>}
+                  icon={<div className="text-h4">📊</div>}
                 />
               </div>
               {latest.bmi !== null && (
                 <div className="mt-3 bg-surface-secondary rounded-card p-3 flex items-center justify-between">
-                  <span className="text-sm text-content-secondary">BMI</span>
+                  <span className="text-body text-content-secondary">BMI</span>
                   <span className="font-bold text-primary">{latest.bmi}</span>
                 </div>
               )}
@@ -149,9 +149,9 @@ export default function BodyComposition() {
           )}
 
           <div className="px-4 py-4">
-            <h3 className="font-semibold text-sm mb-3 text-content-secondary">측정 이력</h3>
+            <h3 className="font-semibold text-body mb-3 text-content-secondary">측정 이력</h3>
             {loading ? (
-              <div className="text-center py-8 text-content-tertiary text-sm">불러오는 중...</div>
+              <div className="text-center py-8 text-content-tertiary text-body">불러오는 중...</div>
             ) : records.length === 0 ? (
               <EmptyState
                 icon={<Scale className="w-8 h-8" />}
@@ -163,7 +163,7 @@ export default function BodyComposition() {
                 {records.map((record) => (
                   <div key={record.id} className="bg-surface rounded-card p-4 shadow-card-soft">
                     <div className="flex items-center justify-between mb-2">
-                      <span className="text-sm font-medium">{formatDateKo(record.date)}</span>
+                      <span className="text-body font-medium">{formatDateKo(record.date)}</span>
                     </div>
                     <div className="grid grid-cols-4 gap-2 text-center">
                       <MiniMetric label="체중" value={record.weight} unit="kg" />
@@ -172,7 +172,7 @@ export default function BodyComposition() {
                       <MiniMetric label="체지방률" value={record.fatRate} unit="%" />
                     </div>
                     {record.memo && (
-                      <p className="text-xs text-content-tertiary mt-2 bg-surface-secondary rounded p-2">{record.memo}</p>
+                      <p className="text-caption text-content-tertiary mt-2 bg-surface-secondary rounded p-2">{record.memo}</p>
                     )}
                   </div>
                 ))}
@@ -183,16 +183,16 @@ export default function BodyComposition() {
       ) : (
         <div className="px-4 py-4 space-y-4">
           <div className="bg-surface rounded-card p-5 shadow-card-soft">
-            <p className="text-xs text-primary font-semibold mb-2">FMS / 체형 요약</p>
-            <h2 className="text-2xl font-bold">총점 {fms.totalScore}점</h2>
-            <p className="text-sm text-content-secondary mt-2 leading-relaxed">{fms.postureSummary}</p>
+            <p className="text-caption text-primary font-semibold mb-2">FMS / 체형 요약</p>
+            <h2 className="text-h1 font-bold">총점 {fms.totalScore}점</h2>
+            <p className="text-body text-content-secondary mt-2 leading-relaxed">{fms.postureSummary}</p>
           </div>
 
           <div className="space-y-3">
             {fms.sections.map((section) => (
               <div key={section.title} className="bg-surface rounded-card p-4 shadow-card-soft">
                 <div className="flex items-center justify-between">
-                  <h3 className="text-sm font-semibold">{section.title}</h3>
+                  <h3 className="text-body font-semibold">{section.title}</h3>
                   <span className={cn(
                     'px-2.5 py-1 rounded-pill text-[11px] font-semibold',
                     section.status === 'good' && 'bg-state-success/10 text-state-success',
@@ -202,14 +202,14 @@ export default function BodyComposition() {
                     {section.score}점
                   </span>
                 </div>
-                <p className="text-sm text-content-secondary mt-2">{section.summary}</p>
+                <p className="text-body text-content-secondary mt-2">{section.summary}</p>
               </div>
             ))}
           </div>
 
           <div className="bg-surface rounded-card p-5 shadow-card-soft">
-            <h3 className="text-sm font-semibold mb-3">코치 메모</h3>
-            <p className="text-sm text-content-secondary leading-relaxed">{fms.coachComment}</p>
+            <h3 className="text-body font-semibold mb-3">코치 메모</h3>
+            <p className="text-body text-content-secondary leading-relaxed">{fms.coachComment}</p>
             {!onboardingDone && (
               <Button
                 fullWidth
@@ -247,14 +247,14 @@ function MetricCard({
     <div className="bg-surface-secondary rounded-card p-3">
       <div className="flex items-center gap-2 mb-2">
         {icon}
-        <span className="text-xs text-content-secondary">{label}</span>
+        <span className="text-caption text-content-secondary">{label}</span>
       </div>
-      <p className="text-xl font-bold">
+      <p className="text-h2 font-bold">
         {value !== null ? value : '-'}
-        <span className="text-xs font-normal text-content-tertiary ml-0.5">{unit}</span>
+        <span className="text-caption font-normal text-content-tertiary ml-0.5">{unit}</span>
       </p>
       {diff !== null && diff !== 0 && (
-        <p className={cn('text-xs mt-1 font-medium', isGood ? 'text-state-success' : 'text-state-error')}>
+        <p className={cn('text-caption mt-1 font-medium', isGood ? 'text-state-success' : 'text-state-error')}>
           {diff > 0 ? '+' : ''}
           {diff}
           {unit}
@@ -268,7 +268,7 @@ function MiniMetric({ label, value, unit }: { label: string; value: number | nul
   return (
     <div>
       <p className="text-[10px] text-content-tertiary">{label}</p>
-      <p className="text-sm font-semibold">
+      <p className="text-body font-semibold">
         {value !== null ? value : '-'}
         <span className="text-[10px] text-content-tertiary">{unit}</span>
       </p>

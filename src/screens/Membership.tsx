@@ -151,7 +151,7 @@ export default function Membership() {
       {/* 헤더 */}
       <header className="bg-surface sticky top-0 z-10 pt-safe-top">
         <div className="px-5 pt-safe-top">
-          <h1 className="text-xl font-bold py-4">이용권</h1>
+          <h1 className="text-h2 font-bold py-4">이용권</h1>
         </div>
 
         {/* 탭 */}
@@ -170,7 +170,7 @@ export default function Membership() {
                 setSearchParams(next, { replace: true });
               }}
               className={cn(
-                'flex-1 py-3 text-sm font-medium relative',
+                'flex-1 py-3 text-body font-medium relative',
                 tab === t.key ? 'text-primary' : 'text-content-tertiary'
               )}
             >
@@ -190,15 +190,15 @@ export default function Membership() {
             onClick={() => navigate('/shop')}
             className="bg-surface rounded-card p-4 shadow-card-soft text-left"
           >
-            <p className="text-xs text-content-tertiary">이용권 구매</p>
-            <p className="text-sm font-semibold mt-1">헬스장 / 골프장 / PT 상품</p>
+            <p className="text-caption text-content-tertiary">이용권 구매</p>
+            <p className="text-body font-semibold mt-1">헬스장 / 골프장 / PT 상품</p>
           </button>
           <button
             onClick={() => navigate('/payment/personal')}
             className="bg-primary text-white rounded-card p-4 shadow-card-soft text-left"
           >
-            <p className="text-xs text-white/80">개인 결제</p>
-            <p className="text-sm font-semibold mt-1">결제 페이지 바로가기</p>
+            <p className="text-caption text-white/80">개인 결제</p>
+            <p className="text-body font-semibold mt-1">결제 페이지 바로가기</p>
           </button>
         </div>
 
@@ -206,20 +206,20 @@ export default function Membership() {
           <Card variant="soft" padding="md">
             <div className="flex items-start justify-between gap-3">
               <div>
-                <p className="text-xs text-content-tertiary">수강권 / 잔여 회차</p>
-                <p className="mt-1 text-sm font-semibold">{activeLessonCount.productName}</p>
-                <p className="mt-2 text-2xl font-bold text-primary">
+                <p className="text-caption text-content-tertiary">수강권 / 잔여 회차</p>
+                <p className="mt-1 text-body font-semibold">{activeLessonCount.productName}</p>
+                <p className="mt-2 text-h1 font-bold text-primary">
                   {Math.max(activeLessonCount.totalCount - activeLessonCount.usedCount, 0)}회
                 </p>
               </div>
               <div className="rounded-card bg-primary-light px-3 py-2 text-right">
                 <p className="text-[11px] text-primary">사용</p>
-                <p className="text-sm font-semibold text-primary">
+                <p className="text-body font-semibold text-primary">
                   {activeLessonCount.usedCount}/{activeLessonCount.totalCount}
                 </p>
               </div>
             </div>
-            <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-xs text-content-secondary">
+            <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-caption text-content-secondary">
               <span>사용기간: {formatDateKo(activeLessonCount.startDate)} ~ {formatDateKo(activeLessonCount.endDate)}</span>
               {latestLessonHistory && <span>최근 차감: {formatDateKo(latestLessonHistory.deductedAt)}</span>}
               {nextLessonDate && <span>다음 예약: {formatDateKo(nextLessonDate)}</span>}
@@ -228,7 +228,7 @@ export default function Membership() {
         )}
 
         {loading ? (
-          <div className="text-center py-12 text-content-tertiary text-sm">불러오는 중...</div>
+          <div className="text-center py-12 text-content-tertiary text-body">불러오는 중...</div>
         ) : displayList.length === 0 ? (
           <EmptyState
             icon={<CreditCard className="w-8 h-8" />}
@@ -269,7 +269,7 @@ export default function Membership() {
                         )} />
                       </div>
                       <div>
-                        <h3 className="font-semibold text-sm">
+                        <h3 className="font-semibold text-body">
                           {contract.productName || '이용권'}
                         </h3>
                         <Badge
@@ -286,7 +286,7 @@ export default function Membership() {
                     </div>
                     {dday !== null && !isExpired && (
                       <span className={cn(
-                        'text-sm font-bold',
+                        'text-body font-bold',
                         ddayUrgent ? 'text-state-error' : 'text-primary'
                       )}>
                         D-{dday}
@@ -294,7 +294,7 @@ export default function Membership() {
                     )}
                   </div>
 
-                  <div className="flex items-center gap-4 text-xs text-content-secondary mb-2">
+                  <div className="flex items-center gap-4 text-caption text-content-secondary mb-2">
                     {contract.startDate && (
                       <span className="flex items-center gap-1">
                         <Calendar className="w-3.5 h-3.5" />

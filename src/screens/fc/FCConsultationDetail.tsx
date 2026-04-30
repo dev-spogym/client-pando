@@ -11,27 +11,27 @@ export default function FCConsultationDetail() {
   const consultation = useMemo(() => getConsultationById(consultationId), [consultationId, version]);
 
   if (!consultation) {
-    return <div className="min-h-screen flex items-center justify-center text-sm text-content-tertiary">상담 이력을 찾을 수 없습니다.</div>;
+    return <div className="min-h-screen flex items-center justify-center text-body text-content-tertiary">상담 이력을 찾을 수 없습니다.</div>;
   }
 
   return (
     <div className="min-h-screen bg-surface-secondary">
       <header className="bg-surface px-5 pt-safe-top pb-4 shadow-sm">
         <div className="pt-4">
-          <p className="text-xs text-content-tertiary">MA-412</p>
-          <h1 className="text-lg font-bold">{consultation.memberName}</h1>
+          <p className="text-caption text-content-tertiary">MA-412</p>
+          <h1 className="text-h4 font-bold">{consultation.memberName}</h1>
         </div>
       </header>
 
       <div className="px-5 py-4 pb-24 space-y-4">
         <Card>
-          <p className="text-sm font-semibold">{consultation.type} · {consultation.channel}</p>
-          <p className="mt-1 text-xs text-content-secondary">{consultation.scheduledAt.replace('T', ' ').slice(0, 16)}</p>
-          <p className="mt-3 text-sm text-content-secondary">{consultation.summary}</p>
+          <p className="text-body font-semibold">{consultation.type} · {consultation.channel}</p>
+          <p className="mt-1 text-caption text-content-secondary">{consultation.scheduledAt.replace('T', ' ').slice(0, 16)}</p>
+          <p className="mt-3 text-body text-content-secondary">{consultation.summary}</p>
         </Card>
 
         <Card className="space-y-3">
-          <p className="text-sm font-semibold">상담 상태 수정</p>
+          <p className="text-body font-semibold">상담 상태 수정</p>
           <div className="flex gap-2">
             {(['scheduled', 'completed', 'no_show'] as const).map((status) => (
               <Chip
@@ -64,7 +64,7 @@ export default function FCConsultationDetail() {
               </Chip>
             ))}
           </div>
-          <div className="rounded-2xl bg-surface-secondary p-4 text-sm text-content-secondary">
+          <div className="rounded-2xl bg-surface-secondary p-4 text-body text-content-secondary">
             후속 조치: {consultation.followUp || '미입력'}
           </div>
         </Card>

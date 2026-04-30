@@ -19,8 +19,8 @@ export default function FCMembers() {
     <div className="min-h-screen bg-surface-secondary">
       <header className="bg-surface px-5 pt-safe-top pb-4 shadow-sm">
         <div className="pt-4">
-          <p className="text-xs text-content-tertiary">MA-420</p>
-          <h1 className="text-lg font-bold">담당 회원 목록</h1>
+          <p className="text-caption text-content-tertiary">MA-420</p>
+          <h1 className="text-h4 font-bold">담당 회원 목록</h1>
         </div>
       </header>
 
@@ -51,9 +51,9 @@ export default function FCMembers() {
               <Card interactive>
                 <div className="flex items-start justify-between gap-3">
                   <div>
-                    <p className="text-sm font-semibold">{member.name}</p>
-                    <p className="mt-1 text-xs text-content-secondary">{member.membershipName}</p>
-                    <p className="mt-2 text-xs text-content-tertiary">만료일 {formatDateKo(member.membershipEnd)}</p>
+                    <p className="text-body font-semibold">{member.name}</p>
+                    <p className="mt-1 text-caption text-content-secondary">{member.membershipName}</p>
+                    <p className="mt-2 text-caption text-content-tertiary">만료일 {formatDateKo(member.membershipEnd)}</p>
                   </div>
                   <span className="rounded-full bg-surface-secondary px-2 py-1 text-[11px] font-semibold text-content-secondary">
                     {member.status}

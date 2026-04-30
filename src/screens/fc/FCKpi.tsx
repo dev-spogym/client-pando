@@ -72,7 +72,7 @@ function formatKRW(value: number): string {
 const CustomTooltip = ({ active, payload, label }: { active?: boolean; payload?: Array<{ color: string; name: string; value: number }>; label?: string }) => {
   if (!active || !payload?.length) return null;
   return (
-    <div className="bg-surface rounded-card shadow-card-soft border border-surface-secondary p-3 text-xs">
+    <div className="bg-surface rounded-card shadow-card-soft border border-surface-secondary p-3 text-caption">
       <p className="font-semibold text-content mb-1">{label}</p>
       {payload.map((p, i) => (
         <p key={i} style={{ color: p.color }}>
@@ -88,7 +88,7 @@ const FunnelTooltip = ({ active, payload, label }: { active?: boolean; payload?:
   const count = payload[0].value;
   const pct = Math.round((count / 100) * 100);
   return (
-    <div className="bg-surface rounded-card shadow-card-soft border border-surface-secondary p-3 text-xs">
+    <div className="bg-surface rounded-card shadow-card-soft border border-surface-secondary p-3 text-caption">
       <p className="font-semibold text-content mb-1">{label}</p>
       <p className="text-primary font-bold">{count}명</p>
       <p className="text-content-tertiary">전체 대비 {pct}%</p>
@@ -144,15 +144,15 @@ export default function FCKpi() {
       {/* Header */}
       <header className="bg-gradient-to-br from-primary to-primary-dark px-5 pt-safe-top pb-6">
         <div className="pt-4">
-          <p className="text-white/70 text-xs tracking-wide">FC 성과 대시보드</p>
-          <h1 className="text-white text-2xl font-bold mt-1">KPI</h1>
+          <p className="text-white/70 text-caption tracking-wide">FC 성과 대시보드</p>
+          <h1 className="text-white text-h1 font-bold mt-1">KPI</h1>
         </div>
         <div className="mt-4 flex gap-2 overflow-x-auto pb-1">
           {PERIODS.map((p) => (
             <button
               key={p}
               onClick={() => setPeriod(p)}
-              className={`shrink-0 px-4 py-1.5 rounded-full text-xs font-semibold transition-all ${
+              className={`shrink-0 px-4 py-1.5 rounded-full text-caption font-semibold transition-all ${
                 period === p ? 'bg-white text-primary' : 'bg-white/20 text-white'
               }`}
             >
@@ -174,7 +174,7 @@ export default function FCKpi() {
                   <Icon className={`w-4 h-4 ${c.color}`} />
                 </div>
                 <p className="mt-3 text-[11px] text-content-tertiary">{c.label}</p>
-                <p className="mt-0.5 text-base font-bold text-content leading-tight">{c.value}</p>
+                <p className="mt-0.5 text-body-lg font-bold text-content leading-tight">{c.value}</p>
                 <div className="mt-1 flex items-center gap-1">
                   {c.up
                     ? <TrendingUp className="w-3 h-3 text-state-success" />
@@ -188,8 +188,8 @@ export default function FCKpi() {
 
         {/* ── Card 1: Funnel ── */}
         <Card variant="elevated" padding="md">
-          <p className="text-sm font-bold text-content mb-1">상담 → 계약 전환 퍼널</p>
-          <p className="text-xs text-content-tertiary mb-4">이번 달 기준 · 총 100건 상담</p>
+          <p className="text-body font-bold text-content mb-1">상담 → 계약 전환 퍼널</p>
+          <p className="text-caption text-content-tertiary mb-4">이번 달 기준 · 총 100건 상담</p>
           <ResponsiveContainer width="100%" height={200}>
             <BarChart data={funnelData} layout="vertical" margin={{ top: 4, right: 40, left: 0, bottom: 0 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#F1F3F5" horizontal={false} />
@@ -214,7 +214,7 @@ export default function FCKpi() {
               return (
                 <div key={stage.stage} className="shrink-0 bg-state-error/10 rounded-lg px-3 py-1.5 text-center">
                   <p className="text-[10px] text-content-tertiary">{funnelData[i].stage} → {stage.stage}</p>
-                  <p className="text-xs font-bold text-state-error">-{dropPct}%</p>
+                  <p className="text-caption font-bold text-state-error">-{dropPct}%</p>
                 </div>
               );
             })}
@@ -223,8 +223,8 @@ export default function FCKpi() {
 
         {/* ── Card 2: 매출 추이 (Area + Line) ── */}
         <Card variant="elevated" padding="md">
-          <p className="text-sm font-bold text-content mb-1">월별 매출 추이</p>
-          <p className="text-xs text-content-tertiary mb-4">목표 vs 실적 (최근 12개월)</p>
+          <p className="text-body font-bold text-content mb-1">월별 매출 추이</p>
+          <p className="text-caption text-content-tertiary mb-4">목표 vs 실적 (최근 12개월)</p>
           <ResponsiveContainer width="100%" height={220}>
             <AreaChart data={monthlySalesFC} margin={{ top: 4, right: 8, left: -8, bottom: 0 }}>
               <defs>
@@ -246,7 +246,7 @@ export default function FCKpi() {
 
         {/* ── Card 3: 상담 카테고리 분포 ── */}
         <Card variant="elevated" padding="md">
-          <p className="text-sm font-bold text-content mb-2">상담 카테고리 분포</p>
+          <p className="text-body font-bold text-content mb-2">상담 카테고리 분포</p>
           <div className="flex items-center gap-2">
             <ResponsiveContainer width="50%" height={180}>
               <PieChart>
@@ -275,9 +275,9 @@ export default function FCKpi() {
                     <div className="flex items-center justify-between mb-0.5">
                       <div className="flex items-center gap-1.5">
                         <div className="w-2 h-2 rounded-full" style={{ background: PIE_COLORS[i] }} />
-                        <span className="text-xs text-content-secondary">{c.name}</span>
+                        <span className="text-caption text-content-secondary">{c.name}</span>
                       </div>
-                      <span className="text-xs font-bold text-content">{pct}%</span>
+                      <span className="text-caption font-bold text-content">{pct}%</span>
                     </div>
                     <div className="h-1.5 bg-surface-secondary rounded-full overflow-hidden">
                       <div className="h-full rounded-full transition-all" style={{ width: `${pct}%`, background: PIE_COLORS[i] }} />
@@ -291,8 +291,8 @@ export default function FCKpi() {
 
         {/* ── Card 4: 만료 예정 분포 ── */}
         <Card variant="elevated" padding="md">
-          <p className="text-sm font-bold text-content mb-1">만료 예정 회원 분포</p>
-          <p className="text-xs text-content-tertiary mb-4">향후 30일 · 일자별</p>
+          <p className="text-body font-bold text-content mb-1">만료 예정 회원 분포</p>
+          <p className="text-caption text-content-tertiary mb-4">향후 30일 · 일자별</p>
           <ResponsiveContainer width="100%" height={160}>
             <BarChart data={expiryData} margin={{ top: 4, right: 4, left: -20, bottom: 0 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#F1F3F5" />
@@ -306,7 +306,7 @@ export default function FCKpi() {
 
         {/* ── Card 5: 본인 vs 평균 ── */}
         <Card variant="elevated" padding="md">
-          <p className="text-sm font-bold text-content mb-4">본인 vs 센터 평균 비교</p>
+          <p className="text-body font-bold text-content mb-4">본인 vs 센터 평균 비교</p>
           <div className="space-y-4">
             {comparisonData.map((d) => {
               const mePct = Math.round((d.me / d.max) * 100);
@@ -314,10 +314,10 @@ export default function FCKpi() {
               return (
                 <div key={d.metric}>
                   <div className="flex justify-between items-center mb-1.5">
-                    <span className="text-xs font-semibold text-content">{d.metric}</span>
+                    <span className="text-caption font-semibold text-content">{d.metric}</span>
                     <div className="flex gap-3">
-                      <span className="text-xs font-bold text-primary">나 {d.me}{d.metric === '매출' || d.metric === '만족도' ? '%' : d.metric === '신규 상담' ? '건' : '%'}</span>
-                      <span className="text-xs text-content-tertiary">평균 {d.avg}{d.metric === '신규 상담' ? '건' : '%'}</span>
+                      <span className="text-caption font-bold text-primary">나 {d.me}{d.metric === '매출' || d.metric === '만족도' ? '%' : d.metric === '신규 상담' ? '건' : '%'}</span>
+                      <span className="text-caption text-content-tertiary">평균 {d.avg}{d.metric === '신규 상담' ? '건' : '%'}</span>
                     </div>
                   </div>
                   <div className="relative h-2.5 bg-surface-secondary rounded-full overflow-hidden">
@@ -341,8 +341,8 @@ export default function FCKpi() {
               <Trophy className="w-7 h-7 text-state-warning" />
             </div>
             <div className="flex-1">
-              <p className="text-xs text-content-tertiary mb-0.5">역대 최고 기록</p>
-              <p className="text-lg font-bold text-content">2025년 12월</p>
+              <p className="text-caption text-content-tertiary mb-0.5">역대 최고 기록</p>
+              <p className="text-h4 font-bold text-content">2025년 12월</p>
               <div className="mt-2 grid grid-cols-2 gap-2">
                 {[
                   { label: '월 매출', value: '21,000,000원' },
@@ -352,7 +352,7 @@ export default function FCKpi() {
                 ].map((r) => (
                   <div key={r.label} className="bg-surface-secondary rounded-xl px-3 py-2">
                     <p className="text-[10px] text-content-tertiary">{r.label}</p>
-                    <p className="text-sm font-bold text-primary">{r.value}</p>
+                    <p className="text-body font-bold text-primary">{r.value}</p>
                   </div>
                 ))}
               </div>

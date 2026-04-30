@@ -97,16 +97,16 @@ export default function Coupons() {
           <div>
             <div className="flex items-center gap-2 mb-1">
               <Coins className="w-5 h-5 text-white/80" />
-              <span className="text-sm text-white/80">보유 마일리지</span>
+              <span className="text-body text-white/80">보유 마일리지</span>
             </div>
-            <p className="text-3xl font-bold">
+            <p className="text-display font-bold">
               {member.mileage.toLocaleString()}
-              <span className="text-lg font-normal">P</span>
+              <span className="text-h4 font-normal">P</span>
             </p>
           </div>
           <div className="text-right">
-            <p className="text-xs text-white/80">획득 배지</p>
-            <p className="text-2xl font-bold">{earnedBadgeCount}개</p>
+            <p className="text-caption text-white/80">획득 배지</p>
+            <p className="text-h1 font-bold">{earnedBadgeCount}개</p>
           </div>
         </div>
       </div>
@@ -121,7 +121,7 @@ export default function Coupons() {
             key={item.key}
             onClick={() => handleTabChange(item.key)}
             className={cn(
-              'flex-1 py-3 text-sm font-medium relative flex items-center justify-center gap-1.5',
+              'flex-1 py-3 text-body font-medium relative flex items-center justify-center gap-1.5',
               tab === item.key ? 'text-primary' : 'text-content-tertiary'
             )}
           >
@@ -135,7 +135,7 @@ export default function Coupons() {
       <div className="px-5 py-4">
         {tab === 'coupon' && (
           loading ? (
-            <div className="text-center py-8 text-content-tertiary text-sm">불러오는 중...</div>
+            <div className="text-center py-8 text-content-tertiary text-body">불러오는 중...</div>
           ) : coupons.length === 0 ? (
             <EmptyState
               icon={<Gift className="w-8 h-8" />}
@@ -150,14 +150,14 @@ export default function Coupons() {
                   <div key={coupon.id} className="bg-surface rounded-card overflow-hidden shadow-card-soft">
                     <div className="flex">
                       <div className="w-24 bg-primary-light flex flex-col items-center justify-center p-3">
-                        <span className="text-2xl font-bold text-primary">
+                        <span className="text-h1 font-bold text-primary">
                           {isPercentage ? `${coupon.value}%` : formatCurrency(Number(coupon.value))}
                         </span>
                         <span className="text-[10px] text-primary/70 mt-0.5">할인</span>
                       </div>
                       <div className="flex-1 p-3">
-                        <h4 className="font-semibold text-sm">{coupon.name}</h4>
-                        <p className="text-xs text-content-tertiary mt-1">
+                        <h4 className="font-semibold text-body">{coupon.name}</h4>
+                        <p className="text-caption text-content-tertiary mt-1">
                           {formatDateKo(coupon.validFrom)} ~ {formatDateKo(coupon.validUntil)}
                         </p>
                         <div className="mt-2">
@@ -175,24 +175,24 @@ export default function Coupons() {
         {tab === 'mileage' && (
           <div className="space-y-4">
             <Card variant="soft" padding="md">
-              <h3 className="font-semibold text-sm mb-3">마일리지 운영 기준</h3>
-              <div className="space-y-2 text-sm text-content-secondary">
+              <h3 className="font-semibold text-body mb-3">마일리지 운영 기준</h3>
+              <div className="space-y-2 text-body text-content-secondary">
                 <p>결제 리워드는 마일리지로 통합 운영됩니다.</p>
                 <p>1P = 1원으로 결제 시 사용 가능</p>
                 <p>적립 후 1년 내 미사용 시 소멸</p>
               </div>
             </Card>
             <Card variant="soft" padding="md">
-              <h3 className="font-semibold text-sm mb-3">적립 / 사용 내역</h3>
+              <h3 className="font-semibold text-body mb-3">적립 / 사용 내역</h3>
               <div className="space-y-3">
                 {mileageHistory.map((item) => (
                   <div key={item.id} className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm font-medium">{item.label}</p>
-                      <p className="text-xs text-content-tertiary mt-1">{item.date}</p>
+                      <p className="text-body font-medium">{item.label}</p>
+                      <p className="text-caption text-content-tertiary mt-1">{item.date}</p>
                     </div>
                     <span className={cn(
-                      'text-sm font-semibold',
+                      'text-body font-semibold',
                       item.type === 'earn' ? 'text-state-success' : 'text-state-error'
                     )}>
                       {item.type === 'earn' ? '+' : '-'}
@@ -219,7 +219,7 @@ export default function Coupons() {
                   <div>
                     <div className="flex items-center gap-2">
                       <span className={cn(
-                        'w-10 h-10 rounded-card flex items-center justify-center text-lg',
+                        'w-10 h-10 rounded-card flex items-center justify-center text-h4',
                         badge.tone === 'gold' && 'bg-state-warning/10',
                         badge.tone === 'blue' && 'bg-state-info/10',
                         badge.tone === 'green' && 'bg-state-success/10',
@@ -228,11 +228,11 @@ export default function Coupons() {
                         {badge.icon === 'Coins' ? 'P' : badge.icon === 'CalendarCheck' ? '출' : badge.icon === 'MessageSquare' ? '후' : badge.icon === 'LineChart' ? '리' : badge.icon === 'Target' ? '목' : '앱'}
                       </span>
                       <div>
-                        <h3 className="text-sm font-semibold">{badge.title}</h3>
-                        <p className="text-xs text-content-tertiary mt-1">{badge.condition}</p>
+                        <h3 className="text-body font-semibold">{badge.title}</h3>
+                        <p className="text-caption text-content-tertiary mt-1">{badge.condition}</p>
                       </div>
                     </div>
-                    <p className="text-sm text-content-secondary mt-3 leading-relaxed">{badge.description}</p>
+                    <p className="text-body text-content-secondary mt-3 leading-relaxed">{badge.description}</p>
                   </div>
                   <Badge
                     tone={badge.earned ? 'primary' : 'neutral'}
@@ -241,7 +241,7 @@ export default function Coupons() {
                     {badge.earned ? '획득 완료' : '도전 중'}
                   </Badge>
                 </div>
-                <div className="mt-4 flex items-center justify-between text-xs">
+                <div className="mt-4 flex items-center justify-between text-caption">
                   <span className="text-content-secondary">{badge.progressText}</span>
                   {badge.earned && <span className="text-primary font-medium">컬렉션 등록</span>}
                 </div>

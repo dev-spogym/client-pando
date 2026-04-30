@@ -46,8 +46,8 @@ export default function ConsentManagement() {
         </section>
 
         <Card padding="lg">
-          <h3 className="text-sm font-semibold mb-2">최근 변경일</h3>
-          <p className="text-sm text-content-secondary">
+          <h3 className="text-body font-semibold mb-2">최근 변경일</h3>
+          <p className="text-body text-content-secondary">
             {consents.updatedAt ? formatDateKo(consents.updatedAt) : '기록 없음'}
           </p>
         </Card>
@@ -70,8 +70,8 @@ function ConsentRow({
   return (
     <div className="flex items-center gap-3 px-4 py-4 border-b last:border-b-0 border-line-light">
       <div className="flex-1">
-        <p className="text-sm font-medium">{label}</p>
-        {disabled && <p className="text-xs text-content-tertiary mt-1">필수 동의 항목</p>}
+        <p className="text-body font-medium">{label}</p>
+        {disabled && <p className="text-caption text-content-tertiary mt-1">필수 동의 항목</p>}
       </div>
       <button
         onClick={onToggle}

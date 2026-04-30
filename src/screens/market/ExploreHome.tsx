@@ -406,17 +406,17 @@ function RecentCentersSection() {
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-caption text-primary font-medium">{center.category}</p>
-                <h3 className="text-body-sm font-semibold text-content line-clamp-1 mt-0.5">{center.name}</h3>
+                <h3 className="text-h4 text-content line-clamp-1 mt-0.5">{center.name}</h3>
                 <p className="text-caption text-content-tertiary mt-0.5">
                   {center.dong} · 내 위치에서 {center.distanceKm}km
                 </p>
                 <div className="flex items-center gap-2 mt-1">
-                  <span className="flex items-center gap-0.5 text-micro text-content-secondary">
+                  <span className="flex items-center gap-0.5 text-caption text-content-secondary">
                     <Star className="w-3 h-3 text-state-warning fill-state-warning" />
                     <span className="font-semibold">{center.rating.toFixed(1)}</span>
                     <span className="text-content-tertiary">({center.reviewCount})</span>
                   </span>
-                  <span className="text-micro text-content font-semibold">
+                  <span className="text-body-sm text-content font-bold">
                     {repOriginal && (
                       <span className="text-state-sale mr-0.5">{discountPct(repOriginal, repPrice)}%</span>
                     )}

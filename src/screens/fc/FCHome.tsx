@@ -17,8 +17,8 @@ export default function FCHome() {
       <header className="bg-gradient-to-br from-primary to-primary-dark px-5 pt-safe-top pb-6">
         <div className="pt-4 flex items-center justify-between">
           <div>
-            <p className="text-white/80 text-sm">FC</p>
-            <h1 className="text-white text-xl font-bold">{displayName}</h1>
+            <p className="text-white/80 text-body">FC</p>
+            <h1 className="text-white text-h2 font-bold">{displayName}</h1>
           </div>
           <button onClick={() => navigate('/fc/notifications')} className="rounded-full bg-white/20 p-2 text-white">
             <Bell className="w-5 h-5" />
@@ -41,30 +41,30 @@ export default function FCHome() {
         </div>
 
         <section className="rounded-card bg-surface p-4 shadow-card-soft">
-          <p className="text-sm font-semibold">오늘의 상담 일정</p>
+          <p className="text-body font-semibold">오늘의 상담 일정</p>
           <div className="mt-3 space-y-2">
             {dashboard.todayConsultations.length === 0 ? (
-              <p className="text-sm text-content-tertiary">오늘 예정된 상담이 없습니다.</p>
+              <p className="text-body text-content-tertiary">오늘 예정된 상담이 없습니다.</p>
             ) : dashboard.todayConsultations.map((item) => (
               <button
                 key={item.id}
                 onClick={() => navigate(`/fc/leads/${item.id}`)}
                 className="w-full rounded-xl bg-surface-secondary px-3 py-3 text-left"
               >
-                <p className="text-sm font-semibold">{item.memberName}</p>
-                <p className="mt-1 text-xs text-content-secondary">{item.type} · {item.scheduledAt.slice(11, 16)} · {item.channel}</p>
+                <p className="text-body font-semibold">{item.memberName}</p>
+                <p className="mt-1 text-caption text-content-secondary">{item.type} · {item.scheduledAt.slice(11, 16)} · {item.channel}</p>
               </button>
             ))}
           </div>
         </section>
 
         <section className="rounded-card bg-surface p-4 shadow-card-soft">
-          <p className="text-sm font-semibold">긴급 알림</p>
+          <p className="text-body font-semibold">긴급 알림</p>
           <div className="mt-3 space-y-2">
             {urgentMembers.map((member) => (
               <div key={member.id} className="rounded-xl bg-state-error/10 px-3 py-3">
-                <p className="text-sm font-semibold text-state-error">{member.name}</p>
-                <p className="mt-1 text-xs text-state-error/80">만료일 {formatDateKo(member.membershipEnd)}</p>
+                <p className="text-body font-semibold text-state-error">{member.name}</p>
+                <p className="mt-1 text-caption text-state-error/80">만료일 {formatDateKo(member.membershipEnd)}</p>
               </div>
             ))}
           </div>
@@ -77,8 +77,8 @@ export default function FCHome() {
 function SummaryCard({ label, value }: { label: string; value: string }) {
   return (
     <div className="rounded-xl bg-white/20 p-4 text-white">
-      <p className="text-xs text-white/70">{label}</p>
-      <p className="mt-1 text-xl font-bold">{value}</p>
+      <p className="text-caption text-white/70">{label}</p>
+      <p className="mt-1 text-h2 font-bold">{value}</p>
     </div>
   );
 }
@@ -87,7 +87,7 @@ function QuickMenu({ label, icon, onClick }: { label: string; icon: React.ReactN
   return (
     <button onClick={onClick} className="rounded-card bg-surface p-4 text-left shadow-card-soft">
       {icon}
-      <p className="mt-3 text-sm font-semibold">{label}</p>
+      <p className="mt-3 text-body font-semibold">{label}</p>
     </button>
   );
 }

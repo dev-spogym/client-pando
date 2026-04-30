@@ -78,8 +78,8 @@ export default function TermsCenter() {
 
       <div className="px-4 py-4">
         <Card padding="lg">
-          <h2 className="text-lg font-bold">{document.title}</h2>
-          <div className="mt-4 space-y-3 text-sm text-content-secondary leading-relaxed">
+          <h2 className="text-h4 font-bold">{document.title}</h2>
+          <div className="mt-4 space-y-3 text-body text-content-secondary leading-relaxed">
             {document.content.map((line) => (
               <p key={line}>{line}</p>
             ))}

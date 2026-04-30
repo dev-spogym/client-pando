@@ -237,9 +237,9 @@ export default function WorkoutLog() {
         <button onClick={prevDay} className="p-2">
           <ChevronLeft className="w-5 h-5 text-content-secondary" />
         </button>
-        <span className="font-semibold text-base">
+        <span className="font-semibold text-body-lg">
           {currentDate.getMonth() + 1}월 {currentDate.getDate()}일
-          {isToday && <span className="text-primary text-sm ml-1">(오늘)</span>}
+          {isToday && <span className="text-primary text-body ml-1">(오늘)</span>}
         </span>
         <button onClick={nextDay} className="p-2">
           <ChevronRight className="w-5 h-5 text-content-secondary" />
@@ -254,8 +254,8 @@ export default function WorkoutLog() {
               <Clock className="w-5 h-5 text-primary" />
             </div>
             <div>
-              <p className="text-xs text-content-tertiary">총 운동 시간</p>
-              <p className="text-lg font-bold">{totalDuration}<span className="text-xs text-content-tertiary ml-0.5">분</span></p>
+              <p className="text-caption text-content-tertiary">총 운동 시간</p>
+              <p className="text-h4 font-bold">{totalDuration}<span className="text-caption text-content-tertiary ml-0.5">분</span></p>
             </div>
           </div>
           <div className="flex items-center gap-3">
@@ -263,8 +263,8 @@ export default function WorkoutLog() {
               <Flame className="w-5 h-5 text-state-warning" />
             </div>
             <div>
-              <p className="text-xs text-content-tertiary">총 볼륨</p>
-              <p className="text-lg font-bold">{totalVolume.toLocaleString()}<span className="text-xs text-content-tertiary ml-0.5">kg</span></p>
+              <p className="text-caption text-content-tertiary">총 볼륨</p>
+              <p className="text-h4 font-bold">{totalVolume.toLocaleString()}<span className="text-caption text-content-tertiary ml-0.5">kg</span></p>
             </div>
           </div>
         </div>
@@ -273,7 +273,7 @@ export default function WorkoutLog() {
       {/* 운동 기록 목록 */}
       <div className="px-4 mt-4 pb-24">
         {loading ? (
-          <div className="text-center py-12 text-content-tertiary text-sm">불러오는 중...</div>
+          <div className="text-center py-12 text-content-tertiary text-body">불러오는 중...</div>
         ) : entries.length === 0 ? (
           <EmptyState
             icon={<Flame className="w-8 h-8" />}
@@ -288,10 +288,10 @@ export default function WorkoutLog() {
                 <div key={entry.id} className="bg-surface rounded-card p-4 shadow-card-soft">
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center gap-2">
-                      <span className={cn('text-xs px-2 py-0.5 rounded-full font-medium', categoryColor[entry.category])}>
+                      <span className={cn('text-caption px-2 py-0.5 rounded-full font-medium', categoryColor[entry.category])}>
                         {entry.category}
                       </span>
-                      <h3 className="font-semibold text-sm">{entry.name}</h3>
+                      <h3 className="font-semibold text-body">{entry.name}</h3>
                     </div>
                     <button onClick={() => handleDeleteEntry(entry.id)} className="p-1">
                       <Trash2 className="w-4 h-4 text-content-tertiary" />
@@ -299,15 +299,15 @@ export default function WorkoutLog() {
                   </div>
                   <div className="space-y-1">
                     {entry.sets.map((set, i) => (
-                      <div key={i} className="flex items-center gap-3 text-sm text-content-secondary">
-                        <span className="text-xs text-content-tertiary w-12">{i + 1}세트</span>
+                      <div key={i} className="flex items-center gap-3 text-body text-content-secondary">
+                        <span className="text-caption text-content-tertiary w-12">{i + 1}세트</span>
                         <span>{set.weight}kg</span>
                         <span>x</span>
                         <span>{set.reps}회</span>
                       </div>
                     ))}
                   </div>
-                  <div className="mt-2 flex items-center gap-3 text-xs text-content-tertiary">
+                  <div className="mt-2 flex items-center gap-3 text-caption text-content-tertiary">
                     {entry.duration > 0 && (
                       <span className="flex items-center gap-0.5">
                         <Clock className="w-3 h-3" />
@@ -337,7 +337,7 @@ export default function WorkoutLog() {
           <div className="absolute inset-0 bg-black/40" onClick={() => setShowModal(false)} />
           <div className="mobile-bottom-sheet relative bg-surface rounded-t-2xl max-h-[85vh] overflow-y-auto">
             <div className="sticky top-0 bg-surface px-5 pt-5 pb-3 border-b border-line flex items-center justify-between">
-              <h2 className="font-bold text-lg">운동 추가</h2>
+              <h2 className="font-bold text-h4">운동 추가</h2>
               <button onClick={() => setShowModal(false)}>
                 <X className="w-6 h-6 text-content-secondary" />
               </button>
@@ -346,7 +346,7 @@ export default function WorkoutLog() {
             <div className="px-5 py-4 space-y-4">
               {/* 부위 선택 */}
               <div>
-                <label className="text-sm font-medium text-content-secondary mb-2 block">운동 부위</label>
+                <label className="text-body font-medium text-content-secondary mb-2 block">운동 부위</label>
                 <div className="flex flex-wrap gap-2">
                   {CATEGORIES.map((cat) => (
                     <Chip
@@ -362,39 +362,39 @@ export default function WorkoutLog() {
 
               {/* 운동명 */}
               <div>
-                <label className="text-sm font-medium text-content-secondary mb-2 block">운동명</label>
+                <label className="text-body font-medium text-content-secondary mb-2 block">운동명</label>
                 <input
                   type="text"
                   value={formName}
                   onChange={(e) => setFormName(e.target.value)}
                   placeholder="예: 벤치프레스"
-                  className="w-full px-4 py-3 bg-surface-secondary rounded-input text-sm border border-line focus:border-primary focus:outline-none"
+                  className="w-full px-4 py-3 bg-surface-secondary rounded-input text-body border border-line focus:border-primary focus:outline-none"
                 />
               </div>
 
               {/* 세트 추가 */}
               <div>
-                <label className="text-sm font-medium text-content-secondary mb-2 block">세트</label>
+                <label className="text-body font-medium text-content-secondary mb-2 block">세트</label>
                 <div className="space-y-2">
                   {formSets.map((set, i) => (
                     <div key={i} className="flex items-center gap-2">
-                      <span className="text-xs text-content-tertiary w-12 flex-shrink-0">{i + 1}세트</span>
+                      <span className="text-caption text-content-tertiary w-12 flex-shrink-0">{i + 1}세트</span>
                       <input
                         type="number"
                         value={set.weight || ''}
                         onChange={(e) => updateSet(i, 'weight', Number(e.target.value))}
                         placeholder="무게"
-                        className="flex-1 px-3 py-2 bg-surface-secondary rounded-lg text-sm border border-line focus:border-primary focus:outline-none text-center"
+                        className="flex-1 px-3 py-2 bg-surface-secondary rounded-lg text-body border border-line focus:border-primary focus:outline-none text-center"
                       />
-                      <span className="text-xs text-content-tertiary">kg</span>
+                      <span className="text-caption text-content-tertiary">kg</span>
                       <input
                         type="number"
                         value={set.reps || ''}
                         onChange={(e) => updateSet(i, 'reps', Number(e.target.value))}
                         placeholder="횟수"
-                        className="flex-1 px-3 py-2 bg-surface-secondary rounded-lg text-sm border border-line focus:border-primary focus:outline-none text-center"
+                        className="flex-1 px-3 py-2 bg-surface-secondary rounded-lg text-body border border-line focus:border-primary focus:outline-none text-center"
                       />
-                      <span className="text-xs text-content-tertiary">회</span>
+                      <span className="text-caption text-content-tertiary">회</span>
                       {formSets.length > 1 && (
                         <button onClick={() => removeSet(i)} className="p-1">
                           <X className="w-4 h-4 text-content-tertiary" />
@@ -405,7 +405,7 @@ export default function WorkoutLog() {
                 </div>
                 <button
                   onClick={addSet}
-                  className="mt-2 w-full py-2 border border-dashed border-line rounded-lg text-sm text-content-secondary active:bg-surface-secondary"
+                  className="mt-2 w-full py-2 border border-dashed border-line rounded-lg text-body text-content-secondary active:bg-surface-secondary"
                 >
                   + 세트 추가
                 </button>
@@ -413,13 +413,13 @@ export default function WorkoutLog() {
 
               {/* 운동 시간 */}
               <div>
-                <label className="text-sm font-medium text-content-secondary mb-2 block">운동 시간 (분)</label>
+                <label className="text-body font-medium text-content-secondary mb-2 block">운동 시간 (분)</label>
                 <input
                   type="number"
                   value={formDuration || ''}
                   onChange={(e) => setFormDuration(Number(e.target.value))}
                   placeholder="예: 30"
-                  className="w-full px-4 py-3 bg-surface-secondary rounded-input text-sm border border-line focus:border-primary focus:outline-none"
+                  className="w-full px-4 py-3 bg-surface-secondary rounded-input text-body border border-line focus:border-primary focus:outline-none"
                 />
               </div>
 

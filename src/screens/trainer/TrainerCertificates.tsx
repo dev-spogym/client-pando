@@ -11,8 +11,8 @@ export default function TrainerCertificates() {
     <div className="min-h-screen bg-surface-secondary">
       <header className="bg-gradient-to-br from-teal-600 to-emerald-600 px-5 pt-safe-top pb-5">
         <div className="pt-4">
-          <p className="text-white/80 text-sm">MA-313</p>
-          <h1 className="text-white text-xl font-bold mt-1">레슨 확인서 조회</h1>
+          <p className="text-white/80 text-body">MA-313</p>
+          <h1 className="text-white text-h2 font-bold mt-1">레슨 확인서 조회</h1>
         </div>
       </header>
 
@@ -30,11 +30,11 @@ export default function TrainerCertificates() {
             >
               <div className="flex items-start justify-between gap-3">
                 <div>
-                  <p className="text-sm font-semibold">{certificate.title}</p>
-                  <p className="mt-1 text-xs text-content-secondary">
+                  <p className="text-body font-semibold">{certificate.title}</p>
+                  <p className="mt-1 text-caption text-content-secondary">
                     {certificate.memberName} · {certificate.mode === 'remote' ? '원격' : '대면'} 서명
                   </p>
-                  <p className="mt-2 text-xs text-content-tertiary">
+                  <p className="mt-2 text-caption text-content-tertiary">
                     {formatDateKo(certificate.trainerSignedAt || new Date().toISOString())}
                   </p>
                 </div>

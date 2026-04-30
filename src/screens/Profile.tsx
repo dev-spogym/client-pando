@@ -61,9 +61,9 @@ export default function Profile() {
       <div className="min-h-screen bg-surface-secondary">
         <header className="bg-gradient-to-br from-primary to-primary-dark px-5 pt-safe-top pb-6">
           <div className="pt-4">
-            <p className="text-white/80 text-sm">트레이너 마이페이지</p>
-            <h1 className="text-white text-xl font-bold mt-1">{trainer.staffName || trainer.name}</h1>
-            <p className="text-white/70 text-sm mt-1">@{trainer.username}</p>
+            <p className="text-white/80 text-body">트레이너 마이페이지</p>
+            <h1 className="text-white text-h2 font-bold mt-1">{trainer.staffName || trainer.name}</h1>
+            <p className="text-white/70 text-body mt-1">@{trainer.username}</p>
           </div>
 
           <div className="mt-5 rounded-card-lg bg-white/15 p-4 text-white">
@@ -72,11 +72,11 @@ export default function Profile() {
                 <User className="h-6 w-6" />
               </div>
               <div className="flex-1">
-                <p className="text-sm font-semibold">{trainer.role}</p>
-                <p className="text-xs text-white/70">지점 ID {trainer.branchId}</p>
+                <p className="text-body font-semibold">{trainer.role}</p>
+                <p className="text-caption text-white/70">지점 ID {trainer.branchId}</p>
               </div>
               {trainer.staffPhone ? (
-                <span className="text-xs text-white/80">{trainer.staffPhone}</span>
+                <span className="text-caption text-white/80">{trainer.staffPhone}</span>
               ) : null}
             </div>
           </div>
@@ -97,7 +97,7 @@ export default function Profile() {
                   )}
                 >
                   <Icon className={cn('w-5 h-5', item.color)} />
-                  <span className="flex-1 text-left text-sm font-medium">{item.label}</span>
+                  <span className="flex-1 text-left text-body font-medium">{item.label}</span>
                   <ChevronRight className="w-4 h-4 text-content-tertiary" />
                 </button>
               );
@@ -109,7 +109,7 @@ export default function Profile() {
             className="w-full bg-surface rounded-card shadow-card-soft px-4 py-3.5 flex items-center gap-3 active:bg-surface-secondary transition-colors"
           >
             <LogOut className="w-5 h-5 text-state-error" />
-            <span className="text-sm font-medium text-state-error">로그아웃</span>
+            <span className="text-body font-medium text-state-error">로그아웃</span>
           </button>
         </div>
       </div>
@@ -157,8 +157,8 @@ export default function Profile() {
     <div className="min-h-screen bg-surface-secondary">
       <header className="bg-surface px-5 pt-safe-top pb-5">
         <div className="flex items-center justify-between pt-4 mb-5">
-          <h1 className="text-xl font-bold">마이페이지</h1>
-          <button onClick={() => navigate('/settings')} className="text-sm text-primary font-medium">
+          <h1 className="text-h2 font-bold">마이페이지</h1>
+          <button onClick={() => navigate('/settings')} className="text-body text-primary font-medium">
             설정
           </button>
         </div>
@@ -166,8 +166,8 @@ export default function Profile() {
         <div className="flex items-center gap-4">
           <Avatar size="xl" src={member.profileImage} alt={member.name} name={member.name} />
           <div className="flex-1 min-w-0">
-            <h2 className="text-lg font-bold">{member.name}</h2>
-            <p className="text-sm text-content-secondary">{formatPhone(member.phone)}</p>
+            <h2 className="text-h4 font-bold">{member.name}</h2>
+            <p className="text-body text-content-secondary">{formatPhone(member.phone)}</p>
             <div className="flex items-center gap-2 mt-1">
               <Badge
                 tone={
@@ -179,7 +179,7 @@ export default function Profile() {
               >
                 {member.status === 'ACTIVE' ? '이용중' : member.status === 'HOLDING' ? '홀딩' : member.status === 'EXPIRED' ? '만료' : member.status}
               </Badge>
-              {member.membershipType && <span className="text-xs text-content-tertiary">{member.membershipType}</span>}
+              {member.membershipType && <span className="text-caption text-content-tertiary">{member.membershipType}</span>}
             </div>
           </div>
         </div>
@@ -189,15 +189,15 @@ export default function Profile() {
             onClick={() => navigate('/coupons?tab=badge')}
             className="bg-gradient-to-r from-primary to-primary-dark rounded-card p-4 text-white text-left"
           >
-            <p className="text-white/80 text-xs">획득 배지</p>
-            <p className="text-xl font-bold mt-1">{badgeCount}개</p>
+            <p className="text-white/80 text-caption">획득 배지</p>
+            <p className="text-h2 font-bold mt-1">{badgeCount}개</p>
           </button>
           <button
             onClick={() => navigate('/onboarding')}
             className="bg-surface-secondary rounded-card p-4 text-left"
           >
-            <p className="text-content-tertiary text-xs">추천 루틴</p>
-            <p className="text-sm font-semibold mt-1">{onboardingDone ? onboarding.recommendedTitle || '저장됨' : '온보딩 필요'}</p>
+            <p className="text-content-tertiary text-caption">추천 루틴</p>
+            <p className="text-body font-semibold mt-1">{onboardingDone ? onboarding.recommendedTitle || '저장됨' : '온보딩 필요'}</p>
           </button>
         </div>
       </header>
@@ -205,7 +205,7 @@ export default function Profile() {
       <div className="px-5 mt-2 space-y-4 pb-4">
         {menuGroups.map((group) => (
           <div key={group.title}>
-            <h3 className="text-xs font-medium text-content-tertiary mb-2 px-1">{group.title}</h3>
+            <h3 className="text-caption font-medium text-content-tertiary mb-2 px-1">{group.title}</h3>
             <Card variant="soft" padding="none" className="overflow-hidden">
               {group.items.map((item, index) => {
                 const Icon = item.icon;
@@ -220,8 +220,8 @@ export default function Profile() {
                     )}
                   >
                     <Icon className={cn('w-5 h-5', item.color)} />
-                    <span className="flex-1 text-left text-sm font-medium">{item.label}</span>
-                    {item.badge && <span className="text-xs text-primary font-medium">{item.badge}</span>}
+                    <span className="flex-1 text-left text-body font-medium">{item.label}</span>
+                    {item.badge && <span className="text-caption text-primary font-medium">{item.badge}</span>}
                     <ChevronRight className="w-4 h-4 text-content-tertiary" />
                   </button>
                 );
@@ -235,7 +235,7 @@ export default function Profile() {
           className="w-full bg-surface rounded-card shadow-card-soft px-4 py-3.5 flex items-center gap-3 active:bg-surface-secondary transition-colors"
         >
           <CreditCard className="w-5 h-5 text-state-info" />
-          <span className="text-sm font-medium">결제 내역 보기</span>
+          <span className="text-body font-medium">결제 내역 보기</span>
           <ChevronRight className="w-4 h-4 text-content-tertiary ml-auto" />
         </button>
 
@@ -244,7 +244,7 @@ export default function Profile() {
           className="w-full bg-surface rounded-card shadow-card-soft px-4 py-3.5 flex items-center gap-3 active:bg-surface-secondary transition-colors"
         >
           <LogOut className="w-5 h-5 text-state-error" />
-          <span className="text-sm font-medium text-state-error">로그아웃</span>
+          <span className="text-body font-medium text-state-error">로그아웃</span>
         </button>
       </div>
     </div>

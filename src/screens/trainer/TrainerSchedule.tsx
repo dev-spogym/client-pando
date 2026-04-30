@@ -590,7 +590,7 @@ export default function TrainerSchedule() {
     <div className="pull-to-refresh">
       <header className="bg-gradient-to-br from-teal-600 to-emerald-600 px-5 pt-safe-top pb-4">
         <div className="pt-4 flex items-center justify-between">
-          <h1 className="text-white text-lg font-bold">일정 관리</h1>
+          <h1 className="text-white text-h4 font-bold">일정 관리</h1>
           <Button
             variant="outline"
             size="sm"
@@ -608,8 +608,8 @@ export default function TrainerSchedule() {
           <Card variant="soft" padding="md">
             <div className="mb-3 flex items-center justify-between">
               <div>
-                <p className="text-sm font-semibold">승인 대기 요청</p>
-                <p className="text-xs text-content-secondary">회원이 스케줄을 보고 보낸 예약 요청입니다.</p>
+                <p className="text-body font-semibold">승인 대기 요청</p>
+                <p className="text-caption text-content-secondary">회원이 스케줄을 보고 보낸 예약 요청입니다.</p>
               </div>
               <Badge tone="warning" variant="soft">{weekRequests.length}건</Badge>
             </div>
@@ -619,9 +619,9 @@ export default function TrainerSchedule() {
                 <div key={request.id} className="rounded-card border border-line bg-surface p-4">
                   <div className="flex items-start justify-between gap-3">
                     <div>
-                      <p className="text-sm font-semibold">{request.memberName}</p>
-                      <p className="mt-1 text-sm text-content">{request.title}</p>
-                      <p className="mt-1 text-xs text-content-secondary">
+                      <p className="text-body font-semibold">{request.memberName}</p>
+                      <p className="mt-1 text-body text-content">{request.title}</p>
+                      <p className="mt-1 text-caption text-content-secondary">
                         {request.startTime.slice(5, 10)} · {formatTime(request.startTime)} - {formatTime(request.endTime)}
                         {request.room ? ` · ${request.room}` : ''}
                       </p>
@@ -661,7 +661,7 @@ export default function TrainerSchedule() {
           <button onClick={prevWeek} className="p-2 text-content-secondary">
             <ChevronLeft className="w-5 h-5" />
           </button>
-          <span className="text-sm font-semibold">{weekLabel}</span>
+          <span className="text-body font-semibold">{weekLabel}</span>
           <button onClick={nextWeek} className="p-2 text-content-secondary">
             <ChevronRight className="w-5 h-5" />
           </button>
@@ -679,7 +679,7 @@ export default function TrainerSchedule() {
               )}
             >
               <span className="text-[10px]">{dayNames[i]}</span>
-              <span className="text-sm font-bold mt-0.5">{d.getDate()}</span>
+              <span className="text-body font-bold mt-0.5">{d.getDate()}</span>
             </button>
           ))}
         </div>
@@ -701,7 +701,7 @@ export default function TrainerSchedule() {
                       cls.type === 'PT' ? 'bg-primary-light' : 'bg-surface-secondary'
                     )}>
                       <span className={cn(
-                        'text-xs font-bold',
+                        'text-caption font-bold',
                         cls.type === 'PT' ? 'text-primary' : 'text-content-secondary'
                       )}>
                         {cls.type}
@@ -709,7 +709,7 @@ export default function TrainerSchedule() {
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
-                        <p className="font-semibold text-sm truncate">{cls.title}</p>
+                        <p className="font-semibold text-body truncate">{cls.title}</p>
                         {cls.type === 'PT' && (
                           <Badge
                             tone={isCompleted ? 'info' : isOpenPtSlot ? 'primary' : 'success'}
@@ -719,7 +719,7 @@ export default function TrainerSchedule() {
                           </Badge>
                         )}
                       </div>
-                      <div className="flex items-center gap-3 mt-1 text-xs text-content-secondary">
+                      <div className="flex items-center gap-3 mt-1 text-caption text-content-secondary">
                         <span className="flex items-center gap-0.5">
                           <Clock className="w-3 h-3" />
                           {formatTime(cls.startTime)} - {formatTime(cls.endTime)}
@@ -732,7 +732,7 @@ export default function TrainerSchedule() {
                         )}
                       </div>
                       {cls.memberName && (
-                        <p className="mt-1 text-xs font-medium text-primary">회원: {cls.memberName}</p>
+                        <p className="mt-1 text-caption font-medium text-primary">회원: {cls.memberName}</p>
                       )}
                       {cls.memberId && (
                         <p className="mt-1 text-[11px] text-content-tertiary">
@@ -740,7 +740,7 @@ export default function TrainerSchedule() {
                         </p>
                       )}
                     </div>
-                    <div className="flex items-center gap-1 text-xs text-content-secondary">
+                    <div className="flex items-center gap-1 text-caption text-content-secondary">
                       <Users className="w-3 h-3" />
                       <span>{cls.booked}/{cls.capacity}</span>
                     </div>
@@ -776,7 +776,7 @@ export default function TrainerSchedule() {
           <div className="absolute inset-0 bg-black/40" onClick={() => setShowModal(false)} />
           <div className="mobile-bottom-sheet relative bg-surface rounded-t-2xl p-5 pb-10 space-y-4 animate-slide-up">
             <div className="flex items-center justify-between">
-              <h2 className="text-lg font-bold">수업 추가</h2>
+              <h2 className="text-h4 font-bold">수업 추가</h2>
               <button onClick={() => setShowModal(false)} className="text-content-tertiary">
                 <X className="w-6 h-6" />
               </button>
@@ -791,7 +791,7 @@ export default function TrainerSchedule() {
                     if (t === 'GX') setFormMemberId('');
                   }}
                   className={cn(
-                    'flex-1 py-2.5 rounded-card text-sm font-medium transition-colors',
+                    'flex-1 py-2.5 rounded-card text-body font-medium transition-colors',
                     formType === t ? 'bg-primary text-white' : 'bg-surface-secondary text-content-secondary'
                   )}
                 >
@@ -805,16 +805,16 @@ export default function TrainerSchedule() {
               value={formTitle}
               onChange={(e) => setFormTitle(e.target.value)}
               placeholder={formType === 'PT' ? '수업명 (비워두면 기본 제목 사용)' : '수업명'}
-              className="w-full px-3 py-3 rounded-input border border-line text-sm focus:outline-none focus:border-primary"
+              className="w-full px-3 py-3 rounded-input border border-line text-body focus:outline-none focus:border-primary"
             />
 
             {formType === 'PT' && (
               <div className="space-y-2">
-                <label className="text-xs text-content-secondary block">회원 지정</label>
+                <label className="text-caption text-content-secondary block">회원 지정</label>
                 <select
                   value={formMemberId}
                   onChange={(e) => setFormMemberId(e.target.value)}
-                  className="w-full px-3 py-3 rounded-input border border-line text-sm focus:outline-none focus:border-primary bg-surface"
+                  className="w-full px-3 py-3 rounded-input border border-line text-body focus:outline-none focus:border-primary bg-surface"
                 >
                   <option value="">오픈 슬롯으로 등록</option>
                   {members.map((item) => (
@@ -823,7 +823,7 @@ export default function TrainerSchedule() {
                     </option>
                   ))}
                 </select>
-                <p className="text-xs text-content-tertiary">
+                <p className="text-caption text-content-tertiary">
                   회원을 지정하면 승인 없이 즉시 수업 일정이 확정되며, 차감은 수업 완료 시 반영됩니다.
                 </p>
               </div>
@@ -833,26 +833,26 @@ export default function TrainerSchedule() {
               type="date"
               value={formDate}
               onChange={(e) => setFormDate(e.target.value)}
-              className="w-full px-3 py-3 rounded-input border border-line text-sm focus:outline-none focus:border-primary"
+              className="w-full px-3 py-3 rounded-input border border-line text-body focus:outline-none focus:border-primary"
             />
 
             <div className="flex gap-2">
               <div className="flex-1">
-                <label className="text-xs text-content-secondary mb-1 block">시작 시간</label>
+                <label className="text-caption text-content-secondary mb-1 block">시작 시간</label>
                 <input
                   type="time"
                   value={formStartTime}
                   onChange={(e) => setFormStartTime(e.target.value)}
-                  className="w-full px-3 py-3 rounded-input border border-line text-sm focus:outline-none focus:border-primary"
+                  className="w-full px-3 py-3 rounded-input border border-line text-body focus:outline-none focus:border-primary"
                 />
               </div>
               <div className="flex-1">
-                <label className="text-xs text-content-secondary mb-1 block">종료 시간</label>
+                <label className="text-caption text-content-secondary mb-1 block">종료 시간</label>
                 <input
                   type="time"
                   value={formEndTime}
                   onChange={(e) => setFormEndTime(e.target.value)}
-                  className="w-full px-3 py-3 rounded-input border border-line text-sm focus:outline-none focus:border-primary"
+                  className="w-full px-3 py-3 rounded-input border border-line text-body focus:outline-none focus:border-primary"
                 />
               </div>
             </div>
@@ -862,18 +862,18 @@ export default function TrainerSchedule() {
               value={formRoom}
               onChange={(e) => setFormRoom(e.target.value)}
               placeholder="장소 (선택)"
-              className="w-full px-3 py-3 rounded-input border border-line text-sm focus:outline-none focus:border-primary"
+              className="w-full px-3 py-3 rounded-input border border-line text-body focus:outline-none focus:border-primary"
             />
 
             {formType === 'GX' && (
               <div>
-                <label className="text-xs text-content-secondary mb-1 block">정원</label>
+                <label className="text-caption text-content-secondary mb-1 block">정원</label>
                 <input
                   type="number"
                   min={1}
                   value={formCapacity}
                   onChange={(e) => setFormCapacity(Number(e.target.value))}
-                  className="w-full px-3 py-3 rounded-input border border-line text-sm focus:outline-none focus:border-primary"
+                  className="w-full px-3 py-3 rounded-input border border-line text-body focus:outline-none focus:border-primary"
                 />
               </div>
             )}

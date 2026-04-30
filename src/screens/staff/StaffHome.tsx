@@ -75,7 +75,7 @@ function formatKRW(value: number): string {
 const CustomTooltip = ({ active, payload, label }: { active?: boolean; payload?: Array<{ color: string; name: string; value: number }>; label?: string }) => {
   if (!active || !payload?.length) return null;
   return (
-    <div className="bg-surface rounded-card shadow-card-soft border border-surface-secondary p-3 text-xs">
+    <div className="bg-surface rounded-card shadow-card-soft border border-surface-secondary p-3 text-caption">
       <p className="font-semibold text-content mb-1">{label}</p>
       {payload.map((p, i) => (
         <p key={i} style={{ color: p.color }}>
@@ -108,8 +108,8 @@ export default function StaffHome() {
       <header className="bg-gradient-to-br from-content to-content-secondary px-5 pt-safe-top pb-6">
         <div className="pt-4 flex items-center justify-between">
           <div>
-            <p className="text-white/80 text-sm">Staff</p>
-            <h1 className="text-white text-xl font-bold">{displayName}</h1>
+            <p className="text-white/80 text-body">Staff</p>
+            <h1 className="text-white text-h2 font-bold">{displayName}</h1>
           </div>
           <button onClick={() => navigate('/staff/notifications')} className="rounded-full bg-white/20 p-2 text-white">
             <Bell className="w-5 h-5" />
@@ -136,7 +136,7 @@ export default function StaffHome() {
 
         {/* ── 운영 KPI Cards ── */}
         <div>
-          <p className="text-xs font-semibold text-content-tertiary uppercase tracking-wide mb-3">오늘 운영 현황</p>
+          <p className="text-caption font-semibold text-content-tertiary uppercase tracking-wide mb-3">오늘 운영 현황</p>
           <div className="grid grid-cols-2 gap-3">
             {kpiCards.map((c) => (
               <Card key={c.label} variant="elevated" padding="md">
@@ -144,7 +144,7 @@ export default function StaffHome() {
                   <p className="text-[11px] text-content-tertiary">{c.label}</p>
                   <div className="w-2 h-2 rounded-full" style={{ background: c.color }} />
                 </div>
-                <p className="mt-2 text-base font-bold text-content leading-tight">{c.value}</p>
+                <p className="mt-2 text-body-lg font-bold text-content leading-tight">{c.value}</p>
                 <div className="mt-1 flex items-center gap-1">
                   <TrendingUp className={`w-3 h-3 ${c.up ? 'text-state-success' : 'text-state-error rotate-180'}`} />
                   <span className={`text-[10px] font-medium ${c.up ? 'text-state-success' : 'text-state-error'}`}>{c.sub}</span>
@@ -156,8 +156,8 @@ export default function StaffHome() {
 
         {/* ── 시간대별 입장 추이 ── */}
         <Card variant="elevated" padding="md">
-          <p className="text-sm font-bold text-content mb-1">오늘 시간대별 입장 추이</p>
-          <p className="text-xs text-content-tertiary mb-4">6시~23시 · 피크타임 19시</p>
+          <p className="text-body font-bold text-content mb-1">오늘 시간대별 입장 추이</p>
+          <p className="text-caption text-content-tertiary mb-4">6시~23시 · 피크타임 19시</p>
           <ResponsiveContainer width="100%" height={180}>
             <LineChart data={hourlyEntry} margin={{ top: 4, right: 8, left: -20, bottom: 0 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#F1F3F5" />
@@ -178,8 +178,8 @@ export default function StaffHome() {
 
         {/* ── 이번 주 일별 출석 ── */}
         <Card variant="elevated" padding="md">
-          <p className="text-sm font-bold text-content mb-1">이번 주 일별 출석</p>
-          <p className="text-xs text-content-tertiary mb-4">월요일 ~ 일요일</p>
+          <p className="text-body font-bold text-content mb-1">이번 주 일별 출석</p>
+          <p className="text-caption text-content-tertiary mb-4">월요일 ~ 일요일</p>
           <ResponsiveContainer width="100%" height={160}>
             <BarChart data={weeklyAttendance} margin={{ top: 4, right: 8, left: -20, bottom: 0 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#F1F3F5" />
@@ -204,7 +204,7 @@ export default function StaffHome() {
 
           {/* 회원 활동 상태 PieChart */}
           <Card variant="elevated" padding="md">
-            <p className="text-xs font-bold text-content mb-2">회원 활동 상태</p>
+            <p className="text-caption font-bold text-content mb-2">회원 활동 상태</p>
             <ResponsiveContainer width="100%" height={120}>
               <PieChart>
                 <Pie
@@ -238,7 +238,7 @@ export default function StaffHome() {
 
           {/* 락커 사용률 Donut */}
           <Card variant="elevated" padding="md">
-            <p className="text-xs font-bold text-content mb-2">락커 사용률</p>
+            <p className="text-caption font-bold text-content mb-2">락커 사용률</p>
             <div className="relative flex items-center justify-center" style={{ height: 120 }}>
               <ResponsiveContainer width="100%" height={120}>
                 <PieChart>
@@ -259,7 +259,7 @@ export default function StaffHome() {
                 </PieChart>
               </ResponsiveContainer>
               <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                <p className="text-lg font-bold text-primary leading-none">{LOCKER_USED}%</p>
+                <p className="text-h4 font-bold text-primary leading-none">{LOCKER_USED}%</p>
                 <p className="text-[9px] text-content-tertiary">사용중</p>
               </div>
             </div>
@@ -282,8 +282,8 @@ export default function StaffHome() {
 
         {/* ── 최근 7일 매출 AreaChart ── */}
         <Card variant="elevated" padding="md">
-          <p className="text-sm font-bold text-content mb-1">최근 7일 매출</p>
-          <p className="text-xs text-content-tertiary mb-4">일별 매출 합계</p>
+          <p className="text-body font-bold text-content mb-1">최근 7일 매출</p>
+          <p className="text-caption text-content-tertiary mb-4">일별 매출 합계</p>
           <ResponsiveContainer width="100%" height={180}>
             <AreaChart data={weeklySales} margin={{ top: 4, right: 8, left: -8, bottom: 0 }}>
               <defs>
@@ -307,14 +307,14 @@ export default function StaffHome() {
               />
             </AreaChart>
           </ResponsiveContainer>
-          <div className="mt-3 flex items-center justify-between text-xs">
+          <div className="mt-3 flex items-center justify-between text-caption">
             <div>
               <p className="text-content-tertiary">주간 합계</p>
-              <p className="text-base font-bold text-content">9,980,000원</p>
+              <p className="text-body-lg font-bold text-content">9,980,000원</p>
             </div>
             <div className="text-right">
               <p className="text-content-tertiary">일 평균</p>
-              <p className="text-base font-bold text-primary">1,426,000원</p>
+              <p className="text-body-lg font-bold text-primary">1,426,000원</p>
             </div>
           </div>
         </Card>
@@ -329,8 +329,8 @@ export default function StaffHome() {
 function SummaryCard({ label, value }: { label: string; value: string }) {
   return (
     <div className="rounded-xl bg-white/20 p-4 text-white">
-      <p className="text-xs text-white/70">{label}</p>
-      <p className="mt-1 text-xl font-bold">{value}</p>
+      <p className="text-caption text-white/70">{label}</p>
+      <p className="mt-1 text-h2 font-bold">{value}</p>
     </div>
   );
 }
@@ -339,7 +339,7 @@ function QuickMenu({ label, icon, onClick }: { label: string; icon: React.ReactN
   return (
     <button onClick={onClick} className="rounded-card bg-surface p-4 text-left shadow-card-soft">
       {icon}
-      <p className="mt-3 text-sm font-semibold">{label}</p>
+      <p className="mt-3 text-body font-semibold">{label}</p>
     </button>
   );
 }

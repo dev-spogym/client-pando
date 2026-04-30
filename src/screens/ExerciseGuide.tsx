@@ -117,7 +117,7 @@ export default function ExerciseGuide() {
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 mb-1">
-                  <h3 className="font-semibold text-base truncate">{exercise.name}</h3>
+                  <h3 className="font-semibold text-body-lg truncate">{exercise.name}</h3>
                 </div>
                 <div className="flex items-center gap-2 mb-2">
                   <span className={cn('text-[10px] px-1.5 py-0.5 rounded-pill font-medium', categoryTagColor[exercise.category])}>
@@ -127,7 +127,7 @@ export default function ExerciseGuide() {
                     {exercise.difficulty}
                   </span>
                 </div>
-                <p className="text-xs text-content-secondary line-clamp-2">{exercise.description}</p>
+                <p className="text-caption text-content-secondary line-clamp-2">{exercise.description}</p>
               </div>
               <ChevronRight className="w-5 h-5 text-content-tertiary flex-shrink-0 mt-1" />
             </div>
@@ -141,7 +141,7 @@ export default function ExerciseGuide() {
           <div className="absolute inset-0 bg-black/40" onClick={() => setSelectedExercise(null)} />
           <div className="mobile-bottom-sheet relative bg-surface rounded-t-2xl max-h-[85vh] overflow-y-auto">
             <div className="sticky top-0 bg-surface px-5 pt-5 pb-3 border-b border-line flex items-center justify-between">
-              <h2 className="font-bold text-lg">{selectedExercise.name}</h2>
+              <h2 className="font-bold text-h4">{selectedExercise.name}</h2>
               <button onClick={() => setSelectedExercise(null)}>
                 <X className="w-6 h-6 text-content-secondary" />
               </button>
@@ -150,33 +150,33 @@ export default function ExerciseGuide() {
             <div className="px-5 py-4 space-y-4">
               {/* 태그 */}
               <div className="flex items-center gap-2">
-                <span className={cn('text-xs px-2 py-0.5 rounded-pill font-medium', categoryTagColor[selectedExercise.category])}>
+                <span className={cn('text-caption px-2 py-0.5 rounded-pill font-medium', categoryTagColor[selectedExercise.category])}>
                   {selectedExercise.category}
                 </span>
-                <span className={cn('text-xs px-2 py-0.5 rounded-pill font-medium', difficultyColor[selectedExercise.difficulty])}>
+                <span className={cn('text-caption px-2 py-0.5 rounded-pill font-medium', difficultyColor[selectedExercise.difficulty])}>
                   {selectedExercise.difficulty}
                 </span>
               </div>
 
               {/* 설명 */}
               <div>
-                <h3 className="font-semibold text-sm mb-2">운동 설명</h3>
-                <p className="text-sm text-content-secondary leading-relaxed">{selectedExercise.description}</p>
+                <h3 className="font-semibold text-body mb-2">운동 설명</h3>
+                <p className="text-body text-content-secondary leading-relaxed">{selectedExercise.description}</p>
               </div>
 
               {/* 올바른 자세 */}
               <div>
-                <h3 className="font-semibold text-sm mb-2 flex items-center gap-1">
+                <h3 className="font-semibold text-body mb-2 flex items-center gap-1">
                   <Target className="w-4 h-4 text-primary" />
                   올바른 자세 포인트
                 </h3>
                 <div className="space-y-2">
                   {selectedExercise.tips.map((tip, i) => (
                     <div key={i} className="flex items-start gap-2 bg-surface-secondary rounded-card p-3">
-                      <span className="w-5 h-5 bg-primary text-white rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">
+                      <span className="w-5 h-5 bg-primary text-white rounded-full flex items-center justify-center text-caption font-bold flex-shrink-0 mt-0.5">
                         {i + 1}
                       </span>
-                      <p className="text-sm text-content-secondary">{tip}</p>
+                      <p className="text-body text-content-secondary">{tip}</p>
                     </div>
                   ))}
                 </div>
@@ -186,9 +186,9 @@ export default function ExerciseGuide() {
               <div className="bg-state-warning/5 border border-state-warning/20 rounded-card p-4">
                 <div className="flex items-center gap-2 mb-2">
                   <AlertTriangle className="w-4 h-4 text-state-warning" />
-                  <h3 className="font-semibold text-sm text-state-warning">주의사항</h3>
+                  <h3 className="font-semibold text-body text-state-warning">주의사항</h3>
                 </div>
-                <p className="text-sm text-content-secondary">{selectedExercise.caution}</p>
+                <p className="text-body text-content-secondary">{selectedExercise.caution}</p>
               </div>
             </div>
           </div>

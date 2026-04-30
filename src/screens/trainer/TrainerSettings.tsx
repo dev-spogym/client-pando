@@ -28,7 +28,7 @@ export default function TrainerSettings() {
             onClick={() => toggle(item.key)}
           >
             <div className="flex items-center justify-between">
-              <span className="text-sm font-medium">{item.label}</span>
+              <span className="text-body font-medium">{item.label}</span>
               <Badge
                 tone={settings[item.key] ? 'primary' : 'neutral'}
                 variant="soft"

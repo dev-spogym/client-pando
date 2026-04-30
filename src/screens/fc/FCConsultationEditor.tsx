@@ -38,8 +38,8 @@ export default function FCConsultationEditor() {
     <div className="min-h-screen bg-surface-secondary">
       <header className="bg-surface px-5 pt-safe-top pb-4 shadow-sm">
         <div className="pt-4">
-          <p className="text-xs text-content-tertiary">MA-411</p>
-          <h1 className="text-lg font-bold">상담 이력 등록</h1>
+          <p className="text-caption text-content-tertiary">MA-411</p>
+          <h1 className="text-h4 font-bold">상담 이력 등록</h1>
         </div>
       </header>
 
@@ -59,14 +59,14 @@ export default function FCConsultationEditor() {
           onChange={(e) => setSummary(e.target.value)}
           placeholder="상담 내용"
           rows={4}
-          className="w-full rounded-xl border border-line px-3 py-3 text-sm resize-none focus:outline-none focus:border-primary bg-surface"
+          className="w-full rounded-xl border border-line px-3 py-3 text-body resize-none focus:outline-none focus:border-primary bg-surface"
         />
         <textarea
           value={followUp}
           onChange={(e) => setFollowUp(e.target.value)}
           placeholder="후속 조치"
           rows={3}
-          className="w-full rounded-xl border border-line px-3 py-3 text-sm resize-none focus:outline-none focus:border-primary bg-surface"
+          className="w-full rounded-xl border border-line px-3 py-3 text-body resize-none focus:outline-none focus:border-primary bg-surface"
         />
         <Button fullWidth size="lg" onClick={submit}>
           저장

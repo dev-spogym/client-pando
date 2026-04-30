@@ -145,7 +145,7 @@ export default function WorkoutAnalysis() {
               key={p}
               onClick={() => setPeriod(p)}
               className={cn(
-                'flex-1 py-2 text-sm font-medium rounded-lg transition-colors',
+                'flex-1 py-2 text-body font-medium rounded-lg transition-colors',
                 period === p ? 'bg-primary text-white' : 'text-content-secondary',
               )}
             >
@@ -157,7 +157,7 @@ export default function WorkoutAnalysis() {
 
       <div className="px-4 mt-3 space-y-4 pb-4">
         {logs === null ? (
-          <div className="rounded-card bg-surface p-8 text-center text-sm text-content-tertiary shadow-card-soft">
+          <div className="rounded-card bg-surface p-8 text-center text-body text-content-tertiary shadow-card-soft">
             불러오는 중...
           </div>
         ) : (
@@ -168,9 +168,9 @@ export default function WorkoutAnalysis() {
             <Calendar className="w-6 h-6 text-primary" />
           </div>
           <div>
-            <p className="text-xs text-content-tertiary">운동 일수</p>
-            <p className="text-2xl font-bold">
-              {workoutDays}<span className="text-sm text-content-tertiary font-normal ml-1">일 / {period === 'week' ? '7' : '30'}일</span>
+            <p className="text-caption text-content-tertiary">운동 일수</p>
+            <p className="text-h1 font-bold">
+              {workoutDays}<span className="text-body text-content-tertiary font-normal ml-1">일 / {period === 'week' ? '7' : '30'}일</span>
             </p>
           </div>
         </div>
@@ -179,7 +179,7 @@ export default function WorkoutAnalysis() {
         <div className="bg-surface rounded-card p-4 shadow-card-soft">
           <div className="flex items-center gap-2 mb-4">
             <BarChart3 className="w-5 h-5 text-primary" />
-            <h3 className="font-semibold text-sm">부위별 운동 비율</h3>
+            <h3 className="font-semibold text-body">부위별 운동 비율</h3>
           </div>
           <div className="space-y-3">
             {CATEGORIES.map((cat) => {
@@ -187,14 +187,14 @@ export default function WorkoutAnalysis() {
               const pct = maxCategoryCount > 0 ? (count / maxCategoryCount) * 100 : 0;
               return (
                 <div key={cat} className="flex items-center gap-3">
-                  <span className="text-xs text-content-secondary w-8">{cat}</span>
+                  <span className="text-caption text-content-secondary w-8">{cat}</span>
                   <div className="flex-1 h-5 bg-surface-secondary rounded-full overflow-hidden">
                     <div
                       className={cn('h-full rounded-full transition-all', categoryColor[cat])}
                       style={{ width: `${Math.max(pct, 2)}%` }}
                     />
                   </div>
-                  <span className="text-xs text-content-tertiary w-8 text-right">{count}회</span>
+                  <span className="text-caption text-content-tertiary w-8 text-right">{count}회</span>
                 </div>
               );
             })}
@@ -205,7 +205,7 @@ export default function WorkoutAnalysis() {
         <div className="bg-surface rounded-card p-4 shadow-card-soft">
           <div className="flex items-center gap-2 mb-4">
             <TrendingUp className="w-5 h-5 text-primary" />
-            <h3 className="font-semibold text-sm">총 볼륨 추이</h3>
+            <h3 className="font-semibold text-body">총 볼륨 추이</h3>
           </div>
           {dailyVolume.length === 0 ? (
             <EmptyState size="sm" title="데이터 없음" description="기록된 데이터가 없습니다" />
@@ -230,7 +230,7 @@ export default function WorkoutAnalysis() {
         <div className="bg-surface rounded-card p-4 shadow-card-soft">
           <div className="flex items-center gap-2 mb-4">
             <Flame className="w-5 h-5 text-state-warning" />
-            <h3 className="font-semibold text-sm">최근 운동 기록</h3>
+            <h3 className="font-semibold text-body">최근 운동 기록</h3>
           </div>
           {recentEntries.length === 0 ? (
             <EmptyState size="sm" title="운동 기록 없음" />
@@ -242,11 +242,11 @@ export default function WorkoutAnalysis() {
                 return (
                   <div key={i} className="flex items-center gap-3 p-3 bg-surface-secondary rounded-card">
                     <div className="w-10 h-10 bg-primary-light rounded-lg flex items-center justify-center">
-                      <span className="text-primary font-bold text-sm">{d.getDate()}</span>
+                      <span className="text-primary font-bold text-body">{d.getDate()}</span>
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium truncate">{entry.name}</p>
-                      <p className="text-xs text-content-tertiary">
+                      <p className="text-body font-medium truncate">{entry.name}</p>
+                      <p className="text-caption text-content-tertiary">
                         {entry.sets.length}세트 · 볼륨 {volume.toLocaleString()}kg
                       </p>
                     </div>

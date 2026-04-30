@@ -178,9 +178,9 @@ export default function DietLog() {
         <button onClick={prevDay} className="p-2">
           <ChevronLeft className="w-5 h-5 text-content-secondary" />
         </button>
-        <span className="font-semibold text-base">
+        <span className="font-semibold text-body-lg">
           {currentDate.getMonth() + 1}월 {currentDate.getDate()}일
-          {isToday && <span className="text-primary text-sm ml-1">(오늘)</span>}
+          {isToday && <span className="text-primary text-body ml-1">(오늘)</span>}
         </span>
         <button onClick={nextDay} className="p-2">
           <ChevronRight className="w-5 h-5 text-content-secondary" />
@@ -194,9 +194,9 @@ export default function DietLog() {
             <Flame className="w-6 h-6 text-state-warning" />
           </div>
           <div>
-            <p className="text-xs text-content-tertiary">하루 총 칼로리</p>
-            <p className="text-2xl font-bold">
-              {totalCalories.toLocaleString()}<span className="text-sm text-content-tertiary font-normal ml-1">kcal</span>
+            <p className="text-caption text-content-tertiary">하루 총 칼로리</p>
+            <p className="text-h1 font-bold">
+              {totalCalories.toLocaleString()}<span className="text-body text-content-tertiary font-normal ml-1">kcal</span>
             </p>
           </div>
         </div>
@@ -205,7 +205,7 @@ export default function DietLog() {
       {/* 끼니별 섹션 */}
       <div className="px-4 mt-4 pb-4 space-y-4">
         {logs === null ? (
-          <div className="bg-surface rounded-card p-8 text-center text-sm text-content-tertiary shadow-card-soft">
+          <div className="bg-surface rounded-card p-8 text-center text-body text-content-tertiary shadow-card-soft">
             불러오는 중...
           </div>
         ) : (
@@ -217,10 +217,10 @@ export default function DietLog() {
               <div key={meal} className="bg-surface rounded-card p-4 shadow-card-soft">
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-2">
-                    <span className="text-lg">{mealIcon[meal]}</span>
-                    <h3 className="font-semibold text-sm">{meal}</h3>
+                    <span className="text-h4">{mealIcon[meal]}</span>
+                    <h3 className="font-semibold text-body">{meal}</h3>
                     {mealCalories > 0 && (
-                      <span className="text-xs text-content-tertiary">{mealCalories}kcal</span>
+                      <span className="text-caption text-content-tertiary">{mealCalories}kcal</span>
                     )}
                   </div>
                   <button
@@ -232,7 +232,7 @@ export default function DietLog() {
                 </div>
 
                 {entries.length === 0 ? (
-                  <p className="text-sm text-content-tertiary text-center py-3">
+                  <p className="text-body text-content-tertiary text-center py-3">
                     음식을 추가해주세요
                   </p>
                 ) : (
@@ -240,8 +240,8 @@ export default function DietLog() {
                     {entries.map((entry) => (
                       <div key={entry.id} className="flex items-center gap-3 p-3 bg-surface-secondary rounded-card">
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium truncate">{entry.name}</p>
-                          <div className="flex items-center gap-2 text-xs text-content-tertiary">
+                          <p className="text-body font-medium truncate">{entry.name}</p>
+                          <div className="flex items-center gap-2 text-caption text-content-tertiary">
                             <span>{entry.calories}kcal</span>
                             {entry.memo && <span>· {entry.memo}</span>}
                           </div>
@@ -265,7 +265,7 @@ export default function DietLog() {
           <div className="absolute inset-0 bg-black/40" onClick={() => setShowModal(false)} />
           <div className="mobile-bottom-sheet relative bg-surface rounded-t-2xl max-h-[85vh] overflow-y-auto">
             <div className="sticky top-0 bg-surface px-5 pt-5 pb-3 border-b border-line flex items-center justify-between">
-              <h2 className="font-bold text-lg">{selectedMeal} 추가</h2>
+              <h2 className="font-bold text-h4">{selectedMeal} 추가</h2>
               <button onClick={() => setShowModal(false)}>
                 <X className="w-6 h-6 text-content-secondary" />
               </button>
@@ -274,51 +274,51 @@ export default function DietLog() {
             <div className="px-5 py-4 space-y-4">
               {/* 음식명 */}
               <div>
-                <label className="text-sm font-medium text-content-secondary mb-2 block">음식명</label>
+                <label className="text-body font-medium text-content-secondary mb-2 block">음식명</label>
                 <input
                   type="text"
                   value={formName}
                   onChange={(e) => setFormName(e.target.value)}
                   placeholder="예: 닭가슴살 샐러드"
-                  className="w-full px-4 py-3 bg-surface-secondary rounded-input text-sm border border-line focus:border-primary focus:outline-none"
+                  className="w-full px-4 py-3 bg-surface-secondary rounded-input text-body border border-line focus:border-primary focus:outline-none"
                 />
               </div>
 
               {/* 칼로리 */}
               <div>
-                <label className="text-sm font-medium text-content-secondary mb-2 block">칼로리 (kcal)</label>
+                <label className="text-body font-medium text-content-secondary mb-2 block">칼로리 (kcal)</label>
                 <input
                   type="number"
                   value={formCalories || ''}
                   onChange={(e) => setFormCalories(Number(e.target.value))}
                   placeholder="예: 350"
-                  className="w-full px-4 py-3 bg-surface-secondary rounded-input text-sm border border-line focus:border-primary focus:outline-none"
+                  className="w-full px-4 py-3 bg-surface-secondary rounded-input text-body border border-line focus:border-primary focus:outline-none"
                 />
               </div>
 
               {/* 사진 첨부 (placeholder) */}
               <div>
-                <label className="text-sm font-medium text-content-secondary mb-2 block">사진 첨부</label>
+                <label className="text-body font-medium text-content-secondary mb-2 block">사진 첨부</label>
                 <button
                   type="button"
                   onClick={() => toast.info('식단 사진 업로드는 곧 제공됩니다.')}
                   className="w-full py-8 border-2 border-dashed border-line rounded-card flex flex-col items-center gap-2 text-content-tertiary active:bg-surface-secondary"
                 >
                   <Camera className="w-8 h-8" />
-                  <span className="text-sm">사진을 추가하세요</span>
-                  <span className="text-xs">(준비 중)</span>
+                  <span className="text-body">사진을 추가하세요</span>
+                  <span className="text-caption">(준비 중)</span>
                 </button>
               </div>
 
               {/* 메모 */}
               <div>
-                <label className="text-sm font-medium text-content-secondary mb-2 block">메모</label>
+                <label className="text-body font-medium text-content-secondary mb-2 block">메모</label>
                 <textarea
                   value={formMemo}
                   onChange={(e) => setFormMemo(e.target.value)}
                   placeholder="간단한 메모를 남겨보세요"
                   rows={2}
-                  className="w-full px-4 py-3 bg-surface-secondary rounded-input text-sm border border-line focus:border-primary focus:outline-none resize-none"
+                  className="w-full px-4 py-3 bg-surface-secondary rounded-input text-body border border-line focus:border-primary focus:outline-none resize-none"
                 />
               </div>
 

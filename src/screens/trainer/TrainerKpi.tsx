@@ -90,7 +90,7 @@ function formatKRW(value: number): string {
 const CustomTooltip = ({ active, payload, label }: { active?: boolean; payload?: Array<{ color: string; name: string; value: number }>; label?: string }) => {
   if (!active || !payload?.length) return null;
   return (
-    <div className="bg-surface rounded-card shadow-card-soft border border-surface-secondary p-3 text-xs">
+    <div className="bg-surface rounded-card shadow-card-soft border border-surface-secondary p-3 text-caption">
       <p className="font-semibold text-content mb-1">{label}</p>
       {payload.map((p, i) => (
         <p key={i} style={{ color: p.color }}>{p.name}: <span className="font-bold">{typeof p.value === 'number' && p.value > 10000 ? formatKRW(p.value) : p.value}</span></p>
@@ -147,8 +147,8 @@ export default function TrainerKpi() {
       {/* Header */}
       <header className="bg-gradient-to-br from-teal-600 to-cyan-600 px-5 pt-safe-top pb-6">
         <div className="pt-4">
-          <p className="text-white/70 text-xs tracking-wide">강사 성과 대시보드</p>
-          <h1 className="text-white text-2xl font-bold mt-1">KPI</h1>
+          <p className="text-white/70 text-caption tracking-wide">강사 성과 대시보드</p>
+          <h1 className="text-white text-h1 font-bold mt-1">KPI</h1>
         </div>
         {/* Period filter */}
         <div className="mt-4 flex gap-2 overflow-x-auto pb-1">
@@ -156,7 +156,7 @@ export default function TrainerKpi() {
             <button
               key={p}
               onClick={() => setPeriod(p)}
-              className={`shrink-0 px-4 py-1.5 rounded-full text-xs font-semibold transition-all ${
+              className={`shrink-0 px-4 py-1.5 rounded-full text-caption font-semibold transition-all ${
                 period === p
                   ? 'bg-white text-teal-700'
                   : 'bg-white/20 text-white'
@@ -180,7 +180,7 @@ export default function TrainerKpi() {
                   <Icon className={`w-4 h-4 ${c.color}`} />
                 </div>
                 <p className="mt-3 text-[11px] text-content-tertiary">{c.label}</p>
-                <p className="mt-0.5 text-lg font-bold text-content">{c.value}</p>
+                <p className="mt-0.5 text-h4 font-bold text-content">{c.value}</p>
                 <div className="mt-1 flex items-center gap-1">
                   {c.up
                     ? <TrendingUp className="w-3 h-3 text-state-success" />
@@ -194,8 +194,8 @@ export default function TrainerKpi() {
 
         {/* ── Card 1: 매출 추이 ── */}
         <Card variant="elevated" padding="md">
-          <p className="text-sm font-bold text-content mb-1">월별 매출 추이</p>
-          <p className="text-xs text-content-tertiary mb-4">최근 12개월</p>
+          <p className="text-body font-bold text-content mb-1">월별 매출 추이</p>
+          <p className="text-caption text-content-tertiary mb-4">최근 12개월</p>
           <ResponsiveContainer width="100%" height={200}>
             <LineChart data={monthlySales} margin={{ top: 4, right: 8, left: -16, bottom: 0 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#F1F3F5" />
@@ -216,8 +216,8 @@ export default function TrainerKpi() {
 
         {/* ── Card 2: 회원 활동 분포 ── */}
         <Card variant="elevated" padding="md">
-          <p className="text-sm font-bold text-content mb-1">요일별 수업 분포</p>
-          <p className="text-xs text-content-tertiary mb-4">PT · 그룹 클래스</p>
+          <p className="text-body font-bold text-content mb-1">요일별 수업 분포</p>
+          <p className="text-caption text-content-tertiary mb-4">PT · 그룹 클래스</p>
           <ResponsiveContainer width="100%" height={200}>
             <BarChart data={weeklyActivity} margin={{ top: 4, right: 8, left: -16, bottom: 0 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#F1F3F5" />
@@ -235,12 +235,12 @@ export default function TrainerKpi() {
         <Card variant="elevated" padding="md">
           <div className="flex items-center justify-between mb-4">
             <div>
-              <p className="text-sm font-bold text-content">회원 별점 분포</p>
-              <p className="text-xs text-content-tertiary">총 165건 리뷰</p>
+              <p className="text-body font-bold text-content">회원 별점 분포</p>
+              <p className="text-caption text-content-tertiary">총 165건 리뷰</p>
             </div>
             <div className="text-right">
-              <p className="text-2xl font-bold text-primary">4.8</p>
-              <p className="text-xs text-state-warning">★★★★★</p>
+              <p className="text-h1 font-bold text-primary">4.8</p>
+              <p className="text-caption text-state-warning">★★★★★</p>
             </div>
           </div>
           <div className="space-y-2.5">
@@ -248,14 +248,14 @@ export default function TrainerKpi() {
               const pct = Math.round((r.count / 165) * 100);
               return (
                 <div key={r.star} className="flex items-center gap-3">
-                  <span className="text-xs font-medium text-content-secondary w-8">{r.star}</span>
+                  <span className="text-caption font-medium text-content-secondary w-8">{r.star}</span>
                   <div className="flex-1 h-2 bg-surface-secondary rounded-full overflow-hidden">
                     <div
                       className="h-full rounded-full bg-primary transition-all"
                       style={{ width: `${pct}%` }}
                     />
                   </div>
-                  <span className="text-xs text-content-tertiary w-8 text-right">{r.count}</span>
+                  <span className="text-caption text-content-tertiary w-8 text-right">{r.count}</span>
                 </div>
               );
             })}
@@ -264,8 +264,8 @@ export default function TrainerKpi() {
 
         {/* ── Card 4: 인기 시간대 (stacked bar by hour) ── */}
         <Card variant="elevated" padding="md">
-          <p className="text-sm font-bold text-content mb-1">인기 시간대</p>
-          <p className="text-xs text-content-tertiary mb-4">요일별 수업 집중도 (7시~21시)</p>
+          <p className="text-body font-bold text-content mb-1">인기 시간대</p>
+          <p className="text-caption text-content-tertiary mb-4">요일별 수업 집중도 (7시~21시)</p>
           <ResponsiveContainer width="100%" height={220}>
             <BarChart data={timeSlotData} margin={{ top: 4, right: 8, left: -16, bottom: 0 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#F1F3F5" />
@@ -285,8 +285,8 @@ export default function TrainerKpi() {
 
         {/* ── Card 5: 회원 세그먼트 ── */}
         <Card variant="elevated" padding="md">
-          <p className="text-sm font-bold text-content mb-1">회원 목표 세그먼트</p>
-          <p className="text-xs text-content-tertiary mb-2">활성 회원 {kpi.activeMembers}명 기준</p>
+          <p className="text-body font-bold text-content mb-1">회원 목표 세그먼트</p>
+          <p className="text-caption text-content-tertiary mb-2">활성 회원 {kpi.activeMembers}명 기준</p>
           <div className="flex items-center gap-4">
             <ResponsiveContainer width="50%" height={180}>
               <PieChart>
@@ -311,9 +311,9 @@ export default function TrainerKpi() {
                 <div key={s.name} className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <div className="w-2.5 h-2.5 rounded-full" style={{ background: PIE_COLORS[i % PIE_COLORS.length] }} />
-                    <span className="text-xs text-content-secondary">{s.name}</span>
+                    <span className="text-caption text-content-secondary">{s.name}</span>
                   </div>
-                  <span className="text-xs font-bold text-content">{s.value}명</span>
+                  <span className="text-caption font-bold text-content">{s.value}명</span>
                 </div>
               ))}
             </div>
@@ -322,22 +322,22 @@ export default function TrainerKpi() {
 
         {/* ── Card 6: Top 회원 ── */}
         <Card variant="elevated" padding="md">
-          <p className="text-sm font-bold text-content mb-4">Top 5 회원</p>
+          <p className="text-body font-bold text-content mb-4">Top 5 회원</p>
           <div className="space-y-3">
             {topMembers.map((m, i) => (
               <div key={m.name} className="flex items-center gap-3">
-                <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${i === 0 ? 'bg-state-warning text-white' : i === 1 ? 'bg-surface-secondary text-content-secondary' : 'bg-surface-tertiary text-content-tertiary'}`}>
+                <div className={`w-6 h-6 rounded-full flex items-center justify-center text-caption font-bold ${i === 0 ? 'bg-state-warning text-white' : i === 1 ? 'bg-surface-secondary text-content-secondary' : 'bg-surface-tertiary text-content-tertiary'}`}>
                   {i + 1}
                 </div>
-                <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center text-sm font-bold text-primary">
+                <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center text-body font-bold text-primary">
                   {m.avatar}
                 </div>
                 <div className="flex-1">
-                  <p className="text-sm font-semibold text-content">{m.name}</p>
-                  <p className="text-xs text-content-tertiary">출석 {m.attendance}회</p>
+                  <p className="text-body font-semibold text-content">{m.name}</p>
+                  <p className="text-caption text-content-tertiary">출석 {m.attendance}회</p>
                 </div>
                 <div className="text-right">
-                  <p className="text-sm font-bold text-state-warning">{m.rating.toFixed(1)} ★</p>
+                  <p className="text-body font-bold text-state-warning">{m.rating.toFixed(1)} ★</p>
                 </div>
               </div>
             ))}

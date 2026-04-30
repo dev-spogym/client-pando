@@ -33,9 +33,9 @@ export default function TrainerClassList() {
     <div className="min-h-screen bg-surface-secondary">
       <header className="bg-gradient-to-br from-teal-600 to-emerald-600 px-5 pt-safe-top pb-5">
         <div className="pt-4">
-          <p className="text-white/80 text-sm">MA-211</p>
-          <h1 className="text-white text-xl font-bold mt-1">수업 목록</h1>
-          <p className="text-white/70 text-sm mt-1">상태별 수업 목록과 누락된 출석/서명 이슈를 빠르게 확인합니다.</p>
+          <p className="text-white/80 text-body">MA-211</p>
+          <h1 className="text-white text-h2 font-bold mt-1">수업 목록</h1>
+          <p className="text-white/70 text-body mt-1">상태별 수업 목록과 누락된 출석/서명 이슈를 빠르게 확인합니다.</p>
         </div>
       </header>
 
@@ -61,19 +61,19 @@ export default function TrainerClassList() {
         <div className="grid grid-cols-3 gap-3">
           <Card variant="soft" padding="md" interactive onClick={() => navigate('/trainer/templates')}>
             <NotebookPen className="w-5 h-5 text-primary" />
-            <p className="mt-3 text-sm font-semibold">템플릿 관리</p>
+            <p className="mt-3 text-body font-semibold">템플릿 관리</p>
           </Card>
           <Card variant="soft" padding="md" interactive onClick={() => navigate('/trainer/penalties')}>
             <CircleAlert className="w-5 h-5 text-state-error" />
-            <p className="mt-3 text-sm font-semibold">노쇼 / 페널티</p>
+            <p className="mt-3 text-body font-semibold">노쇼 / 페널티</p>
           </Card>
           <Card variant="soft" padding="md" interactive onClick={() => navigate('/trainer/certificates')}>
             <FileStack className="w-5 h-5 text-state-info" />
-            <p className="mt-3 text-sm font-semibold">확인서</p>
+            <p className="mt-3 text-body font-semibold">확인서</p>
           </Card>
         </div>
 
-        <p className="text-xs text-content-tertiary">현재 {filtered.length}건</p>
+        <p className="text-caption text-content-tertiary">현재 {filtered.length}건</p>
 
         {filtered.length === 0 ? (
           <EmptyState size="sm" title="해당하는 수업이 없습니다" />
@@ -100,11 +100,11 @@ export default function TrainerClassList() {
                         {STATUS_LABELS[item.status]}
                       </Badge>
                     </div>
-                    <p className="mt-2 text-sm font-semibold">{item.title}</p>
-                    <p className="mt-1 text-xs text-content-secondary">
+                    <p className="mt-2 text-body font-semibold">{item.title}</p>
+                    <p className="mt-1 text-caption text-content-secondary">
                       {formatDateKo(item.startTime)} · {formatTime(item.startTime)} - {formatTime(item.endTime)} · {item.room}
                     </p>
-                    <p className="mt-2 text-xs text-content-tertiary">
+                    <p className="mt-2 text-caption text-content-tertiary">
                       참여 회원 {item.participants.length}명
                     </p>
                   </div>

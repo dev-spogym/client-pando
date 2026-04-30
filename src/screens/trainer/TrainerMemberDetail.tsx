@@ -404,7 +404,7 @@ export default function TrainerMemberDetail() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
           </button>
-          <h1 className="text-white text-lg font-bold">회원 상세</h1>
+          <h1 className="text-white text-h4 font-bold">회원 상세</h1>
         </div>
       </header>
 
@@ -414,8 +414,8 @@ export default function TrainerMemberDetail() {
           <div className="flex items-center gap-3">
             <Avatar name={memberInfo.name} size="lg" />
             <div className="flex-1">
-              <p className="font-bold text-base">{memberInfo.name}</p>
-              <p className="text-sm text-content-secondary">{formatPhone(memberInfo.phone)}</p>
+              <p className="font-bold text-body-lg">{memberInfo.name}</p>
+              <p className="text-body text-content-secondary">{formatPhone(memberInfo.phone)}</p>
             </div>
             <Badge
               tone={memberInfo.status === 'ACTIVE' ? 'success' : 'neutral'}
@@ -424,7 +424,7 @@ export default function TrainerMemberDetail() {
               {memberInfo.status === 'ACTIVE' ? '이용중' : memberInfo.status}
             </Badge>
           </div>
-          <div className="mt-3 flex gap-4 text-xs text-content-secondary">
+          <div className="mt-3 flex gap-4 text-caption text-content-secondary">
             {memberInfo.membershipType && <span>이용권: {memberInfo.membershipType}</span>}
             {memberInfo.membershipExpiry && <span>만료: {formatDateKo(memberInfo.membershipExpiry)}</span>}
           </div>
@@ -439,7 +439,7 @@ export default function TrainerMemberDetail() {
               key={t.key}
               onClick={() => setTab(t.key)}
               className={cn(
-                'flex-1 flex items-center justify-center gap-1 py-3 text-sm font-medium border-b-2 transition-colors',
+                'flex-1 flex items-center justify-center gap-1 py-3 text-body font-medium border-b-2 transition-colors',
                 tab === t.key
                   ? 'border-primary text-primary'
                   : 'border-transparent text-content-tertiary'
@@ -462,10 +462,10 @@ export default function TrainerMemberDetail() {
             exerciseLogs.map((log) => (
               <Card key={log.id} variant="soft" padding="sm">
                 <div className="flex items-center justify-between">
-                  <p className="font-semibold text-sm">{log.exerciseName}</p>
-                  <span className="text-xs text-content-tertiary">{formatDateKo(log.loggedAt)}</span>
+                  <p className="font-semibold text-body">{log.exerciseName}</p>
+                  <span className="text-caption text-content-tertiary">{formatDateKo(log.loggedAt)}</span>
                 </div>
-                <div className="flex gap-3 mt-1 text-xs text-content-secondary">
+                <div className="flex gap-3 mt-1 text-caption text-content-secondary">
                   {log.sets && <span>{log.sets}세트</span>}
                   {log.reps && <span>{log.reps}회</span>}
                   {log.weight && <span>{log.weight}kg</span>}
@@ -484,28 +484,28 @@ export default function TrainerMemberDetail() {
             bodyComps.map((bc) => (
               <Card key={bc.id} variant="soft" padding="sm">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-xs text-content-tertiary">{formatDateKo(bc.createdAt)}</span>
+                  <span className="text-caption text-content-tertiary">{formatDateKo(bc.createdAt)}</span>
                 </div>
                 <div className="grid grid-cols-5 gap-2 text-center">
                   <div>
-                    <p className="text-xs text-content-tertiary">체중</p>
-                    <p className="text-sm font-bold">{bc.weight ?? '-'}kg</p>
+                    <p className="text-caption text-content-tertiary">체중</p>
+                    <p className="text-body font-bold">{bc.weight ?? '-'}kg</p>
                   </div>
                   <div>
-                    <p className="text-xs text-content-tertiary">근육</p>
-                    <p className="text-sm font-bold">{bc.muscle ?? '-'}kg</p>
+                    <p className="text-caption text-content-tertiary">근육</p>
+                    <p className="text-body font-bold">{bc.muscle ?? '-'}kg</p>
                   </div>
                   <div>
-                    <p className="text-xs text-content-tertiary">체지방</p>
-                    <p className="text-sm font-bold">{bc.fat ?? '-'}kg</p>
+                    <p className="text-caption text-content-tertiary">체지방</p>
+                    <p className="text-body font-bold">{bc.fat ?? '-'}kg</p>
                   </div>
                   <div>
-                    <p className="text-xs text-content-tertiary">체지방률</p>
-                    <p className="text-sm font-bold">{bc.fatRate ?? '-'}%</p>
+                    <p className="text-caption text-content-tertiary">체지방률</p>
+                    <p className="text-body font-bold">{bc.fatRate ?? '-'}%</p>
                   </div>
                   <div>
-                    <p className="text-xs text-content-tertiary">BMI</p>
-                    <p className="text-sm font-bold">{bc.bmi ?? '-'}</p>
+                    <p className="text-caption text-content-tertiary">BMI</p>
+                    <p className="text-body font-bold">{bc.bmi ?? '-'}</p>
                   </div>
                 </div>
               </Card>
@@ -520,12 +520,12 @@ export default function TrainerMemberDetail() {
                 <div className="space-y-3">
                   <div className="flex items-start justify-between gap-3">
                     <div>
-                      <p className="text-xs text-content-tertiary">수강권 잔여 현황</p>
-                      <p className="mt-1 text-sm font-semibold">{activeLessonCount.productName}</p>
+                      <p className="text-caption text-content-tertiary">수강권 잔여 현황</p>
+                      <p className="mt-1 text-body font-semibold">{activeLessonCount.productName}</p>
                     </div>
                     <div className="rounded-card bg-primary-light px-3 py-2 text-right">
                       <p className="text-[11px] text-primary">잔여 회차</p>
-                      <p className="text-lg font-bold text-primary">
+                      <p className="text-h4 font-bold text-primary">
                         {Math.max(activeLessonCount.totalCount - activeLessonCount.usedCount, 0)}회
                       </p>
                     </div>
@@ -533,13 +533,13 @@ export default function TrainerMemberDetail() {
                   <div className="grid grid-cols-2 gap-2">
                     <div className="rounded-card bg-surface-secondary px-3 py-3">
                       <p className="text-[11px] text-content-tertiary">사용 회차</p>
-                      <p className="mt-1 text-sm font-semibold">
+                      <p className="mt-1 text-body font-semibold">
                         {activeLessonCount.usedCount}/{activeLessonCount.totalCount}
                       </p>
                     </div>
                     <div className="rounded-card bg-surface-secondary px-3 py-3">
                       <p className="text-[11px] text-content-tertiary">사용 기간</p>
-                      <p className="mt-1 text-sm font-semibold">
+                      <p className="mt-1 text-body font-semibold">
                         {formatDateKo(activeLessonCount.startDate)} ~ {formatDateKo(activeLessonCount.endDate)}
                       </p>
                     </div>
@@ -547,13 +547,13 @@ export default function TrainerMemberDetail() {
                   <div className="grid grid-cols-2 gap-2">
                     <div className="rounded-card bg-surface-secondary px-3 py-3">
                       <p className="text-[11px] text-content-tertiary">최근 차감</p>
-                      <p className="mt-1 text-sm font-semibold">
+                      <p className="mt-1 text-body font-semibold">
                         {latestLessonHistory ? formatDateKo(latestLessonHistory.deductedAt) : '없음'}
                       </p>
                     </div>
                     <div className="rounded-card bg-surface-secondary px-3 py-3">
                       <p className="text-[11px] text-content-tertiary">다음 예약 예정</p>
-                      <p className="mt-1 text-sm font-semibold">
+                      <p className="mt-1 text-body font-semibold">
                         {nextLessonSchedule ? formatDateKo(nextLessonSchedule.startTime) : '없음'}
                       </p>
                     </div>
@@ -563,9 +563,9 @@ export default function TrainerMemberDetail() {
             )}
 
             <Card variant="elevated" padding="md">
-              <p className="font-semibold text-sm mb-3">수업 일정 / 이력</p>
+              <p className="font-semibold text-body mb-3">수업 일정 / 이력</p>
               {lessonSchedules.length === 0 ? (
-                <p className="text-sm text-content-tertiary">등록된 수업 이력이 없습니다</p>
+                <p className="text-body text-content-tertiary">등록된 수업 이력이 없습니다</p>
               ) : (
                 <div className="space-y-3">
                   {lessonSchedules.map((lesson) => (
@@ -573,7 +573,7 @@ export default function TrainerMemberDetail() {
                       <div className="flex items-center justify-between gap-3">
                         <div>
                           <div className="flex items-center gap-2">
-                            <p className="text-sm font-semibold">{lesson.title}</p>
+                            <p className="text-body font-semibold">{lesson.title}</p>
                             <Badge
                               tone={lesson.lessonStatus === 'completed' ? 'info' : 'success'}
                               variant="soft"
@@ -581,11 +581,11 @@ export default function TrainerMemberDetail() {
                               {lesson.lessonStatus === 'completed' ? '완료' : '예정'}
                             </Badge>
                           </div>
-                          <p className="mt-1 text-xs text-content-secondary">
+                          <p className="mt-1 text-caption text-content-secondary">
                             {formatDateKo(lesson.startTime)} · {lesson.type}{lesson.room ? ` · ${lesson.room}` : ''}
                           </p>
                         </div>
-                        <span className="text-xs text-content-tertiary">
+                        <span className="text-caption text-content-tertiary">
                           {formatDateKo(lesson.startTime)}
                         </span>
                       </div>
@@ -596,18 +596,18 @@ export default function TrainerMemberDetail() {
             </Card>
 
             <Card variant="elevated" padding="md">
-              <p className="font-semibold text-sm mb-3">차감 이력</p>
+              <p className="font-semibold text-body mb-3">차감 이력</p>
               {lessonCountHistories.length === 0 ? (
-                <p className="text-sm text-content-tertiary">차감 이력이 없습니다</p>
+                <p className="text-body text-content-tertiary">차감 이력이 없습니다</p>
               ) : (
                 <div className="space-y-3">
                   {lessonCountHistories.map((history) => (
                     <div key={history.id} className="rounded-card bg-surface-secondary px-3 py-3">
                       <div className="flex items-center justify-between gap-3">
-                        <p className="text-sm font-medium">{history.title}</p>
-                        <span className="text-xs text-content-tertiary">{formatDateKo(history.deductedAt)}</span>
+                        <p className="text-body font-medium">{history.title}</p>
+                        <span className="text-caption text-content-tertiary">{formatDateKo(history.deductedAt)}</span>
                       </div>
-                      {history.note && <p className="mt-1 text-xs text-content-secondary">{history.note}</p>}
+                      {history.note && <p className="mt-1 text-caption text-content-secondary">{history.note}</p>}
                     </div>
                   ))}
                 </div>
@@ -620,7 +620,7 @@ export default function TrainerMemberDetail() {
         {tab === 'evaluation' && (
           <>
             <Card variant="elevated" padding="md">
-              <p className="font-semibold text-sm flex items-center gap-1 mb-3">
+              <p className="font-semibold text-body flex items-center gap-1 mb-3">
                 <Plus className="w-4 h-4" /> 새 평가 작성
               </p>
               <div className="space-y-3">
@@ -629,10 +629,10 @@ export default function TrainerMemberDetail() {
                   value={evalCategory}
                   onChange={(e) => setEvalCategory(e.target.value)}
                   placeholder="평가 카테고리 (예: 체력, 자세, 식단)"
-                  className="w-full px-3 py-2 rounded-input border border-line text-sm focus:outline-none focus:border-primary"
+                  className="w-full px-3 py-2 rounded-input border border-line text-body focus:outline-none focus:border-primary"
                 />
                 <div className="flex items-center gap-2">
-                  <span className="text-sm text-content-secondary">점수:</span>
+                  <span className="text-body text-content-secondary">점수:</span>
                   <input
                     type="range"
                     min={1}
@@ -641,14 +641,14 @@ export default function TrainerMemberDetail() {
                     onChange={(e) => setEvalScore(Number(e.target.value))}
                     className="flex-1 accent-primary"
                   />
-                  <span className="text-sm font-bold text-primary w-6 text-right">{evalScore}</span>
+                  <span className="text-body font-bold text-primary w-6 text-right">{evalScore}</span>
                 </div>
                 <textarea
                   value={evalContent}
                   onChange={(e) => setEvalContent(e.target.value)}
                   placeholder="평가 내용을 입력하세요"
                   rows={3}
-                  className="w-full px-3 py-2 rounded-input border border-line text-sm focus:outline-none focus:border-primary resize-none"
+                  className="w-full px-3 py-2 rounded-input border border-line text-body focus:outline-none focus:border-primary resize-none"
                 />
                 <Button
                   variant="primary"
@@ -671,12 +671,12 @@ export default function TrainerMemberDetail() {
                   <div className="flex items-center justify-between mb-1">
                     <div className="flex items-center gap-2">
                       <Badge tone="primary" variant="soft">{ev.category}</Badge>
-                      <span className="text-xs font-bold text-primary">{ev.score}/10</span>
+                      <span className="text-caption font-bold text-primary">{ev.score}/10</span>
                     </div>
-                    <span className="text-xs text-content-tertiary">{formatDateKo(ev.createdAt)}</span>
+                    <span className="text-caption text-content-tertiary">{formatDateKo(ev.createdAt)}</span>
                   </div>
-                  <p className="text-sm text-content">{ev.content}</p>
-                  <p className="text-xs text-content-tertiary mt-1">- {ev.staffName}</p>
+                  <p className="text-body text-content">{ev.content}</p>
+                  <p className="text-caption text-content-tertiary mt-1">- {ev.staffName}</p>
                 </Card>
               ))
             )}
@@ -692,7 +692,7 @@ export default function TrainerMemberDetail() {
                 value={memoContent}
                 onChange={(e) => setMemoContent(e.target.value)}
                 placeholder="메모를 입력하세요"
-                className="flex-1 px-3 py-2.5 rounded-input border border-line text-sm focus:outline-none focus:border-primary"
+                className="flex-1 px-3 py-2.5 rounded-input border border-line text-body focus:outline-none focus:border-primary"
                 onKeyDown={(e) => e.key === 'Enter' && submitMemo()}
               />
               <Button
@@ -710,10 +710,10 @@ export default function TrainerMemberDetail() {
             ) : (
               memos.map((memo) => (
                 <Card key={memo.id} variant="soft" padding="sm">
-                  <p className="text-sm text-content">{memo.content}</p>
+                  <p className="text-body text-content">{memo.content}</p>
                   <div className="flex justify-between mt-1">
-                    <span className="text-xs text-content-tertiary">{memo.author}</span>
-                    <span className="text-xs text-content-tertiary">{formatDateKo(memo.createdAt)}</span>
+                    <span className="text-caption text-content-tertiary">{memo.author}</span>
+                    <span className="text-caption text-content-tertiary">{formatDateKo(memo.createdAt)}</span>
                   </div>
                 </Card>
               ))

@@ -100,7 +100,7 @@ export default function ProductCard({
         <div className="flex items-start justify-between gap-2">
           <div className="min-w-0">
             {category && <p className="text-caption text-primary font-medium truncate">{category}</p>}
-            <h3 className="text-body font-semibold text-content line-clamp-1 mt-0.5">{title}</h3>
+            <h3 className="text-h4 text-content line-clamp-1 mt-0.5">{title}</h3>
             {subtitle && <p className="text-caption text-content-secondary line-clamp-1 mt-0.5">{subtitle}</p>}
             {location && (
               <p className="text-caption text-content-tertiary line-clamp-1 mt-0.5">

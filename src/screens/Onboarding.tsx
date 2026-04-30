@@ -104,8 +104,8 @@ export default function Onboarding() {
         {step === 1 && (
           <>
             <section className="bg-surface rounded-card p-5 shadow-card-soft">
-              <h2 className="text-lg font-bold mb-2">운동 목적을 선택해 주세요</h2>
-              <p className="text-sm text-content-secondary mb-4">복수 선택이 가능하며 첫 루틴 추천에 반영됩니다.</p>
+              <h2 className="text-h4 font-bold mb-2">운동 목적을 선택해 주세요</h2>
+              <p className="text-body text-content-secondary mb-4">복수 선택이 가능하며 첫 루틴 추천에 반영됩니다.</p>
               <div className="flex flex-wrap gap-2">
                 {GOAL_OPTIONS.map((item) => (
                   <Chip
@@ -120,7 +120,7 @@ export default function Onboarding() {
             </section>
 
             <section className="bg-surface rounded-card p-5 shadow-card-soft">
-              <h2 className="text-lg font-bold mb-2">선호 강도를 알려주세요</h2>
+              <h2 className="text-h4 font-bold mb-2">선호 강도를 알려주세요</h2>
               <div className="grid grid-cols-1 gap-2">
                 {STYLE_OPTIONS.map((item) => (
                   <ChoiceCard
@@ -139,7 +139,7 @@ export default function Onboarding() {
         {step === 2 && (
           <>
             <section className="bg-surface rounded-card p-5 shadow-card-soft">
-              <h2 className="text-lg font-bold mb-2">통증이나 불편 부위를 선택해 주세요</h2>
+              <h2 className="text-h4 font-bold mb-2">통증이나 불편 부위를 선택해 주세요</h2>
               <div className="flex flex-wrap gap-2">
                 {PAIN_OPTIONS.map((item) => (
                   <Chip
@@ -154,7 +154,7 @@ export default function Onboarding() {
             </section>
 
             <section className="bg-surface rounded-card p-5 shadow-card-soft">
-              <h2 className="text-lg font-bold mb-2">우선 관리할 부위를 골라 주세요</h2>
+              <h2 className="text-h4 font-bold mb-2">우선 관리할 부위를 골라 주세요</h2>
               <div className="grid grid-cols-2 gap-2">
                 {BODY_FOCUS_OPTIONS.map((item) => (
                   <Chip
@@ -169,7 +169,7 @@ export default function Onboarding() {
             </section>
 
             <section className="bg-surface rounded-card p-5 shadow-card-soft">
-              <h2 className="text-lg font-bold mb-2">가능한 운동 요일과 시간</h2>
+              <h2 className="text-h4 font-bold mb-2">가능한 운동 요일과 시간</h2>
               <div className="flex flex-wrap gap-2 mb-4">
                 {DAY_OPTIONS.map((item) => (
                   <Chip
@@ -199,10 +199,10 @@ export default function Onboarding() {
         {step === 3 && (
           <>
             <section className="bg-surface rounded-card p-5 shadow-card-soft">
-              <p className="text-xs text-primary font-semibold mb-2">온보딩 요약</p>
-              <h2 className="text-xl font-bold">{routine.title}</h2>
-              <p className="text-sm text-content-secondary mt-2">{routine.summary}</p>
-              <div className="mt-4 grid grid-cols-2 gap-3 text-sm">
+              <p className="text-caption text-primary font-semibold mb-2">온보딩 요약</p>
+              <h2 className="text-h2 font-bold">{routine.title}</h2>
+              <p className="text-body text-content-secondary mt-2">{routine.summary}</p>
+              <div className="mt-4 grid grid-cols-2 gap-3 text-body">
                 <SummaryBox label="목표" value={draft.goals.join(', ')} />
                 <SummaryBox label="강도" value={draft.workoutStyle} />
                 <SummaryBox label="통증" value={draft.painAreas.join(', ') || '없음'} />
@@ -211,14 +211,14 @@ export default function Onboarding() {
             </section>
 
             <section className="bg-surface rounded-card p-5 shadow-card-soft">
-              <h3 className="text-lg font-bold mb-3">첫 루틴 제안</h3>
+              <h3 className="text-h4 font-bold mb-3">첫 루틴 제안</h3>
               <div className="space-y-2">
                 {routine.routine.map((item, index) => (
                   <div key={item} className="flex items-center gap-3 bg-surface-secondary rounded-card px-3 py-3">
-                    <div className="w-7 h-7 rounded-full bg-primary-light text-primary flex items-center justify-center text-sm font-semibold">
+                    <div className="w-7 h-7 rounded-full bg-primary-light text-primary flex items-center justify-center text-body font-semibold">
                       {index + 1}
                     </div>
-                    <span className="text-sm text-content-secondary">{item}</span>
+                    <span className="text-body text-content-secondary">{item}</span>
                   </div>
                 ))}
               </div>
@@ -275,8 +275,8 @@ function ChoiceCard({
         active ? 'border-primary bg-primary-light' : 'border-line bg-surface'
       )}
     >
-      <p className="font-semibold text-sm">{title}</p>
-      <p className="text-xs text-content-secondary mt-1">{description}</p>
+      <p className="font-semibold text-body">{title}</p>
+      <p className="text-caption text-content-secondary mt-1">{description}</p>
     </button>
   );
 }
@@ -285,7 +285,7 @@ function SummaryBox({ label, value }: { label: string; value: string }) {
   return (
     <div className="bg-surface-secondary rounded-card p-3">
       <p className="text-[11px] text-content-tertiary">{label}</p>
-      <p className="text-sm font-medium mt-1">{value || '-'}</p>
+      <p className="text-body font-medium mt-1">{value || '-'}</p>
     </div>
   );
 }

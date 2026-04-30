@@ -73,11 +73,11 @@ export default function CenterInfo() {
         <Card padding="lg">
           <div className="flex items-center gap-3 mb-4">
             <div className="w-12 h-12 bg-primary rounded-xl flex items-center justify-center">
-              <span className="text-white font-bold text-lg">스포</span>
+              <span className="text-white font-bold text-h4">스포</span>
             </div>
             <div>
-              <h2 className="text-lg font-bold">스포짐 피트니스</h2>
-              <p className="text-sm text-content-secondary">건강한 라이프스타일의 시작</p>
+              <h2 className="text-h4 font-bold">스포짐 피트니스</h2>
+              <p className="text-body text-content-secondary">건강한 라이프스타일의 시작</p>
             </div>
           </div>
 
@@ -85,13 +85,13 @@ export default function CenterInfo() {
             <div className="flex items-start gap-3">
               <MapPin className="w-5 h-5 text-content-tertiary flex-shrink-0 mt-0.5" />
               <div>
-                <p className="text-sm">서울특별시 강남구 테헤란로 123</p>
-                <p className="text-xs text-content-tertiary">스포짐빌딩 2~3층</p>
+                <p className="text-body">서울특별시 강남구 테헤란로 123</p>
+                <p className="text-caption text-content-tertiary">스포짐빌딩 2~3층</p>
               </div>
             </div>
             <div className="flex items-center gap-3">
               <Phone className="w-5 h-5 text-content-tertiary flex-shrink-0" />
-              <a href="tel:02-1234-5678" className="text-sm text-primary font-medium">02-1234-5678</a>
+              <a href="tel:02-1234-5678" className="text-body text-primary font-medium">02-1234-5678</a>
             </div>
           </div>
         </Card>
@@ -100,13 +100,13 @@ export default function CenterInfo() {
         <Card>
           <div className="flex items-center gap-2 mb-3">
             <Clock className="w-5 h-5 text-primary" />
-            <h3 className="font-semibold text-sm">영업시간</h3>
+            <h3 className="font-semibold text-body">영업시간</h3>
           </div>
           <div className="space-y-2">
             {HOURS.map((h) => (
               <div key={h.day} className="flex items-center justify-between py-1.5">
-                <span className="text-sm text-content-secondary">{h.day}</span>
-                <span className="text-sm font-medium">{h.time}</span>
+                <span className="text-body text-content-secondary">{h.day}</span>
+                <span className="text-body font-medium">{h.time}</span>
               </div>
             ))}
           </div>
@@ -114,15 +114,15 @@ export default function CenterInfo() {
 
         {/* 시설 안내 */}
         <Card>
-          <h3 className="font-semibold text-sm mb-3">시설 안내</h3>
+          <h3 className="font-semibold text-body mb-3">시설 안내</h3>
           <div className="grid grid-cols-2 gap-3">
             {FACILITIES.map((f) => (
               <div key={f.name} className="bg-surface-secondary rounded-card p-3">
                 <div className="flex items-center gap-2 mb-1.5">
                   {f.icon}
-                  <span className="text-sm font-medium">{f.name}</span>
+                  <span className="text-body font-medium">{f.name}</span>
                 </div>
-                <p className="text-xs text-content-tertiary">{f.description}</p>
+                <p className="text-caption text-content-tertiary">{f.description}</p>
               </div>
             ))}
           </div>
@@ -133,11 +133,11 @@ export default function CenterInfo() {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <div className="w-8 h-8 bg-state-info/10 rounded-lg flex items-center justify-center">
-                <span className="text-sm">📢</span>
+                <span className="text-body">📢</span>
               </div>
               <div>
-                <h3 className="font-semibold text-sm">이벤트 · 공지사항</h3>
-                <p className="text-xs text-content-tertiary">최신 소식을 확인하세요</p>
+                <h3 className="font-semibold text-body">이벤트 · 공지사항</h3>
+                <p className="text-caption text-content-tertiary">최신 소식을 확인하세요</p>
               </div>
             </div>
             <ChevronRight className="w-5 h-5 text-content-tertiary" />
@@ -146,21 +146,21 @@ export default function CenterInfo() {
 
         {/* 트레이너 소개 */}
         <Card>
-          <h3 className="font-semibold text-sm mb-3">트레이너 소개</h3>
+          <h3 className="font-semibold text-body mb-3">트레이너 소개</h3>
           <div className="space-y-3">
             {TRAINERS.map((trainer) => (
               <div key={trainer.name} className="flex items-start gap-3 p-3 bg-surface-secondary rounded-card">
                 <div className="w-12 h-12 bg-primary-light rounded-full flex items-center justify-center flex-shrink-0">
-                  <span className="text-primary font-bold text-sm">{trainer.name.slice(0, 1)}</span>
+                  <span className="text-primary font-bold text-body">{trainer.name.slice(0, 1)}</span>
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1">
-                    <h4 className="font-semibold text-sm">{trainer.name}</h4>
+                    <h4 className="font-semibold text-body">{trainer.name}</h4>
                     <span className="text-[10px] px-1.5 py-0.5 bg-primary-light text-primary rounded-pill font-medium">
                       {trainer.experience}
                     </span>
                   </div>
-                  <p className="text-xs text-content-secondary mb-1">{trainer.specialty}</p>
+                  <p className="text-caption text-content-secondary mb-1">{trainer.specialty}</p>
                   <div className="flex flex-wrap gap-1">
                     {trainer.certifications.map((cert) => (
                       <span key={cert} className="text-[10px] px-1.5 py-0.5 bg-surface-tertiary text-content-tertiary rounded">

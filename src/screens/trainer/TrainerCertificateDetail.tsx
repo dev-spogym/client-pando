@@ -9,7 +9,7 @@ export default function TrainerCertificateDetail() {
 
   if (!certificate) {
     return (
-      <div className="min-h-screen flex items-center justify-center text-sm text-content-tertiary">
+      <div className="min-h-screen flex items-center justify-center text-body text-content-tertiary">
         확인서를 찾을 수 없습니다.
       </div>
     );
@@ -23,8 +23,8 @@ export default function TrainerCertificateDetail() {
         <Card variant="elevated" padding="lg">
           <div className="space-y-4">
             <div>
-              <p className="text-xs text-content-tertiary">수업명</p>
-              <p className="mt-1 text-base font-semibold">{certificate.title}</p>
+              <p className="text-caption text-content-tertiary">수업명</p>
+              <p className="mt-1 text-body-lg font-semibold">{certificate.title}</p>
             </div>
             <div className="grid grid-cols-2 gap-3">
               <InfoRow label="회원">{certificate.memberName}</InfoRow>
@@ -40,7 +40,7 @@ export default function TrainerCertificateDetail() {
                   : '대기'}
               </InfoRow>
             </div>
-            <div className="rounded-card bg-surface-secondary p-4 text-sm text-content-secondary">
+            <div className="rounded-card bg-surface-secondary p-4 text-body text-content-secondary">
               PDF 생성 대신 모바일 웹앱 내 확인서 상세 화면으로 먼저 구현했습니다. 백엔드/파일 스토리지 연동 시 Signed URL 발급과 PDF 내려받기를 연결하면 됩니다.
             </div>
           </div>
@@ -53,8 +53,8 @@ export default function TrainerCertificateDetail() {
 function InfoRow({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div className="rounded-card bg-surface-secondary p-4">
-      <p className="text-xs text-content-tertiary">{label}</p>
-      <p className="mt-1 text-sm font-semibold">{children}</p>
+      <p className="text-caption text-content-tertiary">{label}</p>
+      <p className="mt-1 text-body font-semibold">{children}</p>
     </div>
   );
 }

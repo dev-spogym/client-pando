@@ -51,17 +51,17 @@ export default function Withdrawal() {
 
       <div className="px-4 py-4 space-y-4 pb-28">
         <section className="bg-state-error/10 rounded-card p-5">
-          <h2 className="text-lg font-bold text-state-error">탈퇴 전 확인해 주세요</h2>
-          <p className="text-sm text-content-secondary mt-2 leading-relaxed">
+          <h2 className="text-h4 font-bold text-state-error">탈퇴 전 확인해 주세요</h2>
+          <p className="text-body text-content-secondary mt-2 leading-relaxed">
             탈퇴 요청은 퍼블리싱 화면 기준으로 저장되며, 실제 운영에서는 관리자 확인 후 확정 처리됩니다.
           </p>
           {requestedAt && (
-            <p className="text-xs text-state-error mt-3">최근 요청일: {formatDateKo(requestedAt)}</p>
+            <p className="text-caption text-state-error mt-3">최근 요청일: {formatDateKo(requestedAt)}</p>
           )}
         </section>
 
         <section className="bg-surface rounded-card p-5 shadow-card-soft">
-          <h3 className="text-sm font-semibold mb-3">탈퇴 사유</h3>
+          <h3 className="text-body font-semibold mb-3">탈퇴 사유</h3>
           <div className="flex flex-wrap gap-2">
             {REASONS.map((item) => (
               <Chip
@@ -76,12 +76,12 @@ export default function Withdrawal() {
         </section>
 
         <section className="bg-surface rounded-card p-5 shadow-card-soft">
-          <h3 className="text-sm font-semibold mb-3">추가 의견</h3>
+          <h3 className="text-body font-semibold mb-3">추가 의견</h3>
           <textarea
             value={details}
             onChange={(event) => setDetails(event.target.value)}
             placeholder="개선이 필요한 점이나 탈퇴 사유를 자세히 남겨주세요."
-            className="w-full h-28 rounded-card border border-line bg-surface-secondary px-4 py-3 text-sm outline-none resize-none"
+            className="w-full h-28 rounded-card border border-line bg-surface-secondary px-4 py-3 text-body outline-none resize-none"
           />
         </section>
 
@@ -93,8 +93,8 @@ export default function Withdrawal() {
             className="mt-1 w-4 h-4 accent-primary"
           />
           <div>
-            <p className="text-sm font-medium">탈퇴 시 복구가 어렵고, 보관 데이터 정책을 확인했습니다.</p>
-            <p className="text-xs text-content-tertiary mt-1">실제 삭제는 운영 관리자 승인 이후 처리되는 흐름으로 안내합니다.</p>
+            <p className="text-body font-medium">탈퇴 시 복구가 어렵고, 보관 데이터 정책을 확인했습니다.</p>
+            <p className="text-caption text-content-tertiary mt-1">실제 삭제는 운영 관리자 승인 이후 처리되는 흐름으로 안내합니다.</p>
           </div>
         </label>
       </div>

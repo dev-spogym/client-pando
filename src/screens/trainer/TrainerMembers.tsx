@@ -137,7 +137,7 @@ export default function TrainerMembers() {
   return (
     <div className="pull-to-refresh">
       <header className="bg-gradient-to-br from-teal-600 to-emerald-600 px-5 pt-safe-top pb-4">
-        <h1 className="pt-4 text-white text-lg font-bold">회원 관리</h1>
+        <h1 className="pt-4 text-white text-h4 font-bold">회원 관리</h1>
       </header>
 
       <div className="px-5 py-4 space-y-3">
@@ -185,17 +185,17 @@ export default function TrainerMembers() {
                   <Avatar name={m.name} size="md" />
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
-                      <p className="font-semibold text-sm">{m.name}</p>
+                      <p className="font-semibold text-body">{m.name}</p>
                       <Badge tone={statusTone(m.status)} variant="soft">
                         {statusLabel(m.status)}
                       </Badge>
                     </div>
                     <div className="flex items-center gap-2 mt-0.5">
                       <Phone className="w-3 h-3 text-content-tertiary" />
-                      <span className="text-xs text-content-secondary">{formatPhone(m.phone)}</span>
+                      <span className="text-caption text-content-secondary">{formatPhone(m.phone)}</span>
                     </div>
                     {m.membershipType && (
-                      <p className="text-xs text-content-tertiary mt-0.5">{m.membershipType}</p>
+                      <p className="text-caption text-content-tertiary mt-0.5">{m.membershipType}</p>
                     )}
                   </div>
                   <ChevronRight className="w-5 h-5 text-content-tertiary flex-shrink-0" />

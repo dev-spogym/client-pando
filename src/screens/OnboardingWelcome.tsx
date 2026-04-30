@@ -447,7 +447,7 @@ function Step3Interest({
                   : 'border-line bg-surface'
               )}
             >
-              <span className="text-2xl">{option.emoji}</span>
+              <span className="text-h1">{option.emoji}</span>
               <span
                 className={cn(
                   'text-body-sm font-medium',

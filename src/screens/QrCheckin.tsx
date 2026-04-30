@@ -74,7 +74,7 @@ export default function QrCheckin() {
         <button onClick={() => navigate(-1)} className="p-1">
           <ArrowLeft className="w-6 h-6 text-white" />
         </button>
-        <h1 className="flex-1 text-center font-semibold text-lg text-white pr-6">QR 체크인</h1>
+        <h1 className="flex-1 text-center font-semibold text-h4 text-white pr-6">QR 체크인</h1>
       </header>
 
       {/* QR 표시 영역 */}
@@ -82,8 +82,8 @@ export default function QrCheckin() {
         <div className="qr-container flex flex-col items-center w-full max-w-xs">
           {/* 회원 정보 */}
           <div className="mb-4 text-center">
-            <p className="text-lg font-bold text-white">{member.name}</p>
-            <p className="text-sm text-white/70">회원번호 #{String(member.id).padStart(6, '0')}</p>
+            <p className="text-h4 font-bold text-white">{member.name}</p>
+            <p className="text-body text-white/70">회원번호 #{String(member.id).padStart(6, '0')}</p>
           </div>
 
           {/* QR 코드 */}
@@ -130,7 +130,7 @@ export default function QrCheckin() {
                 remainSeconds > 15 ? 'text-white/70' : 'text-state-error'
               )} />
               <span className={cn(
-                'text-sm font-medium',
+                'text-body font-medium',
                 remainSeconds > 15 ? 'text-white/70' : 'text-state-error'
               )}>
                 {isExpired ? '만료됨 - 자동 갱신 중...' : `${remainSeconds}초 후 자동 갱신`}
@@ -140,7 +140,7 @@ export default function QrCheckin() {
         </div>
 
         {/* 안내 텍스트 */}
-        <p className="text-white/70 text-sm mt-6 text-center px-4">
+        <p className="text-white/70 text-body mt-6 text-center px-4">
           키오스크 또는 프론트 데스크에서<br />QR코드를 스캔해주세요
         </p>
       </div>

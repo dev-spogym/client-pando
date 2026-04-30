@@ -46,13 +46,13 @@ export default function Waitlist() {
                 <div className="flex items-start justify-between gap-3">
                   <div>
                     <div className="flex items-center gap-2">
-                      <h3 className="font-semibold text-sm">{entry.title}</h3>
+                      <h3 className="font-semibold text-body">{entry.title}</h3>
                       <span className="px-2 py-0.5 rounded-pill text-[11px] bg-state-warning/10 text-state-warning font-medium">
                         {entry.status === 'cancelled' ? '취소됨' : `${entry.position}번 대기`}
                       </span>
                     </div>
-                    <p className="text-xs text-content-secondary mt-1">{entry.staffName} 강사</p>
-                    <div className="mt-2 space-y-1 text-xs text-content-tertiary">
+                    <p className="text-caption text-content-secondary mt-1">{entry.staffName} 강사</p>
+                    <div className="mt-2 space-y-1 text-caption text-content-tertiary">
                       <p>{formatDateKo(entry.startTime)} {formatTime(entry.startTime)} - {formatTime(entry.endTime)}</p>
                       <p>{entry.room || '수업 장소 추후 안내'}</p>
                     </div>
@@ -68,7 +68,7 @@ export default function Waitlist() {
                   </div>
                 </div>
 
-                <div className="mt-4 flex items-center justify-between text-xs text-content-tertiary">
+                <div className="mt-4 flex items-center justify-between text-caption text-content-tertiary">
                   <span className="flex items-center gap-1">
                     <Clock3 className="w-3.5 h-3.5" />
                     등록일 {formatDateKo(entry.createdAt)}

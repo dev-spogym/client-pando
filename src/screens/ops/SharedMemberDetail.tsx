@@ -70,7 +70,7 @@ export default function SharedMemberDetail({ role }: { role: SharedRole }) {
 
   if (!member) {
     return (
-      <div className="min-h-screen flex items-center justify-center text-sm text-content-tertiary">
+      <div className="min-h-screen flex items-center justify-center text-body text-content-tertiary">
         회원 정보를 찾을 수 없습니다.
       </div>
     );
@@ -172,8 +172,8 @@ export default function SharedMemberDetail({ role }: { role: SharedRole }) {
         <Card variant="elevated" padding="md">
           <div className="flex items-start justify-between gap-3">
             <div>
-              <p className="text-sm font-semibold">{member.membershipName}</p>
-              <p className="mt-1 text-xs text-content-secondary">
+              <p className="text-body font-semibold">{member.membershipName}</p>
+              <p className="mt-1 text-caption text-content-secondary">
                 상태 {member.status} · 담당 {role === 'fc' ? member.assignedFc : member.assignedTrainer}
               </p>
             </div>
@@ -183,7 +183,7 @@ export default function SharedMemberDetail({ role }: { role: SharedRole }) {
               </Button>
             ) : null}
           </div>
-          <p className="mt-3 text-sm text-content-secondary">{member.programSummary}</p>
+          <p className="mt-3 text-body text-content-secondary">{member.programSummary}</p>
         </Card>
 
         {/* 탭 바 */}
@@ -193,7 +193,7 @@ export default function SharedMemberDetail({ role }: { role: SharedRole }) {
               key={item.key}
               onClick={() => setTab(item.key)}
               className={cn(
-                'flex-1 rounded-card px-3 py-2 text-sm font-medium transition-colors',
+                'flex-1 rounded-card px-3 py-2 text-body font-medium transition-colors',
                 tab === item.key ? 'bg-surface-secondary text-content' : 'text-content-tertiary'
               )}
             >
@@ -221,9 +221,9 @@ export default function SharedMemberDetail({ role }: { role: SharedRole }) {
             <div className="mx-auto h-1.5 w-12 rounded-full bg-line" />
             <div className="mt-4 flex items-start justify-between gap-3">
               <div>
-                <p className="text-xs text-content-tertiary">MA-422</p>
-                <h2 className="text-lg font-bold">{member.name} 메모 관리</h2>
-                <p className="mt-1 text-xs text-content-tertiary">총 {notes.length} / {MAX_MEMBER_NOTES}</p>
+                <p className="text-caption text-content-tertiary">MA-422</p>
+                <h2 className="text-h4 font-bold">{member.name} 메모 관리</h2>
+                <p className="mt-1 text-caption text-content-tertiary">총 {notes.length} / {MAX_MEMBER_NOTES}</p>
               </div>
               <Button variant="tertiary" size="sm" onClick={closeMemoSheet}>닫기</Button>
             </div>
@@ -244,7 +244,7 @@ export default function SharedMemberDetail({ role }: { role: SharedRole }) {
                 </div>
 
                 {isEditing ? (
-                  <div className="mt-3 rounded-card bg-accent-light/30 px-3 py-2 text-xs text-accent-dark">
+                  <div className="mt-3 rounded-card bg-accent-light/30 px-3 py-2 text-caption text-accent-dark">
                     수정 모드입니다. 저장 시 메모 내용과 유형이 함께 갱신됩니다.
                   </div>
                 ) : null}
@@ -255,9 +255,9 @@ export default function SharedMemberDetail({ role }: { role: SharedRole }) {
                   placeholder="메모를 입력하세요"
                   rows={4}
                   maxLength={500}
-                  className="mt-3 w-full resize-none rounded-input border border-line bg-surface px-3 py-3 text-sm focus:border-primary focus:outline-none"
+                  className="mt-3 w-full resize-none rounded-input border border-line bg-surface px-3 py-3 text-body focus:border-primary focus:outline-none"
                 />
-                <div className="mt-2 flex items-center justify-between text-xs text-content-tertiary">
+                <div className="mt-2 flex items-center justify-between text-caption text-content-tertiary">
                   <span>{isEditing ? '메모 수정' : '신규 메모 등록'}</span>
                   <span>{noteDraft.length} / 500</span>
                 </div>
@@ -276,7 +276,7 @@ export default function SharedMemberDetail({ role }: { role: SharedRole }) {
               <div className="max-h-[40vh] space-y-3 overflow-y-auto pb-1">
                 {notes.length === 0 ? (
                   <Card variant="soft" padding="md">
-                    <p className="text-sm text-content-tertiary">등록된 메모가 없습니다.</p>
+                    <p className="text-body text-content-tertiary">등록된 메모가 없습니다.</p>
                   </Card>
                 ) : notes.map((note) => (
                   <Card key={note.id} variant="soft" padding="md">
@@ -310,8 +310,8 @@ export default function SharedMemberDetail({ role }: { role: SharedRole }) {
                         </div>
                       ) : null}
                     </div>
-                    <p className="mt-3 text-sm text-content-secondary">{note.content}</p>
-                    <p className="mt-2 text-xs text-content-tertiary">
+                    <p className="mt-3 text-body text-content-secondary">{note.content}</p>
+                    <p className="mt-2 text-caption text-content-tertiary">
                       {note.authorName} · {formatDateKo(note.createdAt)} {note.createdAt.slice(11, 16)}
                     </p>
                   </Card>
@@ -336,8 +336,8 @@ export default function SharedMemberDetail({ role }: { role: SharedRole }) {
                 <AlertTriangle className="h-5 w-5" />
               </div>
               <div className="space-y-1">
-                <p className="text-base font-semibold">메모를 삭제할까요?</p>
-                <p className="text-sm text-content-secondary">삭제된 메모는 복구할 수 없습니다.</p>
+                <p className="text-body-lg font-semibold">메모를 삭제할까요?</p>
+                <p className="text-body text-content-secondary">삭제된 메모는 복구할 수 없습니다.</p>
               </div>
             </div>
             <div className="mt-5 flex gap-2">
@@ -367,8 +367,8 @@ function BasicTab({ member, notes, role }: { member: MockMember; notes: MemberNo
               <AlertTriangle className="h-4 w-4" />
             </div>
             <div>
-              <p className="text-sm font-semibold text-state-error">주의 메모 {cautionNotes.length}건</p>
-              <p className="mt-1 text-sm text-state-error">{cautionNotes[0].content}</p>
+              <p className="text-body font-semibold text-state-error">주의 메모 {cautionNotes.length}건</p>
+              <p className="mt-1 text-body text-state-error">{cautionNotes[0].content}</p>
             </div>
           </div>
         </Card>
@@ -385,19 +385,19 @@ function BasicTab({ member, notes, role }: { member: MockMember; notes: MemberNo
       {role === 'fc' ? (
         <Card variant="elevated" padding="md">
           <div className="flex items-center justify-between gap-3 mb-3">
-            <p className="text-sm font-semibold">최근 메모</p>
-            <span className="text-xs text-content-tertiary">{notes.length}건</span>
+            <p className="text-body font-semibold">최근 메모</p>
+            <span className="text-caption text-content-tertiary">{notes.length}건</span>
           </div>
           <div className="space-y-2">
             {notes.length === 0 ? (
-              <p className="text-sm text-content-tertiary">메모가 없습니다.</p>
+              <p className="text-body text-content-tertiary">메모가 없습니다.</p>
             ) : notes.slice(0, 3).map((note) => (
               <div key={note.id} className="rounded-card bg-surface-secondary px-3 py-3">
                 <div className="flex items-center gap-2">
                   <Badge tone="neutral" variant="soft">{getNoteTypeLabel(note.type)}</Badge>
                 </div>
-                <p className="mt-2 text-sm text-content-secondary">{note.content}</p>
-                <p className="mt-1 text-xs text-content-tertiary">
+                <p className="mt-2 text-body text-content-secondary">{note.content}</p>
+                <p className="mt-1 text-caption text-content-tertiary">
                   {note.authorName} · {formatDateKo(note.createdAt)} {note.createdAt.slice(11, 16)}
                 </p>
               </div>
@@ -425,9 +425,9 @@ function AttendanceTab({ member }: { member: MockMember }) {
     <section className="space-y-3">
       {member.attendanceHistory.map((record) => (
         <Card key={record.id} variant="elevated" padding="md">
-          <p className="text-sm font-semibold">{formatDateKo(record.checkInAt)}</p>
-          <p className="mt-1 text-xs text-content-secondary">{record.source === 'staff' ? '수동 처리' : 'QR 체크인'}</p>
-          <p className="mt-2 text-sm text-content-secondary">
+          <p className="text-body font-semibold">{formatDateKo(record.checkInAt)}</p>
+          <p className="mt-1 text-caption text-content-secondary">{record.source === 'staff' ? '수동 처리' : 'QR 체크인'}</p>
+          <p className="mt-2 text-body text-content-secondary">
             입장 {record.checkInAt.slice(11, 16)} / 퇴장 {record.checkOutAt ? record.checkOutAt.slice(11, 16) : '미처리'}
           </p>
         </Card>
@@ -441,15 +441,15 @@ function ConsultationTab({ consultations }: { consultations: Array<{ id: number;
     <section className="space-y-3">
       {consultations.length === 0 ? (
         <Card variant="soft" padding="md">
-          <p className="text-sm text-content-tertiary">상담 이력이 없습니다.</p>
+          <p className="text-body text-content-tertiary">상담 이력이 없습니다.</p>
         </Card>
       ) : consultations.map((item) => (
         <Card key={item.id} variant="elevated" padding="md">
-          <p className="text-sm font-semibold">{item.type}</p>
-          <p className="mt-1 text-xs text-content-secondary">
+          <p className="text-body font-semibold">{item.type}</p>
+          <p className="mt-1 text-caption text-content-secondary">
             {formatDateKo(item.scheduledAt)} · {item.status} · {item.result || '미정'}
           </p>
-          <p className="mt-2 text-sm text-content-secondary">{item.summary}</p>
+          <p className="mt-2 text-body text-content-secondary">{item.summary}</p>
         </Card>
       ))}
     </section>
@@ -461,9 +461,9 @@ function PaymentTab({ member }: { member: MockMember }) {
     <section className="space-y-3">
       {member.payments.map((payment) => (
         <Card key={payment.id} variant="elevated" padding="md">
-          <p className="text-sm font-semibold">{payment.product}</p>
-          <p className="mt-1 text-xs text-content-secondary">{formatDateKo(payment.paidAt)} · {payment.method}</p>
-          <p className="mt-2 text-sm font-semibold text-primary">{formatCurrency(payment.amount)}</p>
+          <p className="text-body font-semibold">{payment.product}</p>
+          <p className="mt-1 text-caption text-content-secondary">{formatDateKo(payment.paidAt)} · {payment.method}</p>
+          <p className="mt-2 text-body font-semibold text-primary">{formatCurrency(payment.amount)}</p>
         </Card>
       ))}
     </section>
@@ -473,8 +473,8 @@ function PaymentTab({ member }: { member: MockMember }) {
 function InfoCard({ label, value }: { label: string; value: string }) {
   return (
     <Card variant="elevated" padding="md">
-      <p className="text-xs text-content-tertiary">{label}</p>
-      <p className="mt-1 text-sm font-semibold">{value}</p>
+      <p className="text-caption text-content-tertiary">{label}</p>
+      <p className="mt-1 text-body font-semibold">{value}</p>
     </Card>
   );
 }

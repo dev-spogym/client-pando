@@ -222,7 +222,7 @@ export default function Cart() {
                   <div className="flex items-start justify-between gap-2">
                     <div className="min-w-0">
                       <p className="text-caption text-primary font-medium truncate">{item.centerName}</p>
-                      <p className="text-body-sm font-semibold text-content line-clamp-2 mt-0.5">
+                      <p className="text-h4 text-content line-clamp-2 mt-0.5">
                         {item.productName}
                       </p>
                       {item.optionSummary && (

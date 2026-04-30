@@ -60,7 +60,7 @@ export default function Notices() {
 
       <div className="px-5 py-4">
         {loading ? (
-          <div className="text-center py-12 text-content-tertiary text-sm">불러오는 중...</div>
+          <div className="text-center py-12 text-content-tertiary text-body">불러오는 중...</div>
         ) : notices.length === 0 ? (
           <EmptyState title="공지사항이 없습니다" size="md" />
         ) : (
@@ -81,12 +81,12 @@ export default function Notices() {
                     )}
                     <div className="flex-1 min-w-0">
                       <h3 className={cn(
-                        'text-sm font-medium truncate',
+                        'text-body font-medium truncate',
                         notice.is_pinned && 'font-semibold'
                       )}>
                         {notice.title}
                       </h3>
-                      <p className="text-xs text-content-tertiary mt-0.5">
+                      <p className="text-caption text-content-tertiary mt-0.5">
                         {formatDateKo(notice.published_at || notice.created_at)} · {notice.author_name}
                       </p>
                     </div>
@@ -97,7 +97,7 @@ export default function Notices() {
                   </button>
                   {isExpanded && (
                     <div className="px-4 pb-4 border-t border-line-light">
-                      <div className="pt-3 text-sm text-content-secondary leading-relaxed whitespace-pre-wrap">
+                      <div className="pt-3 text-body text-content-secondary leading-relaxed whitespace-pre-wrap">
                         {notice.content}
                       </div>
                     </div>

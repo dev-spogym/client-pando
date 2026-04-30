@@ -116,7 +116,7 @@ export default function OrderDetail() {
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-caption text-primary font-medium truncate">{order.centerName}</p>
-              <p className="text-body font-semibold text-content line-clamp-2 mt-0.5">
+              <p className="text-h4 text-content line-clamp-2 mt-0.5">
                 {order.productName}
               </p>
               <p className="text-caption text-content-tertiary mt-1">{order.optionSummary}</p>

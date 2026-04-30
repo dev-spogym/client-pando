@@ -107,8 +107,8 @@ export default function TrainerHome() {
       <header className="bg-gradient-to-br from-teal-600 to-emerald-600 px-5 pt-safe-top pb-6">
         <div className="pt-4 flex items-center justify-between mb-4">
           <div>
-            <p className="text-white/80 text-sm">트레이너</p>
-            <h1 className="text-white text-xl font-bold">{trainer.staffName || trainer.name}님</h1>
+            <p className="text-white/80 text-body">트레이너</p>
+            <h1 className="text-white text-h2 font-bold">{trainer.staffName || trainer.name}님</h1>
           </div>
           <Badge tone="neutral" variant="soft">
             {trainer.role}
@@ -120,16 +120,16 @@ export default function TrainerHome() {
           <div className="bg-white/20 backdrop-blur-sm rounded-card p-4">
             <div className="flex items-center gap-2 mb-1">
               <CalendarDays className="w-4 h-4 text-white/80" />
-              <span className="text-white/80 text-xs">오늘 수업</span>
+              <span className="text-white/80 text-caption">오늘 수업</span>
             </div>
-            <p className="text-white text-2xl font-bold">{summary.totalClasses}건</p>
+            <p className="text-white text-h1 font-bold">{summary.totalClasses}건</p>
           </div>
           <div className="bg-white/20 backdrop-blur-sm rounded-card p-4">
             <div className="flex items-center gap-2 mb-1">
               <Users className="w-4 h-4 text-white/80" />
-              <span className="text-white/80 text-xs">오늘 방문</span>
+              <span className="text-white/80 text-caption">오늘 방문</span>
             </div>
-            <p className="text-white text-2xl font-bold">{summary.todayVisitors}명</p>
+            <p className="text-white text-h1 font-bold">{summary.todayVisitors}명</p>
           </div>
         </div>
       </header>
@@ -148,9 +148,9 @@ export default function TrainerHome() {
                 <Dumbbell className="w-5 h-5 text-primary" />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-xs text-content-tertiary">다음 수업</p>
-                <p className="font-semibold text-sm truncate">{summary.nextClass.title}</p>
-                <div className="flex items-center gap-1 text-xs text-content-secondary">
+                <p className="text-caption text-content-tertiary">다음 수업</p>
+                <p className="font-semibold text-body truncate">{summary.nextClass.title}</p>
+                <div className="flex items-center gap-1 text-caption text-content-secondary">
                   <Clock className="w-3 h-3" />
                   {formatTime(summary.nextClass.startTime)}
                 </div>
@@ -171,7 +171,7 @@ export default function TrainerHome() {
               <div className="w-10 h-10 bg-surface-secondary rounded-card flex items-center justify-center">
                 {item.icon}
               </div>
-              <span className="text-xs font-medium text-content-secondary">{item.label}</span>
+              <span className="text-caption font-medium text-content-secondary">{item.label}</span>
             </button>
           ))}
         </div>

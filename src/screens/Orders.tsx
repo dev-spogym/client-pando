@@ -169,11 +169,11 @@ function OrderCard({
           </div>
           <div className="flex-1 min-w-0">
             <p className="text-caption text-primary font-medium truncate">{order.centerName}</p>
-            <p className="text-body-sm font-semibold text-content line-clamp-2 mt-0.5">
+            <p className="text-h4 text-content line-clamp-2 mt-0.5">
               {order.productName}
             </p>
             <p className="text-caption text-content-tertiary mt-1 line-clamp-1">{order.optionSummary}</p>
-            <p className="text-body-sm font-bold mt-1">{formatCurrency(order.amount)}</p>
+            <p className="text-h4 font-bold text-content mt-1">{formatCurrency(order.amount)}</p>
           </div>
           <ChevronRight className="w-5 h-5 text-content-tertiary self-center" />
         </div>

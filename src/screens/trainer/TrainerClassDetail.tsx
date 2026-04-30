@@ -74,20 +74,20 @@ export default function TrainerClassDetail() {
         <Card variant="elevated" padding="md">
           <div className="flex items-center justify-between gap-3">
             <div>
-              <p className="text-sm font-semibold">{trainerClass.type} · {trainerClass.room}</p>
-              <p className="mt-1 text-xs text-content-secondary">
+              <p className="text-body font-semibold">{trainerClass.type} · {trainerClass.room}</p>
+              <p className="mt-1 text-caption text-content-secondary">
                 {formatDateKo(trainerClass.startTime)} · {formatTime(trainerClass.startTime)} - {formatTime(trainerClass.endTime)}
               </p>
             </div>
             <Badge tone="neutral" variant="soft">{trainerClass.status}</Badge>
           </div>
-          <p className="mt-3 text-sm text-content-secondary">{trainerClass.memo}</p>
+          <p className="mt-3 text-body text-content-secondary">{trainerClass.memo}</p>
         </Card>
 
         <Card variant="elevated" padding="md">
           <div className="flex items-center gap-2 mb-4">
             <ClipboardCheck className="w-4 h-4 text-primary" />
-            <p className="text-sm font-semibold">출석 체크</p>
+            <p className="text-body font-semibold">출석 체크</p>
           </div>
 
           <div className="space-y-3">
@@ -95,8 +95,8 @@ export default function TrainerClassDetail() {
               <div key={participant.memberId} className="rounded-card border border-line bg-surface-secondary p-3">
                 <div className="flex items-center justify-between gap-3">
                   <div>
-                    <p className="text-sm font-semibold">{participant.memberName}</p>
-                    <p className="mt-1 text-xs text-content-tertiary">잔여 {participant.remainingSessions}회</p>
+                    <p className="text-body font-semibold">{participant.memberName}</p>
+                    <p className="mt-1 text-caption text-content-tertiary">잔여 {participant.remainingSessions}회</p>
                   </div>
                   <Badge tone="neutral" variant="soft">{participant.attendanceStatus}</Badge>
                 </div>
@@ -107,7 +107,7 @@ export default function TrainerClassDetail() {
                       key={option.key}
                       onClick={() => handleAttendance(participant.memberId, option.key)}
                       className={cn(
-                        'rounded-card px-2 py-2 text-xs font-semibold',
+                        'rounded-card px-2 py-2 text-caption font-semibold',
                         participant.attendanceStatus === option.key
                           ? option.key === 'no_show'
                             ? 'bg-state-error text-white'
@@ -121,7 +121,7 @@ export default function TrainerClassDetail() {
                 </div>
 
                 {participant.note ? (
-                  <p className="mt-2 text-xs text-content-tertiary">{participant.note}</p>
+                  <p className="mt-2 text-caption text-content-tertiary">{participant.note}</p>
                 ) : null}
               </div>
             ))}
@@ -131,7 +131,7 @@ export default function TrainerClassDetail() {
         <Card variant="elevated" padding="md">
           <div className="flex items-center gap-2 mb-3">
             <CircleAlert className="w-4 h-4 text-state-warning" />
-            <p className="text-sm font-semibold">운영 액션</p>
+            <p className="text-body font-semibold">운영 액션</p>
           </div>
           <div className="grid grid-cols-2 gap-3">
             <Button
@@ -171,9 +171,9 @@ export default function TrainerClassDetail() {
         <Card variant="elevated" padding="md">
           <div className="flex items-center gap-2 mb-3">
             <PenSquare className="w-4 h-4 text-state-info" />
-            <p className="text-sm font-semibold">기획 반영 상태</p>
+            <p className="text-body font-semibold">기획 반영 상태</p>
           </div>
-          <ul className="space-y-2 text-sm text-content-secondary">
+          <ul className="space-y-2 text-body text-content-secondary">
             <li className="flex items-start gap-2"><CheckCircle2 className="w-4 h-4 mt-0.5 text-primary" /> 수업 시작 / 출석 체크 / 완료 처리</li>
             <li className="flex items-start gap-2"><CheckCircle2 className="w-4 h-4 mt-0.5 text-primary" /> 노쇼 시 페널티 보드 반영</li>
             <li className="flex items-start gap-2"><CheckCircle2 className="w-4 h-4 mt-0.5 text-primary" /> 골프 레슨은 쌍방서명 플로우로 분기</li>

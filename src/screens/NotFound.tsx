@@ -9,8 +9,8 @@ export default function NotFound() {
   return (
     <div className="min-h-screen bg-surface-secondary flex flex-col items-center justify-center px-6">
       <div className="text-6xl font-bold text-primary/20 mb-4">404</div>
-      <h1 className="text-xl font-bold mb-2">페이지를 찾을 수 없습니다</h1>
-      <p className="text-sm text-content-secondary text-center mb-8">
+      <h1 className="text-h2 font-bold mb-2">페이지를 찾을 수 없습니다</h1>
+      <p className="text-body text-content-secondary text-center mb-8">
         요청하신 페이지가 존재하지 않거나<br />이동되었을 수 있습니다.
       </p>
       <div className="flex gap-3">

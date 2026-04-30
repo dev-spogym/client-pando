@@ -15,8 +15,8 @@ export default function FCRenewalConsultation() {
     <div className="min-h-screen bg-surface-secondary">
       <header className="bg-surface px-5 pt-safe-top pb-4 shadow-sm">
         <div className="pt-4">
-          <p className="text-xs text-content-tertiary">MA-431</p>
-          <h1 className="text-lg font-bold">재등록 상담 등록</h1>
+          <p className="text-caption text-content-tertiary">MA-431</p>
+          <h1 className="text-h4 font-bold">재등록 상담 등록</h1>
         </div>
       </header>
 
@@ -24,7 +24,7 @@ export default function FCRenewalConsultation() {
         <select
           value={memberId}
           onChange={(e) => setMemberId(e.target.value)}
-          className="w-full rounded-xl border border-line px-3 py-3 text-sm bg-surface focus:outline-none focus:border-primary"
+          className="w-full rounded-xl border border-line px-3 py-3 text-body bg-surface focus:outline-none focus:border-primary"
         >
           {members.map((member) => (
             <option key={member.id} value={member.id}>{member.name} · 만료일 {member.membershipEnd.slice(0, 10)}</option>
@@ -35,14 +35,14 @@ export default function FCRenewalConsultation() {
           onChange={(e) => setSummary(e.target.value)}
           placeholder="재등록 상담 내용"
           rows={4}
-          className="w-full rounded-xl border border-line px-3 py-3 text-sm resize-none focus:outline-none focus:border-primary bg-surface"
+          className="w-full rounded-xl border border-line px-3 py-3 text-body resize-none focus:outline-none focus:border-primary bg-surface"
         />
         <textarea
           value={followUp}
           onChange={(e) => setFollowUp(e.target.value)}
           placeholder="후속 조치"
           rows={3}
-          className="w-full rounded-xl border border-line px-3 py-3 text-sm resize-none focus:outline-none focus:border-primary bg-surface"
+          className="w-full rounded-xl border border-line px-3 py-3 text-body resize-none focus:outline-none focus:border-primary bg-surface"
         />
         <Button
           fullWidth

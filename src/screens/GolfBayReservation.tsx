@@ -148,16 +148,16 @@ export default function GolfBayReservation() {
         {tab === 'coach' && (
           <>
             <section className="bg-surface rounded-card p-5 shadow-card-soft">
-              <h2 className="text-lg font-bold">골프 강사 예약</h2>
-              <p className="text-sm text-content-secondary mt-2">강사별 레슨 시간과 타석을 확인하고 바로 예약할 수 있습니다.</p>
+              <h2 className="text-h4 font-bold">골프 강사 예약</h2>
+              <p className="text-body text-content-secondary mt-2">강사별 레슨 시간과 타석을 확인하고 바로 예약할 수 있습니다.</p>
             </section>
 
             {coachBookings.length > 0 && (
               <section className="bg-surface rounded-card p-5 shadow-card-soft space-y-4">
                 <div className="flex items-start justify-between gap-3">
                   <div>
-                    <h3 className="text-sm font-semibold">내 골프 레슨 스케줄</h3>
-                    <p className="text-xs text-content-secondary mt-1">예약한 레슨 시간과 타석을 한 번에 확인할 수 있습니다.</p>
+                    <h3 className="text-body font-semibold">내 골프 레슨 스케줄</h3>
+                    <p className="text-caption text-content-secondary mt-1">예약한 레슨 시간과 타석을 한 번에 확인할 수 있습니다.</p>
                   </div>
                   <span className="rounded-pill bg-primary-light px-2 py-1 text-[11px] font-semibold text-primary">
                     {coachBookings.length}건
@@ -166,9 +166,9 @@ export default function GolfBayReservation() {
 
                 {nextCoachBooking && (
                   <div className="rounded-card bg-primary/[0.08] border border-primary/10 p-4">
-                    <p className="text-xs font-semibold text-primary">다음 예약</p>
-                    <p className="mt-1 text-sm font-semibold">{nextCoachBooking.lessonName}</p>
-                    <p className="mt-1 text-xs text-content-secondary">
+                    <p className="text-caption font-semibold text-primary">다음 예약</p>
+                    <p className="mt-1 text-body font-semibold">{nextCoachBooking.lessonName}</p>
+                    <p className="mt-1 text-caption text-content-secondary">
                       {nextCoachBooking.dateLabel} · {nextCoachBooking.timeLabel} · {nextCoachBooking.bayLabel}
                     </p>
                   </div>
@@ -179,14 +179,14 @@ export default function GolfBayReservation() {
                     <div key={booking.id} className="bg-surface-secondary rounded-card p-4">
                       <div className="flex items-center justify-between gap-3">
                         <div>
-                          <p className="text-sm font-semibold">{booking.lessonName}</p>
-                          <p className="text-xs text-content-secondary mt-1">{booking.instructorName} 강사 · {booking.bayLabel}</p>
+                          <p className="text-body font-semibold">{booking.lessonName}</p>
+                          <p className="text-caption text-content-secondary mt-1">{booking.instructorName} 강사 · {booking.bayLabel}</p>
                         </div>
                         <span className="px-2 py-1 rounded-pill bg-primary-light text-primary text-[11px] font-semibold">
                           예약 완료
                         </span>
                       </div>
-                      <p className="text-xs text-content-tertiary mt-2">{booking.dateLabel} / {booking.timeLabel}</p>
+                      <p className="text-caption text-content-tertiary mt-2">{booking.dateLabel} / {booking.timeLabel}</p>
                       <p className="text-[11px] text-content-tertiary mt-1">
                         예약 접수일 {formatDateKo(booking.createdAt)}
                       </p>
@@ -213,14 +213,14 @@ export default function GolfBayReservation() {
                           {slot.bayLabel}
                         </span>
                       </div>
-                      <h3 className="text-lg font-bold">{slot.lessonName}</h3>
-                      <p className="text-sm text-content-secondary mt-1">{slot.instructorName} 강사</p>
-                      <div className="mt-3 space-y-1 text-sm text-content-secondary">
+                      <h3 className="text-h4 font-bold">{slot.lessonName}</h3>
+                      <p className="text-body text-content-secondary mt-1">{slot.instructorName} 강사</p>
+                      <div className="mt-3 space-y-1 text-body text-content-secondary">
                         <p>{slot.dateLabel}</p>
                         <p>{slot.timeLabel}</p>
                       </div>
                     </div>
-                    <p className="text-lg font-bold">{formatCurrency(slot.price)}</p>
+                    <p className="text-h4 font-bold">{formatCurrency(slot.price)}</p>
                   </div>
                 </button>
               ))}
@@ -237,8 +237,8 @@ export default function GolfBayReservation() {
             <div className="bg-surface px-4 py-4 border border-line rounded-card shadow-card-soft">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-content-secondary">현재 이용 가능</p>
-                  <p className="text-2xl font-bold text-primary">{availableCount}석</p>
+                  <p className="text-body text-content-secondary">현재 이용 가능</p>
+                  <p className="text-h1 font-bold text-primary">{availableCount}석</p>
                 </div>
                 <div className="flex gap-3">
                   {Object.entries(statusConfig).map(([key, config]) => (
@@ -271,7 +271,7 @@ export default function GolfBayReservation() {
                           bay.status !== 'available' && 'cursor-default'
                         )}
                       >
-                        <span className="text-sm font-bold">{bay.number}</span>
+                        <span className="text-body font-bold">{bay.number}</span>
                         <span className={cn('text-[10px] font-medium mt-1', config.color)}>
                           {config.label}
                         </span>
@@ -285,8 +285,8 @@ export default function GolfBayReservation() {
             {availableCount === 0 && !loading && (
               <div className="bg-state-warning/10 rounded-card p-4 text-center">
                 <AlertCircle className="w-8 h-8 text-state-warning mx-auto mb-2" />
-                <p className="text-sm font-medium mb-1">현재 이용 가능한 타석이 없습니다</p>
-                <p className="text-xs text-content-secondary mb-3">예상 대기 시간: 약 30분</p>
+                <p className="text-body font-medium mb-1">현재 이용 가능한 타석이 없습니다</p>
+                <p className="text-caption text-content-secondary mb-3">예상 대기 시간: 약 30분</p>
                 <Button variant="secondary" onClick={handleWaitlist}>
                   대기열 등록
                 </Button>
@@ -299,13 +299,13 @@ export default function GolfBayReservation() {
       {selectedSlot && (
         <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40">
           <div className="mobile-bottom-sheet bg-surface rounded-t-2xl p-6 pb-safe-bottom slide-up">
-            <h3 className="text-lg font-bold mb-4">골프 강사 예약 확인</h3>
+            <h3 className="text-h4 font-bold mb-4">골프 강사 예약 확인</h3>
             <div className="space-y-3 bg-surface-secondary rounded-card p-4">
-              <p className="text-sm font-semibold">{selectedSlot.lessonName}</p>
-              <p className="text-sm text-content-secondary flex items-center gap-2"><User className="w-4 h-4" />{selectedSlot.instructorName} 강사</p>
-              <p className="text-sm text-content-secondary flex items-center gap-2"><CalendarClock className="w-4 h-4" />{selectedSlot.dateLabel}</p>
-              <p className="text-sm text-content-secondary flex items-center gap-2"><Clock className="w-4 h-4" />{selectedSlot.timeLabel} / {selectedSlot.bayLabel}</p>
-              <p className="text-lg font-bold">{formatCurrency(selectedSlot.price)}</p>
+              <p className="text-body font-semibold">{selectedSlot.lessonName}</p>
+              <p className="text-body text-content-secondary flex items-center gap-2"><User className="w-4 h-4" />{selectedSlot.instructorName} 강사</p>
+              <p className="text-body text-content-secondary flex items-center gap-2"><CalendarClock className="w-4 h-4" />{selectedSlot.dateLabel}</p>
+              <p className="text-body text-content-secondary flex items-center gap-2"><Clock className="w-4 h-4" />{selectedSlot.timeLabel} / {selectedSlot.bayLabel}</p>
+              <p className="text-h4 font-bold">{formatCurrency(selectedSlot.price)}</p>
             </div>
             <div className="mt-6 flex gap-3">
               <Button
@@ -331,12 +331,12 @@ export default function GolfBayReservation() {
       {selectedBay && (
         <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40">
           <div className="mobile-bottom-sheet bg-surface rounded-t-2xl p-6 pb-safe-bottom slide-up">
-            <h3 className="text-lg font-bold mb-4">타석 예약 확인</h3>
+            <h3 className="text-h4 font-bold mb-4">타석 예약 확인</h3>
             <div className="bg-surface-secondary rounded-card p-4 mb-4">
-              <p className="text-sm text-content-secondary">선택한 타석</p>
-              <p className="text-xl font-bold text-primary">{selectedBay.number}</p>
+              <p className="text-body text-content-secondary">선택한 타석</p>
+              <p className="text-h2 font-bold text-primary">{selectedBay.number}</p>
             </div>
-            <p className="text-sm text-content-secondary mb-6">예약 시간은 1시간이며, 시간 초과 시 자동 반납됩니다.</p>
+            <p className="text-body text-content-secondary mb-6">예약 시간은 1시간이며, 시간 초과 시 자동 반납됩니다.</p>
             <div className="flex gap-3">
               <Button
                 variant="outline"

@@ -19,8 +19,8 @@ export default function FCConsultations() {
       <header className="bg-surface px-5 pt-safe-top pb-4 shadow-sm">
         <div className="pt-4 flex items-center justify-between">
           <div>
-            <p className="text-xs text-content-tertiary">MA-410</p>
-            <h1 className="text-lg font-bold">리드 / 상담 예정 목록</h1>
+            <p className="text-caption text-content-tertiary">MA-410</p>
+            <h1 className="text-h4 font-bold">리드 / 상담 예정 목록</h1>
           </div>
           <Button
             size="sm"
@@ -59,10 +59,10 @@ export default function FCConsultations() {
               className="w-full text-left"
             >
               <Card interactive>
-                <p className="text-sm font-semibold">{item.memberName}</p>
-                <p className="mt-1 text-xs text-content-secondary">{item.type} · {item.channel} · {item.status}</p>
-                <p className="mt-2 text-sm text-content-secondary">{item.summary}</p>
-                <p className="mt-2 text-xs text-content-tertiary">{formatDateKo(item.scheduledAt)}</p>
+                <p className="text-body font-semibold">{item.memberName}</p>
+                <p className="mt-1 text-caption text-content-secondary">{item.type} · {item.channel} · {item.status}</p>
+                <p className="mt-2 text-body text-content-secondary">{item.summary}</p>
+                <p className="mt-2 text-caption text-content-tertiary">{formatDateKo(item.scheduledAt)}</p>
               </Card>
             </button>
           ))}

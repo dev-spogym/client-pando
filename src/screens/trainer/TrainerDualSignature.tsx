@@ -23,7 +23,7 @@ export default function TrainerDualSignature() {
 
   if (!trainerClass) {
     return (
-      <div className="min-h-screen flex items-center justify-center text-sm text-content-tertiary">
+      <div className="min-h-screen flex items-center justify-center text-body text-content-tertiary">
         수업이 없습니다.
       </div>
     );
@@ -43,17 +43,17 @@ export default function TrainerDualSignature() {
 
       <div className="px-5 py-4 pb-24 space-y-4">
         <Card variant="elevated" padding="md">
-          <p className="text-sm font-semibold">{trainerClass.title}</p>
-          <p className="mt-1 text-xs text-content-secondary">
+          <p className="text-body font-semibold">{trainerClass.title}</p>
+          <p className="mt-1 text-caption text-content-secondary">
             {formatDateKo(trainerClass.startTime)} · {formatTime(trainerClass.startTime)} - {formatTime(trainerClass.endTime)}
           </p>
-          <p className="mt-2 text-sm text-content-secondary">
+          <p className="mt-2 text-body text-content-secondary">
             회원: {trainerClass.participants[0]?.memberName || '미정'}
           </p>
         </Card>
 
         <Card variant="elevated" padding="md">
-          <p className="text-sm font-semibold mb-3">서명 방식</p>
+          <p className="text-body font-semibold mb-3">서명 방식</p>
           <div className="flex gap-2">
             {[
               { key: 'face_to_face' as const, label: '대면 서명' },
@@ -74,7 +74,7 @@ export default function TrainerDualSignature() {
         <Card variant="elevated" padding="md">
           <div className="flex items-center gap-2 mb-3">
             <PenTool className="w-4 h-4 text-primary" />
-            <p className="text-sm font-semibold">1단계. 강사 서명</p>
+            <p className="text-body font-semibold">1단계. 강사 서명</p>
           </div>
           <Button
             variant={trainerSigned ? 'secondary' : 'primary'}
@@ -93,7 +93,7 @@ export default function TrainerDualSignature() {
         <Card variant="elevated" padding="md">
           <div className="flex items-center gap-2 mb-3">
             <ShieldCheck className="w-4 h-4 text-state-success" />
-            <p className="text-sm font-semibold">2단계. 회원 서명</p>
+            <p className="text-body font-semibold">2단계. 회원 서명</p>
           </div>
           <Button
             variant={memberSigned ? 'secondary' : 'primary'}
@@ -113,10 +113,10 @@ export default function TrainerDualSignature() {
         {certificate ? (
           <Card variant="soft" padding="md">
             <div className="flex items-center justify-between mb-2">
-              <p className="text-sm font-semibold">확인서 상태</p>
+              <p className="text-body font-semibold">확인서 상태</p>
               <Badge tone="neutral" variant="soft">{certificate.status}</Badge>
             </div>
-            <p className="text-xs text-content-tertiary">
+            <p className="text-caption text-content-tertiary">
               강사 서명: {certificate.trainerSignedAt ? '완료' : '미완료'} / 회원 서명: {certificate.memberSignedAt ? '완료' : '대기'}
             </p>
             <Button

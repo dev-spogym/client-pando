@@ -594,7 +594,7 @@ function EmptyEntry({
               onClick={() => onSelectKeyword(cat.searchKeyword)}
               className={`relative aspect-[4/3] rounded-card-lg ${cat.bgClass} text-white p-4 text-left overflow-hidden active:opacity-90 shadow-card-soft`}
             >
-              <span className="absolute top-3 right-3 text-3xl opacity-90">{cat.emoji}</span>
+              <span className="absolute top-3 right-3 text-display opacity-90">{cat.emoji}</span>
               <p className="text-caption text-white/80 font-medium">카테고리</p>
               <h3 className="text-h3 font-bold mt-1">{cat.label}</h3>
               <p className="text-caption text-white/85 mt-3">전체 보러가기 →</p>

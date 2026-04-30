@@ -76,9 +76,9 @@ export default function RoleSettingsScreen({ role, title, screenId, fields }: Ro
 
       <div className="px-5 py-4 pb-24 space-y-4">
         <Card variant="elevated" padding="md">
-          <p className="text-sm font-semibold">{profile.name}</p>
-          <p className="mt-1 text-xs text-content-secondary">{profile.title} · {profile.branch}</p>
-          <p className="mt-2 text-sm text-content-tertiary">{profile.subtitle}</p>
+          <p className="text-body font-semibold">{profile.name}</p>
+          <p className="mt-1 text-caption text-content-secondary">{profile.title} · {profile.branch}</p>
+          <p className="mt-2 text-body text-content-tertiary">{profile.subtitle}</p>
         </Card>
 
         <section className="space-y-3">
@@ -93,9 +93,9 @@ export default function RoleSettingsScreen({ role, title, screenId, fields }: Ro
             >
               <div className="flex items-center justify-between gap-4">
                 <div>
-                  <p className="text-sm font-medium">{field.label}</p>
+                  <p className="text-body font-medium">{field.label}</p>
                   {field.description ? (
-                    <p className="mt-1 text-xs text-content-tertiary">{field.description}</p>
+                    <p className="mt-1 text-caption text-content-tertiary">{field.description}</p>
                   ) : null}
                 </div>
                 <Badge
@@ -131,9 +131,9 @@ export default function RoleSettingsScreen({ role, title, screenId, fields }: Ro
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <LogOut className="h-4 w-4 text-state-error" />
-              <span className="text-sm font-medium text-state-error">로그아웃</span>
+              <span className="text-body font-medium text-state-error">로그아웃</span>
             </div>
-            <span className="text-xs font-semibold text-state-error">확인</span>
+            <span className="text-caption font-semibold text-state-error">확인</span>
           </div>
         </Card>
       </div>
@@ -147,8 +147,8 @@ export default function RoleSettingsScreen({ role, title, screenId, fields }: Ro
             className="absolute inset-0"
           />
           <div className="relative z-10 w-full max-w-sm rounded-card-lg bg-surface p-5 shadow-card-elevated">
-            <p className="text-base font-semibold">로그아웃할까요?</p>
-            <p className="mt-2 text-sm text-content-secondary">현재 기기에서 로그인 세션이 종료됩니다.</p>
+            <p className="text-body-lg font-semibold">로그아웃할까요?</p>
+            <p className="mt-2 text-body text-content-secondary">현재 기기에서 로그인 세션이 종료됩니다.</p>
             <div className="mt-5 flex gap-2">
               <Button
                 variant="tertiary"
@@ -178,14 +178,14 @@ export default function RoleSettingsScreen({ role, title, screenId, fields }: Ro
 }
 
 function SectionTitle({ children }: { children: string }) {
-  return <p className="px-1 text-xs font-semibold tracking-[0.08em] text-content-tertiary">{children}</p>;
+  return <p className="px-1 text-caption font-semibold tracking-[0.08em] text-content-tertiary">{children}</p>;
 }
 
 function InfoRow({ label, value }: { label: string; value: string }) {
   return (
     <Card variant="elevated" padding="md">
-      <p className="text-xs text-content-tertiary">{label}</p>
-      <p className="mt-1 text-sm font-medium">{value}</p>
+      <p className="text-caption text-content-tertiary">{label}</p>
+      <p className="mt-1 text-body font-medium">{value}</p>
     </Card>
   );
 }
@@ -194,7 +194,7 @@ function ActionRow({ label, onClick }: { label: string; onClick: () => void }) {
   return (
     <Card variant="elevated" padding="md" interactive onClick={onClick}>
       <div className="flex items-center justify-between gap-3">
-        <span className="text-sm font-medium">{label}</span>
+        <span className="text-body font-medium">{label}</span>
         <ChevronRight className="h-4 w-4 text-content-tertiary" />
       </div>
     </Card>

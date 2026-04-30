@@ -32,8 +32,8 @@ export default function StaffManualAttendance() {
     <div className="min-h-screen bg-surface-secondary">
       <header className="bg-surface px-5 pt-safe-top pb-4 shadow-sm">
         <div className="pt-4">
-          <p className="text-xs text-content-tertiary">MA-520</p>
-          <h1 className="text-lg font-bold">수동 출석 처리</h1>
+          <p className="text-caption text-content-tertiary">MA-520</p>
+          <h1 className="text-h4 font-bold">수동 출석 처리</h1>
         </div>
       </header>
 
@@ -42,7 +42,7 @@ export default function StaffManualAttendance() {
           <select
             value={memberId}
             onChange={(e) => setMemberId(e.target.value)}
-            className="w-full rounded-xl border border-line px-3 py-3 text-sm focus:outline-none focus:border-primary bg-surface"
+            className="w-full rounded-xl border border-line px-3 py-3 text-body focus:outline-none focus:border-primary bg-surface"
           >
             {members.map((member) => (
               <option key={member.id} value={member.id}>{member.name} · {member.phone}</option>
@@ -64,7 +64,7 @@ export default function StaffManualAttendance() {
             onChange={(e) => setReason(e.target.value)}
             placeholder="수동 출석 사유"
             rows={3}
-            className="w-full rounded-xl border border-line px-3 py-3 text-sm resize-none focus:outline-none focus:border-primary bg-surface"
+            className="w-full rounded-xl border border-line px-3 py-3 text-body resize-none focus:outline-none focus:border-primary bg-surface"
           />
           <Button fullWidth size="lg" onClick={submit}>
             출석 처리
@@ -74,9 +74,9 @@ export default function StaffManualAttendance() {
         <section className="space-y-3">
           {records.map((record) => (
             <Card key={record.id}>
-              <p className="text-sm font-semibold">{record.memberName}</p>
-              <p className="mt-1 text-xs text-content-secondary">{record.type} · {record.reason}</p>
-              <p className="mt-2 text-xs text-content-tertiary">{record.createdAt.replace('T', ' ').slice(0, 16)} · {record.handledBy}</p>
+              <p className="text-body font-semibold">{record.memberName}</p>
+              <p className="mt-1 text-caption text-content-secondary">{record.type} · {record.reason}</p>
+              <p className="mt-2 text-caption text-content-tertiary">{record.createdAt.replace('T', ' ').slice(0, 16)} · {record.handledBy}</p>
             </Card>
           ))}
         </section>

@@ -58,8 +58,8 @@ export default function Settings() {
               onClick={() => item.path && navigate(item.path)}
               className="w-full flex items-center justify-between px-4 py-4 border-b last:border-b-0 border-line-light"
             >
-              <span className="text-sm font-medium">{item.label}</span>
-              <div className="flex items-center gap-2 text-sm text-content-tertiary">
+              <span className="text-body font-medium">{item.label}</span>
+              <div className="flex items-center gap-2 text-body text-content-tertiary">
                 <span>{item.value}</span>
                 {item.path && <ChevronRight className="w-4 h-4" />}
               </div>
@@ -72,7 +72,7 @@ export default function Settings() {
           className="w-full bg-surface rounded-card shadow-card-soft px-4 py-4 flex items-center gap-3 text-state-error"
         >
           <ShieldAlert className="w-5 h-5" />
-          <span className="text-sm font-medium">회원 탈퇴</span>
+          <span className="text-body font-medium">회원 탈퇴</span>
           <ChevronRight className="w-4 h-4 ml-auto" />
         </button>
 
@@ -81,7 +81,7 @@ export default function Settings() {
           className="w-full bg-surface rounded-card shadow-card-soft px-4 py-4 flex items-center gap-3 text-state-error"
         >
           <LogOut className="w-5 h-5" />
-          <span className="text-sm font-medium">로그아웃</span>
+          <span className="text-body font-medium">로그아웃</span>
         </button>
       </div>
     </div>
@@ -102,8 +102,8 @@ function SettingToggle({
   return (
     <div className="flex items-center gap-3 px-4 py-4 border-b last:border-b-0 border-line-light">
       <div className="flex-1">
-        <p className="text-sm font-medium">{label}</p>
-        <p className="text-xs text-content-tertiary mt-1">{description}</p>
+        <p className="text-body font-medium">{label}</p>
+        <p className="text-caption text-content-tertiary mt-1">{description}</p>
       </div>
       <button
         onClick={onToggle}

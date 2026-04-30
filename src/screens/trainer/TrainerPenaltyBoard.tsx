@@ -19,9 +19,9 @@ export default function TrainerPenaltyBoard() {
     <div className="min-h-screen bg-surface-secondary">
       <header className="bg-gradient-to-br from-rose-600 to-orange-500 px-5 pt-safe-top pb-5">
         <div className="pt-4">
-          <p className="text-white/80 text-sm">MA-213</p>
-          <h1 className="text-white text-xl font-bold mt-1">노쇼 / 페널티 처리</h1>
-          <p className="text-white/70 text-sm mt-1">수업 출석 체크에서 생성된 노쇼·지각 이력을 한 번에 확인합니다.</p>
+          <p className="text-white/80 text-body">MA-213</p>
+          <h1 className="text-white text-h2 font-bold mt-1">노쇼 / 페널티 처리</h1>
+          <p className="text-white/70 text-body mt-1">수업 출석 체크에서 생성된 노쇼·지각 이력을 한 번에 확인합니다.</p>
         </div>
       </header>
 
@@ -34,10 +34,10 @@ export default function TrainerPenaltyBoard() {
               <div>
                 <div className="flex items-center gap-2">
                   <AlertTriangle className="w-4 h-4 text-state-error" />
-                  <p className="text-sm font-semibold">{penalty.memberName}</p>
+                  <p className="text-body font-semibold">{penalty.memberName}</p>
                 </div>
-                <p className="mt-2 text-sm text-content">{penalty.title}</p>
-                <p className="mt-1 text-xs text-content-secondary">
+                <p className="mt-2 text-body text-content">{penalty.title}</p>
+                <p className="mt-1 text-caption text-content-secondary">
                   {formatDateKo(penalty.appliedAt)} · {penalty.reason}
                 </p>
               </div>
@@ -45,7 +45,7 @@ export default function TrainerPenaltyBoard() {
             </div>
 
             <div className="mt-3 flex items-center justify-between">
-              <p className="text-xs text-content-tertiary">
+              <p className="text-caption text-content-tertiary">
                 차감 {penalty.deductCount}회 · 상태 {penalty.status}
               </p>
               {penalty.status === 'active' ? (
@@ -57,7 +57,7 @@ export default function TrainerPenaltyBoard() {
                   면제 처리
                 </Button>
               ) : (
-                <span className="flex items-center gap-1 text-xs font-semibold text-state-success">
+                <span className="flex items-center gap-1 text-caption font-semibold text-state-success">
                   <CheckCircle2 className="w-4 h-4" /> 면제됨
                 </span>
               )}

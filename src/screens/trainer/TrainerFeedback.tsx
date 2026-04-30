@@ -228,7 +228,7 @@ export default function TrainerFeedback() {
               </svg>
             </button>
           )}
-          <h1 className="text-white text-lg font-bold">
+          <h1 className="text-white text-h4 font-bold">
             {view === 'list' ? '운동 피드백' : selectedClass?.title || '피드백 작성'}
           </h1>
         </div>
@@ -273,15 +273,15 @@ export default function TrainerFeedback() {
                       cls.type === 'PT' ? 'bg-primary-light' : 'bg-surface-secondary'
                     )}>
                       <span className={cn(
-                        'text-xs font-bold',
+                        'text-caption font-bold',
                         cls.type === 'PT' ? 'text-primary' : 'text-content-secondary'
                       )}>
                         {cls.type}
                       </span>
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="font-semibold text-sm truncate">{cls.title}</p>
-                      <p className="text-xs text-content-secondary">
+                      <p className="font-semibold text-body truncate">{cls.title}</p>
+                      <p className="text-caption text-content-secondary">
                         {formatDateKo(cls.startTime)} {formatTime(cls.startTime)} - {formatTime(cls.endTime)}
                       </p>
                     </div>
@@ -301,7 +301,7 @@ export default function TrainerFeedback() {
             <EmptyState size="sm" title="이 수업에 출석한 회원이 없습니다" />
           ) : (
             <>
-              <p className="text-sm text-content-secondary">
+              <p className="text-body text-content-secondary">
                 참여 회원 {attendees.length}명에게 피드백을 작성하세요.
               </p>
 
@@ -312,7 +312,7 @@ export default function TrainerFeedback() {
                     <div className="space-y-3">
                       <div className="flex items-center gap-2">
                         <Avatar name={att.memberName} size="sm" />
-                        <p className="font-semibold text-sm">{att.memberName}</p>
+                        <p className="font-semibold text-body">{att.memberName}</p>
                       </div>
 
                       <div className="flex items-center gap-2">
@@ -325,7 +325,7 @@ export default function TrainerFeedback() {
                           onChange={(e) => updateFeedback(att.memberId, 'score', Number(e.target.value))}
                           className="flex-1 accent-primary"
                         />
-                        <span className="text-sm font-bold text-primary w-6 text-right">
+                        <span className="text-body font-bold text-primary w-6 text-right">
                           {fb?.score || 5}
                         </span>
                       </div>
@@ -335,7 +335,7 @@ export default function TrainerFeedback() {
                         onChange={(e) => updateFeedback(att.memberId, 'content', e.target.value)}
                         placeholder="운동 피드백을 입력하세요"
                         rows={2}
-                        className="w-full px-3 py-2 rounded-input border border-line text-sm focus:outline-none focus:border-primary resize-none"
+                        className="w-full px-3 py-2 rounded-input border border-line text-body focus:outline-none focus:border-primary resize-none"
                       />
                     </div>
                   </Card>

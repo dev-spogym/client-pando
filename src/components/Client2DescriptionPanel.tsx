@@ -126,7 +126,7 @@ export default function Client2DescriptionPanel() {
 
   if (!doc) {
     return (
-      <aside className="client2-doc-panel hidden lg:flex" aria-label="client2 화면 설명">
+      <aside className="client2-doc-panel" aria-label="client2 화면 설명">
         <div className="client2-doc-scroll">
           <p className="client2-doc-eyebrow">client2 기준 설명</p>
           <h2 className="client2-doc-title">매핑 확인 필요</h2>
@@ -148,7 +148,7 @@ export default function Client2DescriptionPanel() {
   const publishingCheckpoints = getPublishingCheckpoints(doc);
 
   return (
-    <aside className="client2-doc-panel hidden lg:flex" aria-label="client2 화면 설명">
+    <aside className="client2-doc-panel" aria-label="client2 화면 설명">
       <div className="client2-doc-scroll">
         <div className="client2-doc-header">
           <p className="client2-doc-eyebrow">기획자 화면 설명서</p>

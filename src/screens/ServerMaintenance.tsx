@@ -26,12 +26,12 @@ const CHANNELS: ChannelLink[] = [
   {
     key: 'instagram',
     label: '공식 인스타그램',
-    href: 'https://instagram.com/bodyswitch.official',
+    href: 'https://instagram.com/fitgenie.official',
   },
   {
     key: 'naver',
     label: '공식 블로그',
-    href: 'https://blog.naver.com/bodyswitch',
+    href: 'https://blog.naver.com/fitgenie',
   },
 ];
 

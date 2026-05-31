@@ -1,4 +1,4 @@
-export type UserRole = 'member' | 'trainer' | 'golf_trainer' | 'fc' | 'staff' | 'admin';
+export type UserRole = 'member' | 'trainer' | 'golf_trainer' | 'fc' | 'staff';
 export type EmployeeLoginRole = 'trainer' | 'fc' | 'staff';
 
 const ROLE_LABELS: Record<EmployeeLoginRole, string> = {
@@ -25,27 +25,20 @@ export function normalizeUserRole(rawRole: string | null | undefined): UserRole 
     case 'frontdesk':
     case 'front_desk':
       return 'staff';
-    case 'admin':
-    case 'owner':
-    case 'super_admin':
-    case 'superadmin':
-    case 'manager':
-      return 'admin';
     default:
       return null;
   }
 }
 
-export function isTrainerRole(role: UserRole | null | undefined): role is 'trainer' | 'golf_trainer' | 'admin' {
-  return role === 'trainer' || role === 'golf_trainer' || role === 'admin';
+export function isTrainerRole(role: UserRole | null | undefined): role is 'trainer' | 'golf_trainer' {
+  return role === 'trainer' || role === 'golf_trainer';
 }
 
 export function isEmployeeRole(role: UserRole | null | undefined): role is Exclude<UserRole, 'member'> {
   return role === 'trainer'
     || role === 'golf_trainer'
     || role === 'fc'
-    || role === 'staff'
-    || role === 'admin';
+    || role === 'staff';
 }
 
 export function getRoleHomePath(role: UserRole | null | undefined) {
@@ -58,7 +51,6 @@ export function getRoleHomePath(role: UserRole | null | undefined) {
       return '/staff';
     case 'trainer':
     case 'golf_trainer':
-    case 'admin':
       return '/trainer';
     default:
       return '/login';

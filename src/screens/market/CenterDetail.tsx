@@ -703,12 +703,12 @@ export default function CenterDetail() {
                     ? '골프'
                     : center.category === 'crossfit'
                       ? '크로스핏'
-                      : center.category === 'spinning'
-                        ? '스피닝'
+                      : center.category === 'group'
+                        ? '그룹'
                         : center.category === 'boxing'
                           ? '복싱'
-                          : center.category === 'swimming'
-                            ? '수영'
+                          : center.category === 'other'
+                            ? '기타'
                             : center.category.toUpperCase()}
           </Badge>
           {center.isPromoted && (

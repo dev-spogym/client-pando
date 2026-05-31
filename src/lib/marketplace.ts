@@ -1,33 +1,43 @@
 /**
  * 마켓플레이스 mock 데이터 (탐색 플랫폼)
  * — supabase의 실제 16개 branches 기반으로 재구성.
- * — 각 지점은 헬스장(피트니스) 기본 + PT, 필라테스, 요가, GX, 골프 등 다양한 운영.
+ * — 각 지점은 헬스장(피트니스) 기본 + PT 전문, 필라테스, 요가, GX, 골프 등 다양한 운영.
  * — 이미지: picsum.photos seed (안정적인 무료 CDN)
  */
 
 export type CategoryId =
   | 'all'
   | 'fitness'
-  | 'pilates'
   | 'yoga'
+  | 'pilates'
   | 'golf'
-  | 'crossfit'
-  | 'spinning'
   | 'boxing'
-  | 'swimming'
-  | 'pt';
+  | 'crossfit'
+  | 'pt'
+  | 'women'
+  | 'senior'
+  | 'group'
+  | 'private'
+  | 'rehab'
+  | 'diet'
+  | 'other';
 
 export const CATEGORIES: { id: CategoryId; label: string; icon: string }[] = [
   { id: 'all', label: '전체', icon: '🏋️' },
   { id: 'fitness', label: '헬스', icon: '💪' },
-  { id: 'pt', label: 'PT', icon: '🏋️‍♂️' },
-  { id: 'pilates', label: '필라테스', icon: '🧘‍♀️' },
   { id: 'yoga', label: '요가', icon: '🧘' },
+  { id: 'pilates', label: '필라테스', icon: '🧘‍♀️' },
   { id: 'golf', label: '골프', icon: '⛳' },
-  { id: 'crossfit', label: '크로스핏', icon: '🏃' },
-  { id: 'spinning', label: '스피닝', icon: '🚴' },
   { id: 'boxing', label: '복싱', icon: '🥊' },
-  { id: 'swimming', label: '수영', icon: '🏊' },
+  { id: 'crossfit', label: '크로스핏', icon: '🏃' },
+  { id: 'pt', label: 'PT 전문', icon: '🏋️‍♂️' },
+  { id: 'women', label: '여성 전용', icon: '♀' },
+  { id: 'senior', label: '시니어 전용', icon: '👟' },
+  { id: 'group', label: '그룹', icon: '👥' },
+  { id: 'private', label: '1:1', icon: '🎯' },
+  { id: 'rehab', label: '재활', icon: '🩺' },
+  { id: 'diet', label: '다이어트', icon: '🔥' },
+  { id: 'other', label: '기타', icon: '⋯' },
 ];
 
 export type ProductCategory = '전체' | '수강권' | '이용권' | '체험권' | '그룹' | '개인' | '온라인';
@@ -216,7 +226,7 @@ export const MOCK_CENTERS: MarketCenter[] = [
     id: 1,
     name: 'FitGenie 광화문점',
     category: 'fitness',
-    subCategories: ['pt', 'pilates', 'yoga', 'spinning'],
+    subCategories: ['pt', 'pilates', 'yoga', 'group'],
     district: '종로구',
     dong: '신문로1가',
     address: '서울 종로구 신문로1가 89 광화문빌딩 3F',
@@ -230,7 +240,7 @@ export const MOCK_CENTERS: MarketCenter[] = [
     facilities: ['샤워', '탈의실', '주차장', '카페', '운동복', '타올', '인바디', 'WIFI', '필라테스 룸', '요가 룸', 'GX 스튜디오'],
     openingHours: { weekday: '06:00 - 23:00', weekend: '08:00 - 22:00', holiday: '08:00 - 22:00' },
     phone: '02-1234-5678',
-    description: '광화문 직장인 90% 회원의 본점. 200평 규모, 헬스 · PT · 필라테스 · 요가 · 스피닝 · 줌바 · 에어로빅 모두 운영.',
+    description: '광화문 직장인 90% 회원의 본점. 200평 규모, 헬스 · PT · 필라테스 · 요가 · 스피닝 · 줌바 모두 운영.',
     representativeProduct: { name: '회원권 12개월', price: 980000, originalPrice: 1200000 },
     isPromoted: true,
     branchCode: 'BR001',
@@ -240,7 +250,7 @@ export const MOCK_CENTERS: MarketCenter[] = [
     id: 2,
     name: 'FitGenie 을지로점',
     category: 'fitness',
-    subCategories: ['pt', 'spinning'],
+    subCategories: ['pt', 'group'],
     district: '중구',
     dong: '을지로2가',
     address: '서울 중구 을지로2가 195',
@@ -333,7 +343,7 @@ export const MOCK_CENTERS: MarketCenter[] = [
     id: 6,
     name: 'FitGenie 신당점',
     category: 'fitness',
-    subCategories: ['pt', 'spinning'],
+    subCategories: ['pt', 'group'],
     district: '중구',
     dong: '신당동',
     address: '서울 중구 신당동 290',
@@ -347,7 +357,7 @@ export const MOCK_CENTERS: MarketCenter[] = [
     facilities: ['샤워', '탈의실', '운동복', '타올', '24시간', 'GX 스튜디오'],
     openingHours: { weekday: '24시간', weekend: '24시간', holiday: '24시간' },
     phone: '02-1234-5683',
-    description: '신당역 24시간 운영 헬스장. 스피닝 · 줌바 · 에어로빅 그룹 클래스 매일 진행.',
+    description: '신당역 24시간 운영 헬스장. 스피닝 · 줌바 그룹 클래스 매일 진행.',
     representativeProduct: { name: '헬스 무제한 3개월', price: 180000 },
     branchCode: 'BR006',
     districtZone: '1지부',
@@ -356,7 +366,7 @@ export const MOCK_CENTERS: MarketCenter[] = [
     id: 7,
     name: 'FitGenie 가양점',
     category: 'fitness',
-    subCategories: ['pt', 'pilates', 'yoga', 'spinning'],
+    subCategories: ['pt', 'pilates', 'yoga', 'group'],
     district: '강서구',
     dong: '가양동',
     address: '서울 강서구 가양동 1483',
@@ -403,7 +413,7 @@ export const MOCK_CENTERS: MarketCenter[] = [
     id: 9,
     name: 'FitGenie 양천향교점',
     category: 'fitness',
-    subCategories: ['pt', 'spinning'],
+    subCategories: ['pt', 'group'],
     district: '양천구',
     dong: '신정동',
     address: '서울 양천구 신정동 318',
@@ -449,7 +459,7 @@ export const MOCK_CENTERS: MarketCenter[] = [
     id: 11,
     name: 'FitGenie 판교점',
     category: 'fitness',
-    subCategories: ['pt', 'pilates', 'yoga', 'golf', 'spinning'],
+    subCategories: ['pt', 'pilates', 'yoga', 'golf', 'group'],
     district: '분당구',
     dong: '백현동',
     address: '경기 성남시 분당구 백현동 532',
@@ -537,7 +547,7 @@ export const MOCK_CENTERS: MarketCenter[] = [
     id: 14,
     name: 'FitGenie 고척점',
     category: 'fitness',
-    subCategories: ['pt', 'spinning'],
+    subCategories: ['pt', 'group'],
     district: '구로구',
     dong: '고척동',
     address: '서울 구로구 고척동 70',
@@ -560,7 +570,7 @@ export const MOCK_CENTERS: MarketCenter[] = [
     id: 15,
     name: 'FitGenie 부천점',
     category: 'fitness',
-    subCategories: ['pt', 'pilates', 'swimming'],
+    subCategories: ['pt', 'pilates', 'other'],
     district: '부천시',
     dong: '중동',
     address: '경기 부천시 원미구 중동 1141',
@@ -621,7 +631,7 @@ export const MOCK_TRAINERS: MarketTrainer[] = [
   { id: 2, name: '박지민', centerId: 1, centerName: 'FitGenie 광화문점', category: 'pilates', rating: 5.0, reviewCount: 198, totalLessons: 1080, experienceYears: 7, specialties: ['재활', '체형교정', '필라테스 강사 양성'], certifications: ['BASI 마스터', 'STOTT PILATES'], bio: 'BASI 마스터 강사. 재활 필라테스 전문. 디스크/거북목 호전 사례 다수.', profileUrl: avatarImg('trainer-2', 400), gender: 'F' },
   { id: 3, name: '이서윤', centerId: 1, centerName: 'FitGenie 광화문점', category: 'yoga', rating: 4.8, reviewCount: 113, totalLessons: 760, experienceYears: 6, specialties: ['스트레칭', '유연성', '코어'], certifications: ['RYT-500', '인도 정통 요가 학교 수료'], bio: '인도 리시케시 7년 수련. 빈야사·하타·아쉬탕가 모두 가능.', profileUrl: avatarImg('trainer-3', 400), gender: 'F' },
   { id: 4, name: '강민준', centerId: 1, centerName: 'FitGenie 광화문점', category: 'pt', rating: 4.8, reviewCount: 89, totalLessons: 920, experienceYears: 6, specialties: ['근력', '시니어', '재활'], certifications: ['NSCA-CPT', 'FMS Level 2'], bio: '시니어·재활 PT 특화. 60대 이상 회원의 통증 완화 다수 사례.', profileUrl: avatarImg('trainer-4', 400), gender: 'M' },
-  { id: 5, name: '정혜원', centerId: 1, centerName: 'FitGenie 광화문점', category: 'spinning', rating: 4.9, reviewCount: 154, totalLessons: 1340, experienceYears: 5, specialties: ['다이어트', '유연성'], certifications: ['Schwinn Spinning', 'Les Mills RPM'], bio: '광화문점 인기 스피닝 강사. 점심시간 라이브 DJ 클래스 매주 진행.', profileUrl: avatarImg('trainer-5', 400), gender: 'F' },
+  { id: 5, name: '정혜원', centerId: 1, centerName: 'FitGenie 광화문점', category: 'group', rating: 4.9, reviewCount: 154, totalLessons: 1340, experienceYears: 5, specialties: ['다이어트', '유연성'], certifications: ['Schwinn Spinning', 'Les Mills RPM'], bio: '광화문점 인기 스피닝 강사. 점심시간 라이브 DJ 클래스 매주 진행.', profileUrl: avatarImg('trainer-5', 400), gender: 'F' },
 
   // 을지로점 (id 2) — 1명
   { id: 6, name: '이효리', centerId: 2, centerName: 'FitGenie 을지로점', category: 'pt', rating: 4.7, reviewCount: 64, totalLessons: 580, experienceYears: 5, specialties: ['다이어트', '근력'], certifications: ['NSCA-CPT'], bio: '을지로 직장인 PT 전문. 30분/60분 클래스 운영.', profileUrl: avatarImg('trainer-6', 400), gender: 'F' },
@@ -639,7 +649,7 @@ export const MOCK_TRAINERS: MarketTrainer[] = [
   { id: 12, name: '오나라', centerId: 5, centerName: 'FitGenie 서교점', category: 'yoga', rating: 4.6, reviewCount: 53, totalLessons: 460, experienceYears: 4, specialties: ['스트레칭', '유연성'], certifications: ['RYT-200'], bio: '홍대 인근 직장인 요가 클래스 운영.', profileUrl: avatarImg('trainer-12', 400), gender: 'F' },
 
   // 신당점 (id 6) — 1명
-  { id: 13, name: '송지효', centerId: 6, centerName: 'FitGenie 신당점', category: 'spinning', rating: 4.5, reviewCount: 42, totalLessons: 580, experienceYears: 5, specialties: ['다이어트'], certifications: ['Les Mills RPM'], bio: '24시간 운영 신당점 스피닝 매니저. 새벽·심야 클래스 인기.', profileUrl: avatarImg('trainer-13', 400), gender: 'F' },
+  { id: 13, name: '송지효', centerId: 6, centerName: 'FitGenie 신당점', category: 'group', rating: 4.5, reviewCount: 42, totalLessons: 580, experienceYears: 5, specialties: ['다이어트'], certifications: ['Les Mills RPM'], bio: '24시간 운영 신당점 스피닝 매니저. 새벽·심야 클래스 인기.', profileUrl: avatarImg('trainer-13', 400), gender: 'F' },
 
   // 가양점 (id 7) — 3명
   { id: 14, name: '남주혁', centerId: 7, centerName: 'FitGenie 가양점', category: 'pt', rating: 4.6, reviewCount: 49, totalLessons: 520, experienceYears: 4, specialties: ['다이어트', '근력', '주니어'], certifications: ['NSCA-CPT'], bio: '강서권 가성비 PT. 입문자 친절 코칭.', profileUrl: avatarImg('trainer-14', 400), gender: 'M' },
@@ -663,7 +673,7 @@ export const MOCK_TRAINERS: MarketTrainer[] = [
   { id: 24, name: '김유나', centerId: 11, centerName: 'FitGenie 판교점', category: 'pilates', rating: 4.9, reviewCount: 187, totalLessons: 1340, experienceYears: 7, specialties: ['바디프로필', '재활', '체형교정'], certifications: ['BASI 마스터', 'Polestar Mat'], bio: '판교점 필라테스 8주 챌린지 정원 즉시 마감.', profileUrl: avatarImg('trainer-24', 400), gender: 'F' },
   { id: 25, name: '이수민', centerId: 11, centerName: 'FitGenie 판교점', category: 'yoga', rating: 4.8, reviewCount: 142, totalLessons: 980, experienceYears: 6, specialties: ['스트레칭', '유연성', '명상'] as Specialty[], certifications: ['RYT-500'], bio: '판교 직장인 요가/명상 전문. 점심시간 클래스 인기.', profileUrl: avatarImg('trainer-25', 400), gender: 'F' },
   { id: 26, name: '정현우', centerId: 11, centerName: 'FitGenie 판교점', category: 'golf', rating: 4.9, reviewCount: 156, totalLessons: 1240, experienceYears: 10, specialties: ['주니어', '시니어'], certifications: ['KPGA 정회원', 'TPI Golf Fitness'], bio: 'KPGA 출신. 판교 IT 직장인 골프 입문자 1순위.', profileUrl: avatarImg('trainer-26', 400), gender: 'M' },
-  { id: 27, name: '박서연', centerId: 11, centerName: 'FitGenie 판교점', category: 'spinning', rating: 4.7, reviewCount: 98, totalLessons: 760, experienceYears: 5, specialties: ['다이어트'], certifications: ['Schwinn Spinning'], bio: '판교점 라이브 DJ 스피닝 클래스.', profileUrl: avatarImg('trainer-27', 400), gender: 'F' },
+  { id: 27, name: '박서연', centerId: 11, centerName: 'FitGenie 판교점', category: 'group', rating: 4.7, reviewCount: 98, totalLessons: 760, experienceYears: 5, specialties: ['다이어트'], certifications: ['Schwinn Spinning'], bio: '판교점 라이브 DJ 스피닝 클래스.', profileUrl: avatarImg('trainer-27', 400), gender: 'F' },
 
   // 판교역점 (id 12) — 2명
   { id: 28, name: '고준희', centerId: 12, centerName: 'FitGenie 판교역점', category: 'golf', rating: 4.6, reviewCount: 67, totalLessons: 620, experienceYears: 6, specialties: ['주니어'], certifications: ['KPGA 준회원', 'PGA Junior Coach'], bio: '판교역 도보 1분 골프 전문. 점심시간 1:1 레슨.', profileUrl: avatarImg('trainer-28', 400), gender: 'F' },
@@ -679,7 +689,7 @@ export const MOCK_TRAINERS: MarketTrainer[] = [
   { id: 34, name: '김지원', centerId: 14, centerName: 'FitGenie 고척점', category: 'pt', rating: 4.4, reviewCount: 38, totalLessons: 340, experienceYears: 3, specialties: ['다이어트', '근력'], certifications: ['NSCA-CPT'], bio: '고척돔 인근 PT. 입문자 환영.', profileUrl: avatarImg('trainer-34', 400), gender: 'F' },
 
   // 부천점 (id 15) — 2명
-  { id: 35, name: '이서진', centerId: 15, centerName: 'FitGenie 부천점', category: 'swimming', rating: 4.7, reviewCount: 87, totalLessons: 920, experienceYears: 8, specialties: ['주니어', '시니어'], certifications: ['생활체육 수영지도자', 'KCSF 마스터'], bio: '부천 25m 수영장. 입문자~마스터즈, 주니어반 인기.', profileUrl: avatarImg('trainer-35', 400), gender: 'M' },
+  { id: 35, name: '이서진', centerId: 15, centerName: 'FitGenie 부천점', category: 'other', rating: 4.7, reviewCount: 87, totalLessons: 920, experienceYears: 8, specialties: ['주니어', '시니어'], certifications: ['생활체육 수영지도자', 'KCSF 마스터'], bio: '부천 25m 수영장. 입문자~마스터즈, 주니어반 인기.', profileUrl: avatarImg('trainer-35', 400), gender: 'M' },
   { id: 36, name: '추예원', centerId: 15, centerName: 'FitGenie 부천점', category: 'pilates', rating: 4.6, reviewCount: 54, totalLessons: 510, experienceYears: 5, specialties: ['재활', '체형교정'], certifications: ['BASI'], bio: '부천 필라테스 그룹·1:1.', profileUrl: avatarImg('trainer-36', 400), gender: 'F' },
 
   // 목동점 (id 16) — 3명
@@ -695,7 +705,7 @@ export const MOCK_TRAINERS: MarketTrainer[] = [
 
 // ─────────────────────────────────────────────────────────────
 // 상품 mock — 지점별 다양한 카테고리 (헬스 이용권 + PT + GX 그룹 + 골프)
-// 한 지점에 평균 4-7개 상품이 분포 (BODY SWITCH 패턴: 한 센터 다종목)
+// 한 지점에 평균 4-7개 상품이 분포 (FitGenie 패턴: 한 센터 다종목)
 // ─────────────────────────────────────────────────────────────
 
 let _pid = 0;
@@ -837,14 +847,14 @@ function buildProductsForCenter(center: MarketCenter): MarketProduct[] {
   }
 
   // 스피닝/GX
-  if (center.subCategories.includes('spinning')) {
+  if (center.subCategories.includes('group')) {
     products.push({
       id: nextPid(),
       centerId: center.id,
       centerName: center.name,
-      category: 'spinning',
+      category: 'group',
       productCategory: '그룹',
-      name: 'GX 무제한 3개월 (스피닝/줌바/에어로빅)',
+      name: 'GX 무제한 3개월 (스피닝/줌바/GX 기타)',
       price: 270000,
       duration: '3개월',
       thumbnailUrl: img(`product-${center.id}-gx`, 600, 400),
@@ -870,19 +880,19 @@ function buildProductsForCenter(center: MarketCenter): MarketProduct[] {
     });
   }
 
-  // 수영
-  if (center.subCategories.includes('swimming')) {
+  // 기타
+  if (center.subCategories.includes('other')) {
     products.push({
       id: nextPid(),
       centerId: center.id,
       centerName: center.name,
-      category: 'swimming',
+      category: 'other',
       productCategory: '이용권',
-      name: '자유 수영 6개월',
+      name: '기타 프로그램 6개월',
       price: 360000,
       duration: '6개월',
-      thumbnailUrl: img(`product-${center.id}-swim`, 600, 400),
-      description: '25m 5레인 풀 자유 이용.',
+      thumbnailUrl: img(`product-${center.id}-other`, 600, 400),
+      description: '센터별 기타 프로그램 자유 이용.',
       isRepresentative: false,
     });
   }
@@ -1066,7 +1076,7 @@ export interface MarketBanner {
 }
 
 export const MOCK_BANNERS: MarketBanner[] = [
-  { id: 1, title: 'BODY SWITCH ON 하세요!', subtitle: '강남구 1등 헬스장 추천', imageUrl: img('banner-1', 1200, 480), bgColor: 'bg-primary-light', link: '/centers' },
+  { id: 1, title: 'FitGenie ON 하세요!', subtitle: '강남구 1등 헬스장 추천', imageUrl: img('banner-1', 1200, 480), bgColor: 'bg-primary-light', link: '/centers' },
   { id: 2, title: '4월 신규 가입 50% 할인', subtitle: '체험권부터 시작해보세요', imageUrl: img('banner-2', 1200, 480), bgColor: 'bg-accent-light', link: '/centers/search' },
   { id: 3, title: '리뷰 좋은 강사 BEST 10', subtitle: '평점 4.9 이상 강사 모음', imageUrl: img('banner-3', 1200, 480), bgColor: 'bg-state-warning/10', link: '/trainers' },
 ];

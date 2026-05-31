@@ -2,6 +2,8 @@ import { useNavigate } from 'react-router-dom';
 import {
   Activity,
   Bell,
+  CircleHelp,
+  Coins,
   CalendarDays,
   ChevronRight,
   CreditCard,
@@ -136,7 +138,8 @@ export default function Profile() {
       items: [
         { icon: Heart, label: '찜한 항목', path: '/scrap', badge: scrapCount > 0 ? `${scrapCount}` : undefined, color: 'text-state-sale' },
         { icon: Scale, label: '체성분 / FMS', path: '/body-composition', color: 'text-primary' },
-        { icon: Gift, label: '리워드 센터', path: '/coupons?tab=mileage', badge: `${member.mileage.toLocaleString()}P`, color: 'text-state-warning' },
+        { icon: Coins, label: '마일리지', path: '/mileage', badge: `${member.mileage.toLocaleString()}P`, color: 'text-state-warning' },
+        { icon: Gift, label: '리워드 센터', path: '/coupons?tab=badge', color: 'text-state-warning' },
         { icon: CreditCard, label: '재등록 추천', path: '/renewal', color: 'text-state-info' },
         { icon: Activity, label: '출석 이력', path: '/attendance', color: 'text-state-success' },
       ],
@@ -149,6 +152,7 @@ export default function Profile() {
         { icon: Sparkles, label: '운동 온보딩', path: '/onboarding', badge: onboardingDone ? '완료' : '필요', color: 'text-content-secondary' },
         { icon: ShoppingBag, label: '상품 스토어', path: '/shop', color: 'text-content-secondary' },
         { icon: FileText, label: '공지사항', path: '/notices', color: 'text-content-secondary' },
+        { icon: CircleHelp, label: '1:1 문의', path: '/support', color: 'text-content-secondary' },
       ],
     },
   ];
@@ -172,12 +176,20 @@ export default function Profile() {
               <Badge
                 tone={
                   member.status === 'ACTIVE' ? 'success' :
-                  member.status === 'HOLDING' ? 'warning' :
+                  member.status === 'HOLDING' || member.status === 'EXPIRING' ? 'warning' :
+                  member.status === 'EXPIRED' || member.status === 'WITHDRAWN' ? 'error' :
                   'neutral'
                 }
                 variant="soft"
               >
-                {member.status === 'ACTIVE' ? '이용중' : member.status === 'HOLDING' ? '홀딩' : member.status === 'EXPIRED' ? '만료' : member.status}
+                {member.status === 'ACTIVE' ? '이용중' :
+                  member.status === 'SCHEDULED' ? '예정' :
+                  member.status === 'EXPIRING' ? '만료예정' :
+                  member.status === 'HOLDING' ? '홀딩' :
+                  member.status === 'EXPIRED' ? '만료' :
+                  member.status === 'UNREGISTERED' ? '미등록' :
+                  member.status === 'WITHDRAWN' ? '탈퇴' :
+                  member.status}
               </Badge>
               {member.membershipType && <span className="text-caption text-content-tertiary">{member.membershipType}</span>}
             </div>

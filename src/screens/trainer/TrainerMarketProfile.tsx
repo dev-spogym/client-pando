@@ -23,10 +23,13 @@ const CATEGORY_OPTIONS = [
   { id: 'pilates', label: '필라테스' },
   { id: 'yoga', label: '요가' },
   { id: 'golf', label: '골프' },
-  { id: 'crossfit', label: '크로스핏' },
-  { id: 'spinning', label: '스피닝' },
   { id: 'boxing', label: '복싱' },
-  { id: 'swimming', label: '수영' },
+  { id: 'crossfit', label: '크로스핏' },
+  { id: 'group', label: '그룹' },
+  { id: 'private', label: '1:1' },
+  { id: 'rehab', label: '재활' },
+  { id: 'diet', label: '다이어트' },
+  { id: 'other', label: '기타' },
   { id: 'fitness', label: '헬스' },
 ] as const;
 

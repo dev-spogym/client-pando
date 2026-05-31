@@ -59,15 +59,20 @@ export default function TrainerDetail() {
   ).slice(0, 4);
 
   const categoryLabel: Record<string, string> = {
-    pt: 'PT',
+    pt: 'PT 전문',
     pilates: '필라테스',
     yoga: '요가',
     golf: '골프',
     crossfit: '크로스핏',
     boxing: '복싱',
-    swimming: '수영',
-    fitness: '피트니스',
-    spinning: '스피닝',
+    fitness: '헬스',
+    women: '여성 전용',
+    senior: '시니어 전용',
+    group: '그룹',
+    private: '1:1',
+    rehab: '재활',
+    diet: '다이어트',
+    other: '기타',
   };
 
   return (

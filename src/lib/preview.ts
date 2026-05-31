@@ -96,7 +96,7 @@ export function getPreviewMemberProfile(): MemberProfile {
     id: PREVIEW_MEMBER_ID,
     name: '김회원',
     phone: '01012345678',
-    email: 'preview@spogym.app',
+    email: 'preview@fitgenie.app',
     gender: 'F',
     birthDate: '1994-05-16',
     profileImage: null,
@@ -706,22 +706,22 @@ export function seedPreviewMemberExperience(memberId: number) {
     },
   ];
 
-  writeJson(`spogym-onboarding-${memberId}`, onboarding);
-  writeJson(`spogym-reservations-${memberId}`, reservations);
-  writeJson(`spogym-waitlist-${memberId}`, waitlist);
-  writeJson(`spogym-feedback-${memberId}`, feedback);
-  writeJson(`spogym-settings-${memberId}`, settings);
-  writeJson(`spogym-consents-${memberId}`, consents);
-  writeJson(`spogym-withdrawal-${memberId}`, {
+  writeJson(`fitgenie-onboarding-${memberId}`, onboarding);
+  writeJson(`fitgenie-reservations-${memberId}`, reservations);
+  writeJson(`fitgenie-waitlist-${memberId}`, waitlist);
+  writeJson(`fitgenie-feedback-${memberId}`, feedback);
+  writeJson(`fitgenie-settings-${memberId}`, settings);
+  writeJson(`fitgenie-consents-${memberId}`, consents);
+  writeJson(`fitgenie-withdrawal-${memberId}`, {
     requestedAt: null,
     reason: '',
     details: '',
     status: 'none',
   });
-  writeJson(`spogym-payments-${memberId}`, payments);
-  writeJson(`spogym-golf-bookings-${memberId}`, golfBookings);
-  writeJson('spogym-workout-logs', workoutLogs);
-  writeJson('spogym-diet-logs', dietLogs);
+  writeJson(`fitgenie-payments-${memberId}`, payments);
+  writeJson(`fitgenie-golf-bookings-${memberId}`, golfBookings);
+  writeJson('fitgenie-workout-logs', workoutLogs);
+  writeJson('fitgenie-diet-logs', dietLogs);
   seedLessonPlanningStorage({
     memberId,
     counts: lessonCounts,
@@ -805,9 +805,9 @@ type PreviewTrainerAttendanceMember = {
 };
 
 const PREVIEW_TRAINER_STORAGE = {
-  classes: 'spogym-preview-trainer-classes',
-  evaluations: 'spogym-preview-trainer-evaluations',
-  memos: 'spogym-preview-trainer-memos',
+  classes: 'fitgenie-preview-trainer-classes',
+  evaluations: 'fitgenie-preview-trainer-evaluations',
+  memos: 'fitgenie-preview-trainer-memos',
 } as const;
 
 function getBasePreviewTrainerMembers(): PreviewTrainerMember[] {

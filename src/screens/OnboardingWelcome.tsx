@@ -23,10 +23,13 @@ const INTEREST_OPTIONS = [
   { key: 'pilates', label: '필라테스', emoji: '🧘' },
   { key: 'yoga', label: '요가', emoji: '🕉️' },
   { key: 'golf', label: '골프', emoji: '⛳' },
-  { key: 'spinning', label: '스피닝', emoji: '🚴' },
-  { key: 'crossfit', label: '크로스핏', emoji: '🤸' },
   { key: 'boxing', label: '복싱', emoji: '🥊' },
-  { key: 'swimming', label: '수영', emoji: '🏊' },
+  { key: 'crossfit', label: '크로스핏', emoji: '🤸' },
+  { key: 'group', label: '그룹', emoji: '👥' },
+  { key: 'private', label: '1:1', emoji: '🎯' },
+  { key: 'rehab', label: '재활', emoji: '🩺' },
+  { key: 'diet', label: '다이어트', emoji: '🔥' },
+  { key: 'other', label: '기타', emoji: '⋯' },
 ] as const;
 
 const GOAL_OPTIONS = [
@@ -283,7 +286,7 @@ export default function OnboardingWelcome() {
           }
           onClick={goNext}
         >
-          {step === TOTAL_STEPS ? 'BODY SWITCH 시작하기' : '다음'}
+          {step === TOTAL_STEPS ? 'FitGenie 시작하기' : '다음'}
         </Button>
       </div>
     </div>
@@ -311,7 +314,7 @@ function Step1Welcome({ name }: { name: string }) {
         <span className="text-primary">{name}</span>님
       </h1>
       <p className="text-body-lg text-content-secondary mt-4 leading-relaxed">
-        BODY SWITCH가 {name}님의 일상에
+        FitGenie가 {name}님의 일상에
         <br />
         딱 맞는 운동을 추천해드릴게요.
       </p>
@@ -343,7 +346,7 @@ function Step2Permission({
         <PermissionCard
           icon={<MapPin className="w-6 h-6" strokeWidth={2.2} />}
           title="위치 권한"
-          description="가까운 BODY SWITCH 센터를 추천해드릴게요"
+          description="가까운 FitGenie 센터를 추천해드릴게요"
           granted={locationGranted}
           onAllow={onLocation}
         />

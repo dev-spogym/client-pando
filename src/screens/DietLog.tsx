@@ -26,7 +26,7 @@ interface DayDietLog {
   meals: MealLog;
 }
 
-const STORAGE_KEY = 'spogym-diet-logs';
+const STORAGE_KEY = 'fitgenie-diet-logs';
 
 function getDateStr(date: Date): string {
   return date.toISOString().split('T')[0];

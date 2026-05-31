@@ -218,7 +218,7 @@ export const MOCK_EVENTS: DiscoverEvent[] = [
     ctaLabel: '50% 할인 받으러 가기',
     productIds: MOCK_PRODUCTS.filter((p) => p.productCategory === '이용권').slice(0, 4).map((p) => p.id),
     eligibility: [
-      '판도 앱 신규 가입 회원 (가입 30일 이내)',
+      'FitGenie 앱 신규 가입 회원 (가입 30일 이내)',
       '회원권 첫 구매에 한함',
       '한 ID당 1회',
     ],
@@ -228,7 +228,7 @@ export const MOCK_EVENTS: DiscoverEvent[] = [
       '센터 운영 정책에 따라 일부 상품은 제외될 수 있습니다.',
     ],
     bodySections: [
-      { heading: '시작이 절반!', body: '판도에서 첫 운동을 결제하면 50% 할인 쿠폰이 자동 적용됩니다. 별도 코드 입력 없이 결제만 진행하시면 돼요.', imageSeed: 'event-1-body-a' },
+      { heading: '시작이 절반!', body: 'FitGenie에서 첫 운동을 결제하면 50% 할인 쿠폰이 자동 적용됩니다. 별도 코드 입력 없이 결제만 진행하시면 돼요.', imageSeed: 'event-1-body-a' },
       { heading: '어떤 상품에 적용되나요?', body: '회원권/이용권 카테고리 상품 4종이 대상입니다. 상품 상세 페이지의 가격 표시를 확인해 보세요.' },
     ],
     badgeLabel: 'BEST',
@@ -250,7 +250,7 @@ export const MOCK_EVENTS: DiscoverEvent[] = [
       '환불 시 추가 회차는 자동 소멸됩니다.',
     ],
     bodySections: [
-      { heading: '4월에만 만나는 혜택', body: '판도 PT 인기 강사진과 함께 부담 없이 시작해 보세요. 추가 2회로 효과를 직접 체감할 수 있어요.', imageSeed: 'event-2-body-a' },
+      { heading: '4월에만 만나는 혜택', body: 'FitGenie PT 인기 강사진과 함께 부담 없이 시작해 보세요. 추가 2회로 효과를 직접 체감할 수 있어요.', imageSeed: 'event-2-body-a' },
     ],
     badgeLabel: 'HOT',
   }),
@@ -268,7 +268,7 @@ export const MOCK_EVENTS: DiscoverEvent[] = [
     eligibility: ['필라테스 그룹레슨 50회권 결제 회원'],
     notice: ['무제한 1개월은 마지막 회차 사용일 기준 자동 연장됩니다.'],
     bodySections: [
-      { heading: '봄, 다시 시작하기', body: '판도 인기 필라테스 강사진의 그룹레슨을 부담 없이 무제한으로 즐겨보세요.', imageSeed: 'event-3-body-a' },
+      { heading: '봄, 다시 시작하기', body: 'FitGenie 인기 필라테스 강사진의 그룹레슨을 부담 없이 무제한으로 즐겨보세요.', imageSeed: 'event-3-body-a' },
     ],
   }),
   buildEvent({
@@ -292,7 +292,7 @@ export const MOCK_EVENTS: DiscoverEvent[] = [
     id: 5,
     title: '친구 추천 1만원 적립',
     subtitle: '추천한 친구가 가입하면 양쪽 다 적립',
-    description: '친구를 판도에 초대하고, 양쪽 모두 1만원씩 받아가세요.',
+    description: '친구를 FitGenie에 초대하고, 양쪽 모두 1만원씩 받아가세요.',
     heroSeed: 'event-5-hero',
     startsAt: '2026-01-01',
     endsAt: '2099-12-31',
@@ -302,7 +302,7 @@ export const MOCK_EVENTS: DiscoverEvent[] = [
     eligibility: ['추천 코드를 친구에게 공유한 회원', '추천받은 친구가 신규 가입 + 첫 구매 완료'],
     notice: ['적립금은 첫 구매 결제 후 7일 이내 자동 지급됩니다.', '한 ID당 추천 인원은 무제한입니다.'],
     bodySections: [
-      { heading: '함께 운동하면 더 즐거워요', body: '판도를 친구에게 추천하고 양쪽 모두 1만원씩 받으세요. 더 많이 추천할수록 더 많이 적립됩니다.', imageSeed: 'event-5-body-a' },
+      { heading: '함께 운동하면 더 즐거워요', body: 'FitGenie를 친구에게 추천하고 양쪽 모두 1만원씩 받으세요. 더 많이 추천할수록 더 많이 적립됩니다.', imageSeed: 'event-5-body-a' },
     ],
     isAlways: true,
     badgeLabel: '상시',
@@ -311,17 +311,17 @@ export const MOCK_EVENTS: DiscoverEvent[] = [
     id: 6,
     title: '주말 그룹 GX 무료 체험',
     subtitle: '토요일 오전 GX 클래스 1회 무료',
-    description: '판도 모든 지점의 토요일 오전 GX 클래스 1회를 무료로 제공해 드려요.',
+    description: 'FitGenie 모든 지점의 토요일 오전 GX 클래스 1회를 무료로 제공해 드려요.',
     heroSeed: 'event-6-hero',
     startsAt: '2026-04-25',
     endsAt: '2026-05-31',
     ctaPath: '/centers',
     ctaLabel: '주말 GX 예약하기',
-    productIds: MOCK_PRODUCTS.filter((p) => p.category === 'spinning').slice(0, 3).map((p) => p.id),
-    eligibility: ['판도 가입 회원', 'GX 첫 체험에 한함'],
+    productIds: MOCK_PRODUCTS.filter((p) => p.category === 'group').slice(0, 3).map((p) => p.id),
+    eligibility: ['FitGenie 가입 회원', 'GX 첫 체험에 한함'],
     notice: ['해당 시간대에 한해 무료 체험이 가능합니다.', '예약 후 노쇼 시 다음 무료 체험은 제한될 수 있습니다.'],
     bodySections: [
-      { heading: '주말 아침의 활기', body: '스피닝, 줌바, 에어로빅까지 — 토요일 오전 90분, GX 스튜디오에서 만나요.', imageSeed: 'event-6-body-a' },
+      { heading: '주말 아침의 활기', body: '스피닝, 줌바, GX 기타까지 - 토요일 오전 90분, GX 스튜디오에서 만나요.', imageSeed: 'event-6-body-a' },
     ],
   }),
   buildEvent({
@@ -355,7 +355,7 @@ export const MOCK_EVENTS: DiscoverEvent[] = [
     eligibility: ['거북목/허리 통증 등 재활 목적 회원'],
     notice: ['상담은 전화 또는 센터 방문으로 진행됩니다.', '결제 의무는 없으나 상담 후 결제 시 5% 추가 할인.'],
     bodySections: [
-      { heading: '몸에 맞는 운동, 몸이 알아요', body: '판도 재활 전문 필라테스 강사진이 1:1로 상담해 드립니다.', imageSeed: 'event-8-body-a' },
+      { heading: '몸에 맞는 운동, 몸이 알아요', body: 'FitGenie 재활 전문 필라테스 강사진이 1:1로 상담해 드립니다.', imageSeed: 'event-8-body-a' },
     ],
   }),
   buildEvent({
@@ -380,7 +380,7 @@ export const MOCK_EVENTS: DiscoverEvent[] = [
     id: 10,
     title: '바디프로필 챌린지 8주',
     subtitle: '결제 회원 전원 인바디 무료 + 사진 쿠폰',
-    description: '판도 인기 강사진과 함께하는 8주 바디프로필 챌린지.',
+    description: 'FitGenie 인기 강사진과 함께하는 8주 바디프로필 챌린지.',
     heroSeed: 'event-10-hero',
     startsAt: '2026-05-06',
     endsAt: '2026-06-30',
@@ -390,7 +390,7 @@ export const MOCK_EVENTS: DiscoverEvent[] = [
     eligibility: ['바디프로필 PT 패키지 결제 회원'],
     notice: ['중도 포기 시 부가 혜택은 환급되지 않습니다.', '사진 쿠폰은 제휴 스튜디오에서 사용 가능.'],
     bodySections: [
-      { heading: '인생 사진 한 장의 8주', body: '판도 인기 PT 강사진과 함께 8주 바디프로필을 도전하세요.', imageSeed: 'event-10-body-a' },
+      { heading: '인생 사진 한 장의 8주', body: 'FitGenie 인기 PT 강사진과 함께 8주 바디프로필을 도전하세요.', imageSeed: 'event-10-body-a' },
     ],
   }),
 ];

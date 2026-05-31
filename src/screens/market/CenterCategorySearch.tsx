@@ -32,15 +32,20 @@ import {
 
 /* ── 카테고리 레이블 (CategoryId → 한글) ── */
 const CATEGORY_LABEL: Record<Exclude<CategoryId, 'all'>, string> = {
-  fitness: '피트니스',
-  pilates: '필라테스',
+  fitness: '헬스',
   yoga: '요가',
+  pilates: '필라테스',
   golf: '골프',
-  crossfit: '크로스핏',
-  spinning: '스피닝',
   boxing: '복싱',
-  swimming: '수영',
-  pt: 'PT',
+  crossfit: '크로스핏',
+  pt: 'PT 전문',
+  women: '여성 전용',
+  senior: '시니어 전용',
+  group: '그룹',
+  private: '1:1',
+  rehab: '재활',
+  diet: '다이어트',
+  other: '기타',
 };
 
 const POPULAR_KEYWORDS = ['필라테스', 'PT', '요가', '골프', '체험권'];

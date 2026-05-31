@@ -14,11 +14,10 @@ import { useAuthStore } from '@/stores/authStore';
 
 interface PreviewRoleRouteProps {
   allowedRoles: Array<PreviewRole | UserRole>;
-  allowAdmin?: boolean;
   children: React.ReactNode;
 }
 
-export default function PreviewRoleRoute({ allowedRoles, allowAdmin = false, children }: PreviewRoleRouteProps) {
+export default function PreviewRoleRoute({ allowedRoles, children }: PreviewRoleRouteProps) {
   const searchParams = useNextSearchParams();
   const { member, trainer, userRole, sessionSource, loading, initialized, initialize } = useAuthStore();
   const previewMode = readPreviewMode(searchParams);
@@ -58,10 +57,6 @@ export default function PreviewRoleRoute({ allowedRoles, allowAdmin = false, chi
 
   if (!userRole) {
     return <Navigate to="/login" replace />;
-  }
-
-  if (allowAdmin && userRole === 'admin') {
-    return <>{children}</>;
   }
 
   if (!allowedRoles.includes(userRole)) {

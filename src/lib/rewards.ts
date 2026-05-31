@@ -8,7 +8,7 @@
 // ─── 멤버십 등급 ─────────────────────────────────────────────
 
 /** 회원 등급 ID */
-export type MembershipGradeId = 'BRONZE' | 'SILVER' | 'GOLD' | 'VIP' | 'VVIP';
+export type MembershipGradeId = 'BRONZE' | 'SILVER' | 'GOLD' | 'PLATINUM' | 'DIAMOND';
 
 /** 등급별 메타 정보 */
 export interface MembershipGrade {
@@ -39,7 +39,7 @@ export interface GradeBenefit {
 export const MEMBERSHIP_GRADES: MembershipGrade[] = [
   {
     id: 'BRONZE',
-    name: 'BRONZE',
+    name: '브론즈',
     tagline: '시작하는 단계',
     threshold: 0,
     color: '#CD7F32',
@@ -53,7 +53,7 @@ export const MEMBERSHIP_GRADES: MembershipGrade[] = [
   },
   {
     id: 'SILVER',
-    name: 'SILVER',
+    name: '실버',
     tagline: '꾸준히 운동 중',
     threshold: 500_000,
     color: '#A8A8A8',
@@ -62,35 +62,35 @@ export const MEMBERSHIP_GRADES: MembershipGrade[] = [
     summary: '50만원+ · PT 5% 할인 + 후기 추가 적립',
     benefits: [
       { title: 'PT 5% 할인', description: '모든 PT 결제 시 자동 적용', icon: 'discount' },
-      { title: '첫 후기 보너스', description: '후기 작성 시 추가 1,000P 적립', icon: 'review' },
+      { title: '첫 후기 보너스', description: '후기 작성 시 추가 1,000마일리지 적립', icon: 'review' },
       { title: '월간 인바디 1회', description: '체성분 측정 무료 1회 제공', icon: 'inbody' },
     ],
   },
   {
     id: 'GOLD',
-    name: 'GOLD',
+    name: '골드',
     tagline: '주요 회원',
-    threshold: 1_000_000,
+    threshold: 2_000_000,
     color: '#D4A017',
     gradient: 'from-[#B8860B] via-[#D4A017] to-[#F1C40F]',
     accentText: 'text-[#B8860B]',
-    summary: '100만원+ · PT 10% 할인 + 무료 인바디',
+    summary: '200만원+ · PT 10% 할인 + 무료 인바디',
     benefits: [
       { title: 'PT 10% 할인', description: '모든 PT 결제 시 자동 적용', icon: 'discount' },
       { title: '무제한 인바디', description: '체성분 측정 무제한 무료', icon: 'inbody' },
-      { title: '리뷰 보너스 2배', description: '후기 작성 시 2,000P 적립', icon: 'review' },
+      { title: '리뷰 보너스 2배', description: '후기 작성 시 2,000마일리지 적립', icon: 'review' },
       { title: '시즌 굿즈', description: '분기별 한정 굿즈 제공', icon: 'gift' },
     ],
   },
   {
-    id: 'VIP',
-    name: 'VIP',
-    tagline: '센터의 VIP',
-    threshold: 2_500_000,
+    id: 'PLATINUM',
+    name: '플래티넘',
+    tagline: '우수 회원',
+    threshold: 5_000_000,
     color: '#0E7C7B',
     gradient: 'from-primary-deep via-primary-dark to-primary',
     accentText: 'text-primary',
-    summary: '250만원+ · PT 15% + 우선 예약 + 전용 락커',
+    summary: '500만원+ · PT 15% + 우선 예약 + 전용 락커',
     benefits: [
       { title: 'PT 15% 할인', description: '모든 PT 결제 시 자동 적용', icon: 'discount' },
       { title: '강사 우선 예약', description: '인기 강사 24시간 먼저 예약', icon: 'priority' },
@@ -100,14 +100,14 @@ export const MEMBERSHIP_GRADES: MembershipGrade[] = [
     ],
   },
   {
-    id: 'VVIP',
-    name: 'VVIP',
+    id: 'DIAMOND',
+    name: '다이아몬드',
     tagline: '최상위 멤버십',
-    threshold: 5_000_000,
+    threshold: 10_000_000,
     color: '#063F3E',
     gradient: 'from-primary-deep via-[#0a3d3c] to-[#1f2937]',
     accentText: 'text-primary-deep',
-    summary: '500만원+ · 모든 할인 + 프라이빗 룸 + 전담 매니저',
+    summary: '1,000만원+ · 모든 할인 + 프라이빗 룸 + 전담 매니저',
     benefits: [
       { title: '모든 상품 20% 할인', description: 'PT · 그룹 클래스 · 굿즈 모두', icon: 'discount' },
       { title: '프라이빗 트레이닝 룸', description: '개인 룸 시간당 무료 이용', icon: 'private' },
@@ -310,9 +310,9 @@ export const SAMPLE_BEST_INSTRUCTORS: BestInstructor[] = [
 ];
 
 export const SAMPLE_FAVORITE_CENTERS: FavoriteCenter[] = [
-  { id: 1, name: '판도 강남점', area: '서울 강남구', visitCount: 52, lastVisitedAt: '2026-04-28' },
-  { id: 2, name: '판도 잠실점', area: '서울 송파구', visitCount: 22, lastVisitedAt: '2026-04-15' },
-  { id: 3, name: '판도 분당점', area: '경기 성남시', visitCount: 12, lastVisitedAt: '2026-03-30' },
+  { id: 1, name: 'FitGenie 강남점', area: '서울 강남구', visitCount: 52, lastVisitedAt: '2026-04-28' },
+  { id: 2, name: 'FitGenie 잠실점', area: '서울 송파구', visitCount: 22, lastVisitedAt: '2026-04-15' },
+  { id: 3, name: 'FitGenie 분당점', area: '경기 성남시', visitCount: 12, lastVisitedAt: '2026-03-30' },
 ];
 
 export const SAMPLE_BADGES: MilestoneBadge[] = [
@@ -327,18 +327,18 @@ export const SAMPLE_BADGES: MilestoneBadge[] = [
 ];
 
 export const SAMPLE_TIMELINE: TimelineEntry[] = [
-  { id: 't1', date: '2026-04-29', action: 'visit', title: '판도 강남점 방문', meta: '오전 7:42' },
+  { id: 't1', date: '2026-04-29', action: 'visit', title: 'FitGenie 강남점 방문', meta: '오전 7:42' },
   { id: 't2', date: '2026-04-29', action: 'reservation', title: '김태형 강사 PT 예약', meta: '5/2 19:00' },
   { id: 't3', date: '2026-04-28', action: 'review', title: '필라테스 그룹 클래스 후기 작성', meta: '+1,000P' },
-  { id: 't4', date: '2026-04-26', action: 'visit', title: '판도 강남점 방문', meta: '오후 6:15' },
+  { id: 't4', date: '2026-04-26', action: 'visit', title: 'FitGenie 강남점 방문', meta: '오후 6:15' },
   { id: 't5', date: '2026-04-25', action: 'payment', title: 'PT 10회권 결제', meta: '카드', amount: 660_000 },
-  { id: 't6', date: '2026-04-23', action: 'visit', title: '판도 잠실점 방문', meta: '오후 8:02' },
+  { id: 't6', date: '2026-04-23', action: 'visit', title: 'FitGenie 잠실점 방문', meta: '오후 8:02' },
   { id: 't7', date: '2026-04-22', action: 'reservation', title: '요가 클래스 예약', meta: '4/24 18:00' },
   { id: 't8', date: '2026-04-20', action: 'payment', title: '단백질 쉐이크 정기배송', meta: '간편결제', amount: 38_000 },
-  { id: 't9', date: '2026-04-18', action: 'visit', title: '판도 강남점 방문', meta: '오전 7:55' },
+  { id: 't9', date: '2026-04-18', action: 'visit', title: 'FitGenie 강남점 방문', meta: '오전 7:55' },
   { id: 't10', date: '2026-04-16', action: 'review', title: '김태형 강사 후기 작성', meta: '+1,000P' },
   { id: 't11', date: '2026-04-12', action: 'payment', title: '굿즈 구매 (요가매트)', meta: '카드', amount: 49_000 },
-  { id: 't12', date: '2026-04-08', action: 'visit', title: '판도 분당점 방문', meta: '오후 5:30' },
+  { id: 't12', date: '2026-04-08', action: 'visit', title: 'FitGenie 분당점 방문', meta: '오후 5:30' },
 ];
 
 // ─── 신규 회원 빈 상태 ────────────────────────────────────

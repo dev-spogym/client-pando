@@ -6,7 +6,7 @@ import {
 import { cn } from '@/lib/utils';
 import { PageHeader, EmptyState } from '@/components/ui';
 
-const STORAGE_KEY = 'spogym-workout-logs';
+const STORAGE_KEY = 'fitgenie-workout-logs';
 
 const CATEGORIES = ['가슴', '등', '어깨', '하체', '팔', '코어'] as const;
 

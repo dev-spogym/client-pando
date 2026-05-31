@@ -13,6 +13,7 @@ import {
   Dumbbell,
   Flame,
   MapPin,
+  MessageSquareText,
   QrCode,
   Trophy,
   UtensilsCrossed,
@@ -201,6 +202,7 @@ export default function Home() {
     { icon: ClipboardList, label: '운동일지', path: '/workout-log' },
     { icon: BookOpen, label: '운동가이드', path: '/exercise-guide' },
     { icon: UtensilsCrossed, label: '식단관리', path: '/diet' },
+    { icon: MessageSquareText, label: '커뮤니티', path: '/community' },
     { icon: Building2, label: '센터정보', path: '/center' },
   ];
 
@@ -323,7 +325,7 @@ export default function Home() {
             actionLabel="전체 보기"
             onAction={() => navigate('/classes')}
           />
-          <div className="grid grid-cols-4 gap-3">
+          <div className="grid grid-cols-5 gap-2">
             {quickActions.map((item) => {
               const Icon = item.icon;
               return (

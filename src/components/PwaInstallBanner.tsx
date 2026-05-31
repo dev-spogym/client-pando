@@ -52,7 +52,7 @@ export default function PwaInstallBanner() {
     <div className="mobile-floating-banner-top fixed z-50 slide-down">
       <div className="bg-surface rounded-card shadow-card-elevated border border-line p-3 flex items-center gap-3">
         <div className="w-10 h-10 bg-primary rounded-card flex items-center justify-center flex-shrink-0">
-          <span className="text-white font-bold text-caption">스포</span>
+          <span className="text-white font-bold text-caption">FG</span>
         </div>
         <div className="flex-1 min-w-0">
           <p className="text-body-sm font-semibold text-content">FitGenie 앱 설치</p>

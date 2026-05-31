@@ -100,7 +100,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     set({ loading: true });
     try {
       const cleanPhone = phone.replace(/-/g, '');
-      const email = `${cleanPhone}@member.spogym.app`;
+      const email = `${cleanPhone}@member.fitgenie.app`;
 
       // 1) Supabase Auth로 로그인 시도
       const { error: authError } = await supabase.auth.signInWithPassword({
@@ -191,7 +191,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     set({ loading: true });
     try {
       // Supabase Auth로 직원 로그인
-      const email = `${username}@spogym.local`;
+      const email = `${username}@fitgenie.local`;
       const { error: authError } = await supabase.auth.signInWithPassword({
         email,
         password,
@@ -388,7 +388,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         if (session?.user) {
           const userEmail = session.user.email || '';
 
-          if (userEmail.endsWith('@spogym.local')) {
+          if (userEmail.endsWith('@fitgenie.local')) {
             const username = userEmail.split('@')[0];
             const user = await getTrainerByUsername(username);
             if (user) {
@@ -423,7 +423,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
             }
           }
 
-          if (userEmail.endsWith('@member.spogym.app')) {
+          if (userEmail.endsWith('@member.fitgenie.app')) {
             const phone = userEmail.split('@')[0];
             const member = await getMemberByPhone(phone);
             if (member) {
@@ -626,7 +626,7 @@ async function clearEmployeeSession(set: (partial: Partial<AuthState>) => void) 
   set({ member: null, trainer: null, userRole: null, sessionSource: null, loading: false });
 }
 
-function createPreviewEmployeeProfile(role: Exclude<UserRole, 'member' | 'admin'>): TrainerProfile {
+function createPreviewEmployeeProfile(role: Exclude<UserRole, 'member'>): TrainerProfile {
   const base = getPreviewTrainerProfile();
 
   if (role === 'fc') {

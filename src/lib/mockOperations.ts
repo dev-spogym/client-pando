@@ -1,4 +1,4 @@
-export type MockMemberStatus = 'ACTIVE' | 'EXPIRED' | 'HOLD' | 'DORMANT';
+export type MockMemberStatus = 'ACTIVE' | 'EXPIRED' | 'SCHEDULED' | 'EXPIRING' | 'HOLDING' | 'UNREGISTERED' | 'WITHDRAWN';
 export type ConsultationStatus = 'scheduled' | 'completed' | 'cancelled' | 'no_show';
 export type ConsultationType = '상담' | 'OT' | '체험' | '재등록상담';
 export type ClassStatus = 'scheduled' | 'in_progress' | 'completed' | 'cancelled' | 'no_show' | 'pending_member_sign';
@@ -298,7 +298,7 @@ const MOCK_MEMBERS: MockMember[] = [
     phone: '01011112222',
     gender: 'M',
     birthDate: '1987-08-22',
-    status: 'HOLD',
+    status: 'HOLDING',
     membershipName: 'PT 20회 패키지',
     membershipStart: offsetIso(-40, 10),
     membershipEnd: offsetIso(80, 23, 59),
@@ -896,7 +896,7 @@ export function getFcKpi() {
     totalConsultations: consultations.length,
     completedConsultations: completed.length,
     scheduledConsultations: scheduled,
-    holdMembers: getMockMembers().filter((item) => item.status === 'HOLD').length,
+    holdMembers: getMockMembers().filter((item) => item.status === 'HOLDING').length,
   };
 }
 
@@ -973,7 +973,7 @@ export function getMockProfile(role: 'trainer' | 'fc' | 'staff') {
       title: 'FC',
       subtitle: '회원 전환 관리',
       branch: '강남점',
-      email: 'jeong.haneul@spogym.local',
+      email: 'jeong.haneul@fitgenie.local',
     };
   }
 
@@ -983,7 +983,7 @@ export function getMockProfile(role: 'trainer' | 'fc' | 'staff') {
       title: 'Staff',
       subtitle: '데스크 운영',
       branch: '강남점',
-      email: 'kim.yuri@spogym.local',
+      email: 'kim.yuri@fitgenie.local',
     };
   }
 
@@ -992,6 +992,6 @@ export function getMockProfile(role: 'trainer' | 'fc' | 'staff') {
     title: 'Trainer',
     subtitle: 'PT · 골프 레슨',
     branch: '강남점',
-    email: 'park.seoyeon@spogym.local',
+    email: 'park.seoyeon@fitgenie.local',
   };
 }

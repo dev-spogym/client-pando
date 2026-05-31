@@ -49,6 +49,11 @@ export default function Settings() {
           {[
             { label: '약관 / 정책', path: '/legal', value: '보기' },
             { label: '동의관리', path: '/consents', value: '관리' },
+            { label: '권한 설정', path: '/permissions', value: '관리' },
+            { label: '디바이스 / 앱 정보', path: '/device-info', value: '보기' },
+            { label: '앱 업데이트', path: '/app-update', value: '확인' },
+            { label: '구독 / 자동결제', path: '/subscription', value: '관리' },
+            { label: '1:1 문의', path: '/support', value: '접수' },
             { label: '개인 결제 페이지', path: '/payment/personal', value: '이동' },
             { label: '상품 스토어', path: '/shop', value: '이동' },
             { label: '앱 버전', path: '', value: '1.0.0' },

@@ -97,7 +97,7 @@ export default function MembershipGrade() {
                 <p className="mt-1 text-h2 font-bold">{formatCurrency(totalSpend)}</p>
               </div>
               <div className="text-right">
-                <p className="text-caption text-white/70">올해 적립 포인트</p>
+                <p className="text-caption text-white/70">올해 적립 마일리지</p>
                 <p className="mt-1 text-h2 font-bold">21,500P</p>
               </div>
             </div>

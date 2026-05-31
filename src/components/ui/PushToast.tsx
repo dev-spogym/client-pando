@@ -291,7 +291,7 @@ export default function PushToast({
           <div className="flex items-center gap-2">
             <Bell className="w-3 h-3 text-content-tertiary flex-shrink-0" />
             <span className="text-micro text-content-tertiary">
-              BODY SWITCH
+              FitGenie
             </span>
             <span className="text-micro text-content-tertiary">·</span>
             <span className="text-micro text-content-tertiary">지금</span>

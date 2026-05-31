@@ -43,7 +43,7 @@ function buildReferralCode(memberId: number | undefined) {
 export default function Referral() {
   const { member } = useAuthStore();
   const referralCode = useMemo(() => buildReferralCode(member?.id), [member?.id]);
-  const referralLink = useMemo(() => `https://app.pando.kr/r/${referralCode}`, [referralCode]);
+  const referralLink = useMemo(() => `https://app.fitgenie.kr/r/${referralCode}`, [referralCode]);
 
   const [friends] = useState<ReferralFriend[]>(SAMPLE_REFERRAL_FRIENDS);
   const [referrerInput, setReferrerInput] = useState('');

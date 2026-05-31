@@ -46,7 +46,7 @@ export default function RoleSettingsScreen({ role, title, screenId, fields }: Ro
     title: role === 'fc' ? 'FC' : role === 'staff' ? '스태프' : '트레이너',
     branch: trainer ? `지점 ID ${trainer.branchId}` : mockProfile.branch,
     subtitle: mockProfile.subtitle,
-    email: trainer?.username ? `${trainer.username}@spogym.local` : mockProfile.email,
+    email: trainer?.username ? `${trainer.username}@fitgenie.local` : mockProfile.email,
   };
 
   const toggle = (key: RoleSettingsFieldKey) => {

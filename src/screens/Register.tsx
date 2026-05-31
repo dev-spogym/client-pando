@@ -74,7 +74,7 @@ export default function Register() {
 
     setLoading(true);
     const cleanPhone = phone.replace(/-/g, '');
-    const email = `${cleanPhone}@member.spogym.app`;
+    const email = `${cleanPhone}@member.fitgenie.app`;
 
     try {
       const response = await fetch('/api/register-member', {

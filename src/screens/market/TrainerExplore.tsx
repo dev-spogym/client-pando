@@ -25,7 +25,7 @@ type SecondaryFilter = '평점 4.5+' | '여성 강사' | '남성 강사' | '체�
 
 const SECONDARY_FILTERS: SecondaryFilter[] = ['평점 4.5+', '여성 강사', '남성 강사', '체험 가능', '5년+'];
 
-const TRAINER_CATEGORIES: CategoryId[] = ['all', 'pt', 'pilates', 'yoga', 'golf', 'crossfit', 'boxing', 'swimming'];
+const TRAINER_CATEGORIES: CategoryId[] = ['all', 'pt', 'pilates', 'yoga', 'golf', 'crossfit', 'boxing', 'group', 'private', 'rehab', 'diet', 'other'];
 
 export default function TrainerExplore() {
   const navigate = useNavigate();

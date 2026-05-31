@@ -20,22 +20,24 @@ interface ClassItem {
   booked: number;
 }
 
-type ClassFilter = 'ALL' | 'PT' | 'GX' | 'PILATES' | 'YOGA' | 'GOLF' | 'CROSSFIT' | 'SPINNING';
+type ClassFilter = 'ALL' | 'PT' | 'GX' | 'GOLF' | 'OTHER' | 'PILATES' | 'YOGA' | 'SPINNING' | 'ZUMBA' | 'GX_OTHER';
 
-const FILTER_OPTIONS: readonly ClassFilter[] = ['ALL', 'PT', 'GX', 'PILATES', 'YOGA', 'GOLF', 'CROSSFIT', 'SPINNING'];
+const FILTER_OPTIONS: readonly ClassFilter[] = ['ALL', 'PT', 'GX', 'GOLF', 'OTHER', 'PILATES', 'YOGA', 'SPINNING', 'ZUMBA', 'GX_OTHER'];
 
 const FILTER_LABELS: Record<ClassFilter, string> = {
   ALL: '전체',
   PT: 'PT',
   GX: 'GX',
+  GOLF: '골프',
+  OTHER: '기타',
   PILATES: '필라테스',
   YOGA: '요가',
-  GOLF: '골프',
-  CROSSFIT: '크로스핏',
   SPINNING: '스피닝',
+  ZUMBA: '줌바',
+  GX_OTHER: 'GX 기타',
 };
 
-/** 수업 type을 ClassFilter로 매핑 (supabase의 GX 안에 필라테스/요가/스피닝 등이 섞여 들어오는 경우 title 기반 추론) */
+/** 수업 type을 ClassFilter로 매핑 (GX 세부종목은 title 기반으로 추론) */
 function inferFilterFromClass(cls: ClassItem): ClassFilter {
   const upper = cls.type?.toUpperCase() || '';
   if (FILTER_OPTIONS.includes(upper as ClassFilter)) return upper as ClassFilter;
@@ -43,9 +45,12 @@ function inferFilterFromClass(cls: ClassItem): ClassFilter {
   if (title.includes('필라테스')) return 'PILATES';
   if (title.includes('요가')) return 'YOGA';
   if (title.includes('골프')) return 'GOLF';
-  if (title.includes('크로스')) return 'CROSSFIT';
   if (title.includes('스피닝')) return 'SPINNING';
-  return upper === 'PT' ? 'PT' : 'GX';
+  if (title.includes('줌바')) return 'ZUMBA';
+  if (upper === 'PT') return 'PT';
+  if (upper === 'GOLF') return 'GOLF';
+  if (upper === 'OTHER') return 'OTHER';
+  return 'GX_OTHER';
 }
 
 /** 수업 목록 / 예약 페이지 */
@@ -103,15 +108,15 @@ export default function ClassList() {
       .lte('startTime', `${dateStr}T23:59:59`)
       .order('startTime');
 
-    // supabase classes.type은 PT / GX 만 저장. 그 외 종목은 GX 안에서 클라이언트 필터링
-    if (filter === 'PT' || filter === 'GX') {
+    // docs4 정본 수업 유형은 PT / GX / 골프 / 기타. GX 세부종목은 GX 안에서 클라이언트 필터링.
+    if (filter === 'PT' || filter === 'GX' || filter === 'GOLF' || filter === 'OTHER') {
       query = query.eq('type', filter);
     } else if (filter !== 'ALL') {
       query = query.eq('type', 'GX');
     }
 
     const { data } = await query;
-    const filtered = filter === 'ALL' || filter === 'PT' || filter === 'GX'
+    const filtered = filter === 'ALL' || filter === 'PT' || filter === 'GX' || filter === 'GOLF' || filter === 'OTHER'
       ? (data || [])
       : (data || []).filter((c) => inferFilterFromClass(c as ClassItem) === filter);
     setClasses(filtered);

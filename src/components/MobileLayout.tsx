@@ -2,12 +2,24 @@ import { useLocation } from 'react-router-dom';
 import { isTrainerRole } from '@/lib/auth';
 import { useAuthStore } from '@/stores/authStore';
 import BottomTabBar from './BottomTabBar';
+import Client2DescriptionPanel from './Client2DescriptionPanel';
 import TrainerTabBar from './TrainerTabBar';
 import FcTabBar from './FcTabBar';
 import StaffTabBar from './StaffTabBar';
 
 /** 탭바를 숨길 경로 목록 */
-const HIDE_TAB_PATHS = ['/login', '/register', '/lesson-sign', '/onboarding', '/checkout', '/renewal', '/withdrawal'];
+const HIDE_TAB_PATHS = [
+  '/login',
+  '/register',
+  '/lesson-sign',
+  '/onboarding',
+  '/checkout',
+  '/renewal',
+  '/withdrawal',
+  '/app-update',
+  '/permissions',
+  '/device-info',
+];
 
 /** 상세 화면 중 탭바를 숨길 prefix */
 const HIDE_TAB_PREFIXES = ['/classes/', '/shop/', '/centers/', '/trainers/', '/messages/'];
@@ -56,20 +68,23 @@ export default function MobileLayout({ children }: { children: React.ReactNode }
         : hideMemberTab;
 
   return (
-    <div className="mobile-shell flex justify-center bg-surface-secondary md:bg-gray-100">
-      <div className="mobile-frame relative flex flex-col bg-surface shadow-none md:shadow-xl">
-        <main className={hideTab ? 'mobile-main' : 'mobile-main page-content'}>
-          {children}
-        </main>
-        {!hideTab && (
-          isFcPath
-            ? <FcTabBar />
-            : isStaffPath
-              ? <StaffTabBar />
-              : showTrainerTab
-                ? <TrainerTabBar />
-                : <BottomTabBar />
-        )}
+    <div className="mobile-shell bg-surface-secondary md:bg-gray-100">
+      <div className="mobile-workbench">
+        <div className="mobile-frame relative flex flex-col bg-surface shadow-none md:shadow-xl">
+          <main className={hideTab ? 'mobile-main' : 'mobile-main page-content'}>
+            {children}
+          </main>
+          {!hideTab && (
+            isFcPath
+              ? <FcTabBar />
+              : isStaffPath
+                ? <StaffTabBar />
+                : showTrainerTab
+                  ? <TrainerTabBar />
+                  : <BottomTabBar />
+          )}
+        </div>
+        <Client2DescriptionPanel />
       </div>
     </div>
   );

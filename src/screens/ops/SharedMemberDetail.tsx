@@ -25,7 +25,7 @@ const MAX_MEMBER_NOTES = 50;
 const NOTE_TYPE_OPTIONS: Array<{ value: MemberNoteType; label: string }> = [
   { value: 'general', label: '일반' },
   { value: 'caution', label: '주의' },
-  { value: 'vip', label: 'VIP' },
+  { value: 'vip', label: '우수회원' },
   { value: 'other', label: '기타' },
 ];
 

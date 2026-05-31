@@ -8,7 +8,7 @@ export default {
   theme: {
     extend: {
       colors: {
-        // Primary: BODY SWITCH 스타일 진한 틸/청록
+        // Primary: FitGenie 스타일 진한 틸/청록
         primary: {
           DEFAULT: '#0E7C7B',
           light: '#E6F3F3',

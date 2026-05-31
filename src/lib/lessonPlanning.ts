@@ -41,7 +41,7 @@ export interface LessonCountHistoryEntry {
   note: string | null;
 }
 
-const LESSON_REQUESTS_KEY = 'spogym-lesson-booking-requests';
+const LESSON_REQUESTS_KEY = 'fitgenie-lesson-booking-requests';
 
 function isBrowser() {
   return typeof window !== 'undefined';
@@ -76,11 +76,11 @@ function mergeById<T extends { id: string }>(existing: T[], defaults: T[]) {
 }
 
 function lessonCountsKey(memberId: number) {
-  return `spogym-lesson-counts-${memberId}`;
+  return `fitgenie-lesson-counts-${memberId}`;
 }
 
 function lessonCountHistoriesKey(memberId: number) {
-  return `spogym-lesson-count-histories-${memberId}`;
+  return `fitgenie-lesson-count-histories-${memberId}`;
 }
 
 export function getLessonBookingRequests() {

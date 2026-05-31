@@ -108,11 +108,15 @@ export default function TrainerMembers() {
     return true;
   });
 
-  const statusTone = (status: string): 'success' | 'error' | 'warning' | 'neutral' => {
-    const map: Record<string, 'success' | 'error' | 'warning' | 'neutral'> = {
+  const statusTone = (status: string): 'success' | 'error' | 'warning' | 'neutral' | 'primary' => {
+    const map: Record<string, 'success' | 'error' | 'warning' | 'neutral' | 'primary'> = {
       ACTIVE: 'success',
+      SCHEDULED: 'primary',
+      EXPIRING: 'warning',
       EXPIRED: 'error',
       HOLDING: 'warning',
+      UNREGISTERED: 'neutral',
+      WITHDRAWN: 'error',
       INACTIVE: 'neutral',
     };
     return map[status] || 'neutral';
@@ -121,8 +125,12 @@ export default function TrainerMembers() {
   const statusLabel = (status: string) => {
     const map: Record<string, string> = {
       ACTIVE: '이용중',
+      SCHEDULED: '예정',
+      EXPIRING: '만료예정',
       EXPIRED: '만료',
       HOLDING: '일시정지',
+      UNREGISTERED: '미등록',
+      WITHDRAWN: '탈퇴',
       INACTIVE: '비활성',
     };
     return map[status] || status;

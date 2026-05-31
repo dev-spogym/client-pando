@@ -11,9 +11,9 @@
 // Q&A (공개 질문답변)
 // ─────────────────────────────────────────
 
-export type QnaCategory = '시설' | '가격' | '강사' | '예약' | '기타';
+export type QnaCategory = '운동' | '식단' | '이용권' | '시설' | '기타';
 
-export const QNA_CATEGORIES: QnaCategory[] = ['시설', '가격', '강사', '예약', '기타'];
+export const QNA_CATEGORIES: QnaCategory[] = ['운동', '식단', '이용권', '시설', '기타'];
 
 export type QnaTab = 'all' | 'answered' | 'pending';
 
@@ -83,7 +83,7 @@ export const QNA_LIST: QnaItem[] = [
     answers: [
       {
         id: 11,
-        authorName: '판도 강남점',
+        authorName: 'FitGenie 강남점',
         role: 'official',
         refId: 1,
         body: '안녕하세요. 강남점은 2층 전체가 여성 전용으로 운영되며, 샤워실·탈의실·운동 공간 모두 분리되어 있습니다. 24시간 출입 가능하고, 야간에는 여성 매니저가 상주합니다.',
@@ -102,7 +102,7 @@ export const QNA_LIST: QnaItem[] = [
   },
   {
     id: 2,
-    category: '가격',
+    category: '이용권',
     title: '단체 할인 가능할까요? 4명 등록 예정입니다.',
     body: '회사 동료 4명이 함께 등록하려고 하는데 단체 할인 정책이 있는지 궁금합니다. 또 3개월 vs 6개월 어느 쪽이 더 합리적인지 알려주세요.',
     authorName: '익명',
@@ -113,7 +113,7 @@ export const QNA_LIST: QnaItem[] = [
     answers: [
       {
         id: 21,
-        authorName: '판도 강남점',
+        authorName: 'FitGenie 강남점',
         role: 'official',
         refId: 1,
         body: '4인 이상 단체 등록 시 1인당 10%, 6인 이상은 15% 할인 적용됩니다. 6개월 등록이 단가 기준으로 가장 합리적이에요. 직접 방문 상담 시 1회 PT 체험을 무료로 드리고 있습니다.',
@@ -124,7 +124,7 @@ export const QNA_LIST: QnaItem[] = [
   },
   {
     id: 3,
-    category: '강사',
+    category: '운동',
     title: '재활 운동 전문 강사 추천 부탁드려요',
     body: '무릎 수술 후 재활 운동이 필요한데, 재활 케이스를 다뤄보신 강사님 추천해주실 수 있을까요? 50대 여성입니다.',
     authorName: mask('이성우'),
@@ -163,7 +163,7 @@ export const QNA_LIST: QnaItem[] = [
   },
   {
     id: 4,
-    category: '예약',
+    category: '이용권',
     title: 'GX 프로그램 당일 예약도 가능한가요?',
     body: '갑자기 시간이 비어서 오늘 GX 수업 들으러 가고 싶은데, 당일 예약이 가능한지 궁금해요.',
     authorName: mask('윤하늘'),
@@ -174,7 +174,7 @@ export const QNA_LIST: QnaItem[] = [
     answers: [
       {
         id: 41,
-        authorName: '판도 강남점',
+        authorName: 'FitGenie 강남점',
         role: 'official',
         refId: 1,
         body: '네, 당일 예약 가능합니다. 앱 > 클래스 메뉴에서 시작 30분 전까지 예약 가능하며, 자리가 남아있을 경우 현장 입실도 허용합니다.',
@@ -196,7 +196,7 @@ export const QNA_LIST: QnaItem[] = [
     answers: [
       {
         id: 51,
-        authorName: '판도 강남점',
+        authorName: 'FitGenie 강남점',
         role: 'official',
         refId: 1,
         body: '운동복·타올 대여 모두 무료입니다. 락커룸에 비치된 사이즈별 운동복을 자유롭게 사용하시면 됩니다.',
@@ -218,7 +218,7 @@ export const QNA_LIST: QnaItem[] = [
     answers: [
       {
         id: 61,
-        authorName: '판도 강남점',
+        authorName: 'FitGenie 강남점',
         role: 'official',
         refId: 1,
         body: '회원은 2시간 무료 주차 가능하며, 추가 시간은 30분당 1,000원입니다. PT 회원은 3시간까지 무료입니다.',
@@ -229,7 +229,7 @@ export const QNA_LIST: QnaItem[] = [
   },
   {
     id: 7,
-    category: '강사',
+    category: '운동',
     title: '바디프로필 준비 PT 추천',
     body: '8월에 바디프로필 촬영 예정입니다. 다이어트와 근비대를 같이 잡아주실 강사님 추천 부탁드려요.',
     authorName: mask('서민지'),
@@ -251,7 +251,7 @@ export const QNA_LIST: QnaItem[] = [
   },
   {
     id: 8,
-    category: '가격',
+    category: '이용권',
     title: 'PT 10회권 vs 20회권 어느 쪽이 좋을까요?',
     body: '처음 PT를 시작하려고 하는데 10회 끊고 효과 보면 추가하는게 나을지, 처음부터 20회 가는게 나을지 고민됩니다.',
     authorName: '익명',
@@ -271,7 +271,7 @@ export const QNA_LIST: QnaItem[] = [
       },
       {
         id: 82,
-        authorName: '판도 강남점',
+        authorName: 'FitGenie 강남점',
         role: 'official',
         refId: 1,
         body: '현재 신규 회원 대상으로 20회권 결제 시 인바디 6회 무료 + 식단 컨설팅 1회 제공 중입니다.',
@@ -282,7 +282,7 @@ export const QNA_LIST: QnaItem[] = [
   },
   {
     id: 9,
-    category: '예약',
+    category: '이용권',
     title: '예약 노쇼하면 패널티가 있나요?',
     body: '직장인이라 일정이 자주 바뀌는데, 노쇼 시 어떤 패널티가 있는지 알려주세요.',
     authorName: mask('조현우'),
@@ -293,7 +293,7 @@ export const QNA_LIST: QnaItem[] = [
     answers: [
       {
         id: 91,
-        authorName: '판도 강남점',
+        authorName: 'FitGenie 강남점',
         role: 'official',
         refId: 1,
         body: '시작 30분 이전 취소는 패널티가 없으며, 30분 이내 취소 또는 노쇼 시 1회권이 차감됩니다. 월 2회까지는 유예 처리됩니다.',
@@ -323,7 +323,7 @@ export const QNA_LIST: QnaItem[] = [
       },
       {
         id: 102,
-        authorName: '판도 강남점',
+        authorName: 'FitGenie 강남점',
         role: 'official',
         refId: 1,
         body: '하루 4회 정기 청소 + 매주 일요일 종합 방역을 진행하고 있습니다. 직접 방문 시 시설 투어 가능합니다.',
@@ -334,7 +334,7 @@ export const QNA_LIST: QnaItem[] = [
   },
   {
     id: 11,
-    category: '예약',
+    category: '이용권',
     title: '예약 변경/취소 어디서 하나요?',
     body: '앱에서 예약은 했는데, 변경/취소 메뉴가 안 보입니다.',
     authorName: '익명',
@@ -346,7 +346,7 @@ export const QNA_LIST: QnaItem[] = [
   },
   {
     id: 12,
-    category: '강사',
+    category: '운동',
     title: '필라테스 신규 강사 분 어떠세요?',
     body: '이번에 새로 오신 김수진 강사님 수업 들어보신 분 후기 부탁드려요.',
     authorName: mask('이연우'),
@@ -367,7 +367,7 @@ export const QNA_LIST: QnaItem[] = [
   },
   {
     id: 13,
-    category: '가격',
+    category: '이용권',
     title: '환불 규정이 어떻게 되나요?',
     body: '6개월 등록 후 사정상 1개월 이용했는데 환불 가능한가요?',
     authorName: '익명',
@@ -378,7 +378,7 @@ export const QNA_LIST: QnaItem[] = [
     answers: [
       {
         id: 131,
-        authorName: '판도 강남점',
+        authorName: 'FitGenie 강남점',
         role: 'official',
         refId: 1,
         body: '소비자보호법에 따라 이용 일수 + 위약금 10%를 제외한 금액을 환불해드립니다. 자세한 사항은 상담실 방문 또는 1:1 문의 부탁드립니다.',
@@ -400,7 +400,7 @@ export const QNA_LIST: QnaItem[] = [
     answers: [
       {
         id: 141,
-        authorName: '판도 강남점',
+        authorName: 'FitGenie 강남점',
         role: 'official',
         refId: 1,
         body: '회원은 월 2회 무료, 추가 측정은 1회 5,000원입니다. PT 회원은 무제한 무료 이용 가능합니다.',
@@ -422,7 +422,7 @@ export const QNA_LIST: QnaItem[] = [
     answers: [
       {
         id: 151,
-        authorName: '판도 강남점',
+        authorName: 'FitGenie 강남점',
         role: 'official',
         refId: 1,
         body: '1회 예약당 1시간이며, 빈 시간이 있을 경우 30분 단위로 연장 가능합니다. 주말은 예약 1시간 단위로만 운영됩니다.',
@@ -483,7 +483,7 @@ export const FAQ_LIST: FaqItem[] = [
     id: 1,
     category: '이용',
     question: '운영 시간이 어떻게 되나요?',
-    answer: '판도 강남점은 24시간 운영됩니다. 다만 안내 데스크는 평일 06:00~23:00, 주말 08:00~22:00에 운영되며, 그 외 시간은 무인 운영입니다.',
+    answer: 'FitGenie 강남점은 24시간 운영됩니다. 다만 안내 데스크는 평일 06:00~23:00, 주말 08:00~22:00에 운영되며, 그 외 시간은 무인 운영입니다.',
     helpfulCount: 412,
     popular: true,
   },

@@ -21,7 +21,7 @@ interface Trainer {
 const FACILITIES: Facility[] = [
   { icon: <Dumbbell className="w-5 h-5 text-primary" />, name: '헬스장', description: '최신 기구 완비, 프리웨이트 존 별도 운영' },
   { icon: <Users className="w-5 h-5 text-accent" />, name: 'PT룸', description: '1:1 개인 트레이닝 전용 공간' },
-  { icon: <Music className="w-5 h-5 text-primary" />, name: 'GX룸', description: '그룹 운동 수업 (요가, 필라테스, 에어로빅)' },
+  { icon: <Music className="w-5 h-5 text-primary" />, name: 'GX룸', description: '그룹 운동 수업 (요가, 필라테스, 스피닝, 줌바)' },
   { icon: <Lock className="w-5 h-5 text-state-warning" />, name: '락커룸', description: '개인 락커, 샤워실, 파우더룸 완비' },
   { icon: <Waves className="w-5 h-5 text-state-info" />, name: '스트레칭 존', description: '폼롤러, 밴드 등 스트레칭 용품 구비' },
   { icon: <Wifi className="w-5 h-5 text-state-success" />, name: '라운지', description: '무료 Wi-Fi, 단백질 음료 판매' },
@@ -32,7 +32,7 @@ const TRAINERS: Trainer[] = [
     name: '김민수',
     specialty: '체형교정 / 다이어트',
     experience: '경력 8년',
-    certifications: ['NSCA-CPT', '스포츠지도사 2급'],
+    certifications: ['NSCA-CPT', 'FG츠지도사 2급'],
   },
   {
     name: '이서연',
@@ -44,7 +44,7 @@ const TRAINERS: Trainer[] = [
     name: '박준혁',
     specialty: '근력강화 / 바디빌딩',
     experience: '경력 10년',
-    certifications: ['ACSM-CPT', '스포츠지도사 1급'],
+    certifications: ['ACSM-CPT', 'FG츠지도사 1급'],
   },
   {
     name: '최유진',
@@ -73,7 +73,7 @@ export default function CenterInfo() {
         <Card padding="lg">
           <div className="flex items-center gap-3 mb-4">
             <div className="w-12 h-12 bg-primary rounded-xl flex items-center justify-center">
-              <span className="text-white font-bold text-h4">스포</span>
+              <span className="text-white font-bold text-h4">FG</span>
             </div>
             <div>
               <h2 className="text-h4 font-bold">FitGenie 피트니스</h2>

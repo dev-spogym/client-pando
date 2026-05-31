@@ -1,3 +1,3 @@
 'use client';
 
-export { default } from '@/screens/market/ExploreHome';
+export { default } from '@/screens/Home';

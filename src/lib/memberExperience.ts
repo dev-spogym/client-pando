@@ -184,6 +184,37 @@ export interface WithdrawalRequest {
   status: 'none' | 'requested';
 }
 
+export type HealthDataConnectionStatus =
+  | 'connected'
+  | 'partial'
+  | 'delayed'
+  | 'disconnected'
+  | 'failed'
+  | 'connecting'
+  | 'unsupported';
+
+export type HealthDataPermissionStatus = 'granted' | 'partial' | 'denied';
+
+export interface HealthDataSummary {
+  steps7d: number;
+  steps30d: number;
+  distanceKm7d: number;
+  calories7d: number;
+  workoutSessions30d: number;
+  workoutDays30d: number;
+}
+
+export interface HealthDataState {
+  status: HealthDataConnectionStatus;
+  supported: boolean;
+  permissionStatus: HealthDataPermissionStatus;
+  serviceConsent: boolean;
+  sourceApp: string | null;
+  lastSyncedAt: string | null;
+  lastSyncResult: 'success' | 'partial' | 'failed' | null;
+  summary: HealthDataSummary;
+}
+
 export interface GolfInstructorSlot {
   id: string;
   instructorId: number;
@@ -455,43 +486,47 @@ function writeJson(key: string, value: unknown) {
 }
 
 function onboardingKey(memberId: number) {
-  return `spogym-onboarding-${memberId}`;
+  return `fitgenie-onboarding-${memberId}`;
 }
 
 function waitlistKey(memberId: number) {
-  return `spogym-waitlist-${memberId}`;
+  return `fitgenie-waitlist-${memberId}`;
 }
 
 function reservationKey(memberId: number) {
-  return `spogym-reservations-${memberId}`;
+  return `fitgenie-reservations-${memberId}`;
 }
 
 function feedbackKey(memberId: number) {
-  return `spogym-feedback-${memberId}`;
+  return `fitgenie-feedback-${memberId}`;
 }
 
 function settingsKey(memberId: number) {
-  return `spogym-settings-${memberId}`;
+  return `fitgenie-settings-${memberId}`;
 }
 
 function notificationReadKey(memberId: number) {
-  return `spogym-notification-read-${memberId}`;
+  return `fitgenie-notification-read-${memberId}`;
 }
 
 function paymentsKey(memberId: number) {
-  return `spogym-payments-${memberId}`;
+  return `fitgenie-payments-${memberId}`;
 }
 
 function consentsKey(memberId: number) {
-  return `spogym-consents-${memberId}`;
+  return `fitgenie-consents-${memberId}`;
 }
 
 function withdrawalKey(memberId: number) {
-  return `spogym-withdrawal-${memberId}`;
+  return `fitgenie-withdrawal-${memberId}`;
+}
+
+function healthDataKey(memberId: number) {
+  return `fitgenie-health-data-${memberId}`;
 }
 
 function golfBookingKey(memberId: number) {
-  return `spogym-golf-bookings-${memberId}`;
+  return `fitgenie-golf-bookings-${memberId}`;
 }
 
 export function loadOnboarding(memberId: number): OnboardingDraft {
@@ -933,6 +968,106 @@ export function loadWithdrawalRequest(memberId: number) {
 
 export function saveWithdrawalRequest(memberId: number, request: WithdrawalRequest) {
   writeJson(withdrawalKey(memberId), request);
+}
+
+function buildDefaultHealthDataState(memberId: number): HealthDataState {
+  const seed = Math.max(1, memberId % 100);
+  return {
+    status: 'disconnected',
+    supported: true,
+    permissionStatus: 'denied',
+    serviceConsent: false,
+    sourceApp: null,
+    lastSyncedAt: null,
+    lastSyncResult: null,
+    summary: {
+      steps7d: 42_000 + seed * 37,
+      steps30d: 168_000 + seed * 91,
+      distanceKm7d: 29.4 + seed / 20,
+      calories7d: 8_400 + seed * 12,
+      workoutSessions30d: 8 + (seed % 6),
+      workoutDays30d: 12 + (seed % 9),
+    },
+  };
+}
+
+function persistHealthDataState(memberId: number, state: HealthDataState) {
+  writeJson(healthDataKey(memberId), state);
+  return state;
+}
+
+export function loadHealthDataState(memberId: number): HealthDataState {
+  return readJson<HealthDataState>(healthDataKey(memberId), buildDefaultHealthDataState(memberId));
+}
+
+export function connectHealthData(memberId: number): HealthDataState {
+  const current = loadHealthDataState(memberId);
+  return persistHealthDataState(memberId, {
+    ...current,
+    status: 'connecting',
+    supported: true,
+    permissionStatus: 'granted',
+    serviceConsent: true,
+    sourceApp: 'Health Connect',
+    lastSyncResult: null,
+  });
+}
+
+export function syncHealthData(memberId: number): HealthDataState {
+  const current = loadHealthDataState(memberId);
+  if (!current.supported) {
+    return persistHealthDataState(memberId, {
+      ...current,
+      status: 'unsupported',
+      lastSyncResult: 'failed',
+    });
+  }
+
+  const status: HealthDataConnectionStatus = current.permissionStatus === 'partial'
+    ? 'partial'
+    : current.permissionStatus === 'denied'
+      ? 'failed'
+      : 'connected';
+
+  return persistHealthDataState(memberId, {
+    ...current,
+    status,
+    serviceConsent: current.permissionStatus !== 'denied',
+    sourceApp: current.sourceApp ?? 'Health Connect',
+    lastSyncedAt: new Date().toISOString(),
+    lastSyncResult: current.permissionStatus === 'partial'
+      ? 'partial'
+      : current.permissionStatus === 'denied'
+        ? 'failed'
+        : 'success',
+  });
+}
+
+export function setHealthDataPermissionStatus(
+  memberId: number,
+  permissionStatus: HealthDataPermissionStatus
+): HealthDataState {
+  const current = loadHealthDataState(memberId);
+  return persistHealthDataState(memberId, {
+    ...current,
+    permissionStatus,
+    status: permissionStatus === 'granted' ? 'connected' : permissionStatus === 'partial' ? 'partial' : 'failed',
+    serviceConsent: permissionStatus !== 'denied',
+    sourceApp: permissionStatus === 'denied' ? current.sourceApp : current.sourceApp ?? 'Health Connect',
+    lastSyncedAt: permissionStatus === 'denied' ? current.lastSyncedAt : new Date().toISOString(),
+    lastSyncResult: permissionStatus === 'granted' ? 'success' : permissionStatus === 'partial' ? 'partial' : 'failed',
+  });
+}
+
+export function disconnectHealthData(memberId: number): HealthDataState {
+  const current = loadHealthDataState(memberId);
+  return persistHealthDataState(memberId, {
+    ...current,
+    status: 'disconnected',
+    permissionStatus: 'denied',
+    serviceConsent: false,
+    sourceApp: null,
+  });
 }
 
 export function getGolfInstructorSlots() {

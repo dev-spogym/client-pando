@@ -123,9 +123,16 @@ function BottomMiniCard({
   const repPrice = center.representativeProduct.price;
 
   return (
-    <button
-      type="button"
+    <div
+      role="button"
+      tabIndex={0}
       onClick={onClick}
+      onKeyDown={(event) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          onClick();
+        }
+      }}
       className={`shrink-0 w-56 bg-surface rounded-card-lg p-3 text-left shadow-card-soft transition-all duration-150
         ${active ? 'ring-2 ring-primary shadow-card-elevated' : ''}`}
     >
@@ -161,7 +168,7 @@ function BottomMiniCard({
           상세보기
         </button>
       </div>
-    </button>
+    </div>
   );
 }
 

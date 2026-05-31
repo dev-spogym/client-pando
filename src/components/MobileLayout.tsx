@@ -22,7 +22,8 @@ const HIDE_TAB_PATHS = [
 ];
 
 /** 상세 화면 중 탭바를 숨길 prefix */
-const HIDE_TAB_PREFIXES = ['/classes/', '/shop/', '/centers/', '/trainers/', '/messages/'];
+const HIDE_TAB_PREFIXES = ['/classes/', '/shop/', '/trainers/', '/messages/'];
+const CENTER_TAB_PATHS = ['/centers', '/centers/search', '/centers/map'];
 
 /** 트레이너 탭바를 숨길 경로 */
 const HIDE_TRAINER_TAB_PATHS = ['/login', '/register'];
@@ -42,6 +43,14 @@ function matchesRolePath(pathname: string, rolePath: string): boolean {
   return pathname === rolePath || pathname.startsWith(`${rolePath}/`);
 }
 
+function isCenterDetailPath(pathname: string): boolean {
+  if (CENTER_TAB_PATHS.includes(pathname)) {
+    return false;
+  }
+
+  return pathname.startsWith('/centers/');
+}
+
 /** 모바일 레이아웃 (헤더 + 탭바) */
 export default function MobileLayout({ children }: { children: React.ReactNode }) {
   const location = useLocation();
@@ -57,7 +66,8 @@ export default function MobileLayout({ children }: { children: React.ReactNode }
   const hideFcTab = HIDE_FC_TAB_PREFIXES.some((p) => location.pathname.startsWith(p));
   const hideStaffTab = HIDE_STAFF_TAB_PREFIXES.some((p) => location.pathname.startsWith(p));
   const hideMemberTab = HIDE_TAB_PATHS.some((p) => location.pathname.startsWith(p))
-    || HIDE_TAB_PREFIXES.some((p) => location.pathname.startsWith(p));
+    || HIDE_TAB_PREFIXES.some((p) => location.pathname.startsWith(p))
+    || isCenterDetailPath(location.pathname);
 
   const hideTab = isFcPath
     ? hideFcTab

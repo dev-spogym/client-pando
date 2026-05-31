@@ -20,6 +20,8 @@ import {
 const AUTH_INIT_TIMEOUT_MS = 3000;
 const EMPLOYEE_ID_STORAGE_KEY = 'employee_id';
 const EMPLOYEE_USERNAME_STORAGE_KEY = 'employee_username';
+const MEMBER_AUTH_DOMAINS = ['member.fitgenie.app', 'member.spogym.app'];
+const EMPLOYEE_AUTH_DOMAINS = ['fitgenie.local', 'spogym.local'];
 let initializePromise: Promise<void> | null = null;
 
 /** 회원 정보 타입 */
@@ -100,18 +102,14 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     set({ loading: true });
     try {
       const cleanPhone = phone.replace(/-/g, '');
-      const email = `${cleanPhone}@member.fitgenie.app`;
 
       // 1) Supabase Auth로 로그인 시도
-      const { error: authError } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
+      const { error: authError } = await signInWithDomains(cleanPhone, password, MEMBER_AUTH_DOMAINS);
 
       if (authError) {
         if (typeof window !== 'undefined') {
           // eslint-disable-next-line no-console
-          console.warn('[Auth] signIn failed:', authError.message);
+          console.warn('[Auth] signIn failed:', getAuthErrorMessage(authError));
         }
 
         // 2) Auth 실패 — 회원 정보가 있으면 가입이 필요한 상태로 안내
@@ -191,11 +189,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     set({ loading: true });
     try {
       // Supabase Auth로 직원 로그인
-      const email = `${username}@fitgenie.local`;
-      const { error: authError } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
+      const { error: authError } = await signInWithDomains(username, password, EMPLOYEE_AUTH_DOMAINS);
 
       if (authError) {
         set({ loading: false });
@@ -388,7 +382,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         if (session?.user) {
           const userEmail = session.user.email || '';
 
-          if (userEmail.endsWith('@fitgenie.local')) {
+          if (isAuthEmailDomain(userEmail, EMPLOYEE_AUTH_DOMAINS)) {
             const username = userEmail.split('@')[0];
             const user = await getTrainerByUsername(username);
             if (user) {
@@ -423,7 +417,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
             }
           }
 
-          if (userEmail.endsWith('@member.fitgenie.app')) {
+          if (isAuthEmailDomain(userEmail, MEMBER_AUTH_DOMAINS)) {
             const phone = userEmail.split('@')[0];
             const member = await getMemberByPhone(phone);
             if (member) {
@@ -600,6 +594,37 @@ async function getMemberByPhone(phone: string) {
   );
 
   return result?.data ?? null;
+}
+
+async function signInWithDomains(identifier: string, password: string, domains: string[]) {
+  let lastError: unknown = null;
+
+  for (const domain of domains) {
+    const { error } = await supabase.auth.signInWithPassword({
+      email: `${identifier}@${domain}`,
+      password,
+    });
+
+    if (!error) {
+      return { error: null };
+    }
+
+    lastError = error;
+  }
+
+  return { error: lastError };
+}
+
+function getAuthErrorMessage(error: unknown) {
+  if (error && typeof error === 'object' && 'message' in error) {
+    return String(error.message);
+  }
+
+  return 'Unknown auth error';
+}
+
+function isAuthEmailDomain(email: string, domains: string[]) {
+  return domains.some((domain) => email.endsWith(`@${domain}`));
 }
 
 function saveEmployeeSession(id: number, username: string, role: UserRole) {

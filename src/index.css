@@ -468,6 +468,32 @@ body {
   padding-bottom: calc(16px + var(--safe-bottom));
 }
 
+@media (min-width: 700px) {
+  .mobile-fixed-width.bottom-0 {
+    bottom: 12px;
+  }
+
+  .bottom-action-bar {
+    left: calc((100vw - min(52vw, var(--content-max-width)) - min(32rem, max(280px, calc(48vw - 36px))) - 12px) / 2 + min(52vw, var(--content-max-width)) / 2);
+    bottom: 12px;
+    width: min(52vw, var(--content-max-width));
+    max-width: min(52vw, var(--content-max-width));
+  }
+}
+
+@media (min-width: 1024px) {
+  .mobile-fixed-width.bottom-0 {
+    bottom: 24px;
+  }
+
+  .bottom-action-bar {
+    left: calc((100vw - var(--content-max-width) - min(30rem, calc(100vw - var(--content-max-width) - 5rem)) - 24px) / 2 + var(--content-max-width) / 2);
+    bottom: 24px;
+    width: var(--content-max-width);
+    max-width: var(--content-max-width);
+  }
+}
+
 /* ─────────────────────────────────────────
  * 진행률 바
  * ───────────────────────────────────────── */

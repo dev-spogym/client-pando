@@ -62,6 +62,64 @@ function getMockDataNotes(doc: Client2ScreenDoc): string[] {
   return ['회원명, 이용권, 예약, 알림 등 화면 데이터는 검수용 목업으로 표시합니다.', '빈 상태와 정상 상태가 모두 화면 의도와 맞아야 합니다.'];
 }
 
+function getStateNotes(doc: Client2ScreenDoc): string[] {
+  if (doc.domain.includes('결제')) {
+    return ['결제 전 확인 상태, 결제 진행 상태, 결제 완료 상태, 결제 실패 상태가 구분되어야 합니다.', '환불 또는 취소가 있는 화면은 요청 전/요청 완료/처리 중/처리 완료 상태를 확인할 수 있어야 합니다.', '금액, 할인, 마일리지, 결제수단 표시는 사용자가 오해하지 않도록 같은 순서와 단위로 유지합니다.'];
+  }
+
+  if (doc.domain.includes('트레이너')) {
+    return ['오늘 할 일이 있는 상태와 없는 상태가 모두 자연스럽게 보여야 합니다.', '수업은 예정, 진행 가능, 완료, 노쇼, 서명 필요, 확인서 발급 같은 상태가 구분되어야 합니다.', '회원 기록 화면은 저장 전 입력 상태와 저장 후 반영 상태가 화면에서 분명해야 합니다.'];
+  }
+
+  if (doc.domain.includes('FC') || doc.domain.includes('스태프')) {
+    return ['업무 대상이 있는 상태와 없는 상태를 모두 확인할 수 있어야 합니다.', '상담, 메모, 출석 처리 등 현장 업무는 처리 전/처리 후 상태가 분명해야 합니다.', '권한상 볼 수 없는 정보는 숨기고, 필요한 다음 행동만 남겨야 합니다.'];
+  }
+
+  if (doc.domain.includes('탐색')) {
+    return ['추천 목록, 검색 결과 있음, 검색 결과 없음, 필터 적용 상태가 구분되어야 합니다.', '센터/강사/리뷰 상세는 정보가 부족한 경우에도 화면 구조가 깨지면 안 됩니다.', '스크랩, 문의, 예약 같은 다음 행동은 현재 대상의 상태에 맞게 노출되어야 합니다.'];
+  }
+
+  if (doc.domain.includes('리워드')) {
+    return ['보유 혜택 있음, 보유 혜택 없음, 만료 예정, 사용 완료 상태가 구분되어야 합니다.', '등급과 마일리지는 현재 값, 다음 조건, 이력 정보가 서로 혼동되지 않아야 합니다.', '혜택 사용이 불가능한 경우에도 이유와 다음 행동이 보여야 합니다.'];
+  }
+
+  if (doc.domain.includes('커뮤니티')) {
+    return ['목록 있음, 목록 없음, 작성 중, 답변 완료, 신고 처리 중 상태가 구분되어야 합니다.', '비공개 또는 제한된 항목은 사용자가 이유를 이해할 수 있게 안내해야 합니다.', '작성/신고/차단처럼 민감한 행동은 완료 전 확인과 완료 후 상태가 필요합니다.'];
+  }
+
+  if (doc.domain.includes('시스템')) {
+    return ['정상 사용 가능, 권한 필요, 네트워크 오류, 점검, 업데이트 필요 상태가 구분되어야 합니다.', '사용자가 직접 해결할 수 있는 상태는 설정/재시도/업데이트 행동을 제공합니다.', '앱 사용이 막히는 상태에서도 현재 이유와 다음 행동이 먼저 보여야 합니다.'];
+  }
+
+  return ['정상 상태, 데이터 없음 상태, 제한 상태, 완료 상태가 화면에서 구분되어야 합니다.', '사용자가 다음 행동을 선택해야 하는 화면은 주요 CTA가 하나로 분명해야 합니다.', '상태 안내 문구는 짧고 구체적으로 표시합니다.'];
+}
+
+function getPublishingCheckpoints(doc: Client2ScreenDoc): string[] {
+  const base = [
+    '모바일 앱 폭에서 정보가 잘리지 않고, 데스크톱 검수 화면에서는 왼쪽 앱과 오른쪽 설명이 동시에 보여야 합니다.',
+    '버튼, 탭, 카드, 리스트, 배지, 빈 상태가 같은 디자인 톤으로 정리되어야 합니다.',
+    '문구는 개발 용어가 아니라 사용자가 이해하는 업무/서비스 용어로 표시해야 합니다.',
+  ];
+
+  if (doc.domain.includes('결제')) {
+    return [...base, '금액과 상태 배지는 한눈에 구분되어야 하고, 실패/환불 상태는 성공 상태와 색상과 문구가 섞이면 안 됩니다.'];
+  }
+
+  if (doc.domain.includes('트레이너') || doc.domain.includes('FC') || doc.domain.includes('스태프')) {
+    return [...base, '업무 화면은 반복 사용을 전제로 하므로 핵심 정보와 처리 버튼이 스크롤 없이 먼저 인지되어야 합니다.'];
+  }
+
+  if (doc.domain.includes('탐색')) {
+    return [...base, '검색/필터/상세 이동이 자연스럽게 이어지고, 카드 정보 밀도가 과하지 않아야 합니다.'];
+  }
+
+  if (doc.domain.includes('커뮤니티')) {
+    return [...base, '작성, 신고, 차단 같은 행동은 버튼 문구와 완료 피드백이 명확해야 합니다.'];
+  }
+
+  return base;
+}
+
 export default function Client2DescriptionPanel() {
   const location = useLocation();
   const doc = getClient2ScreenDoc(location.pathname);
@@ -86,12 +144,14 @@ export default function Client2DescriptionPanel() {
 
   const flowSteps = getFlowSteps(doc);
   const mockDataNotes = getMockDataNotes(doc);
+  const stateNotes = getStateNotes(doc);
+  const publishingCheckpoints = getPublishingCheckpoints(doc);
 
   return (
     <aside className="client2-doc-panel hidden lg:flex" aria-label="client2 화면 설명">
       <div className="client2-doc-scroll">
         <div className="client2-doc-header">
-          <p className="client2-doc-eyebrow">기획 기준 화면 설명</p>
+          <p className="client2-doc-eyebrow">기획자 화면 설명서</p>
           <h2 className="client2-doc-title">{doc.title}</h2>
         </div>
 
@@ -139,9 +199,27 @@ export default function Client2DescriptionPanel() {
         </div>
 
         <div className="client2-doc-section">
+          <h3>상태별 표현</h3>
+          <ul>
+            {stateNotes.map((item) => (
+              <li key={item}>{item}</li>
+            ))}
+          </ul>
+        </div>
+
+        <div className="client2-doc-section">
           <h3>목업 데이터 기준</h3>
           <ul>
             {mockDataNotes.map((item) => (
+              <li key={item}>{item}</li>
+            ))}
+          </ul>
+        </div>
+
+        <div className="client2-doc-section">
+          <h3>퍼블리싱 검수 기준</h3>
+          <ul>
+            {publishingCheckpoints.map((item) => (
               <li key={item}>{item}</li>
             ))}
           </ul>

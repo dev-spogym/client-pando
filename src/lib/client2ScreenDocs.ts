@@ -839,7 +839,15 @@ function patternToRegex(pattern: string): RegExp {
 export function getClient2ScreenDoc(pathname: string): Client2ScreenDoc | undefined {
   const normalized = normalizePath(pathname);
 
+  const exactMatch = client2ScreenDocs.find((doc) =>
+    doc.patterns.some((pattern) => normalizePath(pattern) === normalized),
+  );
+
+  if (exactMatch) {
+    return exactMatch;
+  }
+
   return client2ScreenDocs.find((doc) =>
-    doc.patterns.some((pattern) => patternToRegex(pattern).test(normalized)),
+    doc.patterns.some((pattern) => pattern.includes(':') && patternToRegex(pattern).test(normalized)),
   );
 }

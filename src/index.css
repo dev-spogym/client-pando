@@ -82,6 +82,9 @@ body {
   height: 100%;
   min-height: 100%;
   overflow: hidden;
+  /* fixed 자손(바텀시트·모달·액션바)을 앱 프레임 안으로 가두는 containing block.
+   * 데스크톱 검수 2단 레이아웃에서 오버레이가 오른쪽 설명 패널로 새지 않게 한다. */
+  transform: translateZ(0);
 }
 
 .mobile-main {
@@ -96,16 +99,18 @@ body {
   touch-action: pan-y;
 }
 
+/* 프레임이 containing block이므로 fixed 요소는 프레임 폭을 그대로 채운다. */
 .mobile-fixed-width {
-  left: 50%;
-  width: min(var(--content-max-width), calc(100vw - var(--safe-left) - var(--safe-right)));
-  max-width: calc(100vw - var(--safe-left) - var(--safe-right));
-  transform: translateX(-50%);
+  left: 0;
+  right: 0;
+  width: 100%;
+  max-width: 100%;
+  transform: none;
 }
 
 .mobile-bottom-sheet {
-  width: min(var(--content-max-width), calc(100vw - var(--safe-left) - var(--safe-right)));
-  max-width: calc(100vw - var(--safe-left) - var(--safe-right));
+  width: 100%;
+  max-width: 100%;
 }
 
 .mobile-fab {
@@ -274,18 +279,7 @@ body {
     height: calc(100dvh - 24px);
   }
 
-  .mobile-fixed-width,
-  .bottom-action-bar {
-    left: calc((100vw - min(52vw, var(--content-max-width)) - min(32rem, max(280px, calc(48vw - 36px))) - 12px) / 2 + min(52vw, var(--content-max-width)) / 2);
-    width: min(52vw, var(--content-max-width));
-    max-width: min(52vw, var(--content-max-width));
-  }
-
-  .mobile-bottom-sheet,
-  .mobile-floating-banner,
-  .mobile-floating-banner-top {
-    margin-left: 0;
-  }
+  /* 프레임이 containing block이라 별도 left 계산 없이 프레임 폭을 채운다. */
 }
 
 @media (min-width: 1024px) {
@@ -311,12 +305,7 @@ body {
     height: calc(100dvh - 48px);
   }
 
-  .mobile-fixed-width,
-  .bottom-action-bar {
-    left: calc((100vw - var(--content-max-width) - min(30rem, calc(100vw - var(--content-max-width) - 5rem)) - 24px) / 2 + var(--content-max-width) / 2);
-    width: var(--content-max-width);
-    max-width: var(--content-max-width);
-  }
+  /* 프레임이 containing block이라 별도 left 계산 없이 프레임 폭을 채운다. */
 }
 
 @keyframes slideDown {
@@ -461,10 +450,11 @@ body {
 /* 하단 고정 액션 바 (다음/결제 버튼 등) */
 .bottom-action-bar {
   @apply fixed bottom-0 z-50 bg-surface border-t border-line p-4;
-  left: 50%;
-  width: min(var(--content-max-width), calc(100vw - var(--safe-left) - var(--safe-right)));
-  max-width: calc(100vw - var(--safe-left) - var(--safe-right));
-  transform: translateX(-50%);
+  /* 프레임 containing block 안에서 좌우를 가득 채운다. */
+  left: 0;
+  right: 0;
+  width: 100%;
+  max-width: 100%;
   padding-bottom: calc(16px + var(--safe-bottom));
 }
 
@@ -474,10 +464,7 @@ body {
   }
 
   .bottom-action-bar {
-    left: calc((100vw - min(52vw, var(--content-max-width)) - min(32rem, max(280px, calc(48vw - 36px))) - 12px) / 2 + min(52vw, var(--content-max-width)) / 2);
     bottom: 12px;
-    width: min(52vw, var(--content-max-width));
-    max-width: min(52vw, var(--content-max-width));
   }
 }
 
@@ -487,10 +474,7 @@ body {
   }
 
   .bottom-action-bar {
-    left: calc((100vw - var(--content-max-width) - min(30rem, calc(100vw - var(--content-max-width) - 5rem)) - 24px) / 2 + var(--content-max-width) / 2);
     bottom: 24px;
-    width: var(--content-max-width);
-    max-width: var(--content-max-width);
   }
 }
 

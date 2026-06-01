@@ -124,7 +124,12 @@ export default function Withdrawal() {
 
       <div className="bottom-action-bar">
         <div className="max-w-lg mx-auto">
-          <Button variant="danger" fullWidth onClick={handleSubmit}>
+          <Button
+            variant="danger"
+            fullWidth
+            onClick={handleSubmit}
+            disabled={!reason || !agree}
+          >
             탈퇴 요청하기
           </Button>
         </div>

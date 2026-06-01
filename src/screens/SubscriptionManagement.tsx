@@ -1,22 +1,33 @@
 'use client';
 
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { AlertTriangle, CalendarDays, CreditCard, PauseCircle, PlayCircle, RefreshCw, XCircle } from 'lucide-react';
 import { Badge, Button, Card, PageHeader } from '@/components/ui';
 
 const BILLING_HISTORY = [
-  { id: 'b-001', date: '2026-05-10', amount: 99000, status: '결제완료' },
-  { id: 'b-002', date: '2026-04-10', amount: 99000, status: '결제완료' },
-  { id: 'b-003', date: '2026-03-10', amount: 99000, status: '결제완료' },
+  { id: 'b-001', date: '2026.05.10', amount: 99000, status: '결제완료' },
+  { id: 'b-002', date: '2026.04.10', amount: 99000, status: '결제완료' },
+  { id: 'b-003', date: '2026.03.10', amount: 99000, status: '결제완료' },
 ];
 
 export default function SubscriptionManagement() {
+  const navigate = useNavigate();
   const [paused, setPaused] = useState(false);
 
   const handlePauseToggle = () => {
-    setPaused((value) => !value);
-    toast.success(paused ? '자동결제를 재개했어요' : '자동결제를 일시정지했어요');
+    // 다음 상태값 기준으로 토스트 메시지 결정 (갱신 전 값 참조 버그 수정)
+    const next = !paused;
+    setPaused(next);
+    toast.success(next ? '자동결제를 일시정지했어요' : '자동결제를 재개했어요');
+  };
+
+  const handleCancelSubscription = () => {
+    const confirmed = window.confirm('정말 구독을 해지하시겠어요? 본인 확인 후 진행됩니다.');
+    if (confirmed) {
+      toast.success('구독 해지 요청이 접수되었어요');
+    }
   };
 
   return (
@@ -57,7 +68,7 @@ export default function SubscriptionManagement() {
               <p className="text-body font-semibold text-content">기본 결제수단</p>
               <p className="mt-1 text-body-sm text-content-secondary">현대카드 **** 4412</p>
             </div>
-            <Button variant="ghost" size="sm" onClick={() => toast.message('결제수단 화면으로 이동합니다')}>
+            <Button variant="ghost" size="sm" onClick={() => navigate('/payment-methods')}>
               변경
             </Button>
           </div>
@@ -71,7 +82,7 @@ export default function SubscriptionManagement() {
           <Button
             variant="ghost"
             size="lg"
-            onClick={() => toast.error('구독 해지는 본인 확인 후 진행됩니다')}
+            onClick={handleCancelSubscription}
           >
             <XCircle className="h-4 w-4" />
             해지

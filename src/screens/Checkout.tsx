@@ -1,4 +1,4 @@
-import { Check, CreditCard } from 'lucide-react';
+import { Check, CreditCard, Tag } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -10,6 +10,7 @@ import {
   type PaymentMethod,
   type ProductCategory,
 } from '@/lib/memberExperience';
+import { AVAILABLE_COUPONS, type CartCoupon } from '@/lib/orders';
 import { isPreviewMode } from '@/lib/preview';
 import { cn, formatCurrency } from '@/lib/utils';
 import { Button, Card, PageHeader } from '@/components/ui';
@@ -22,6 +23,8 @@ export default function Checkout() {
   const { member } = useAuthStore();
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('CARD');
   const [mileageUsed, setMileageUsed] = useState(0);
+  // MA-142: 쿠폰 1장 선택 상태 (null = 선택 없음)
+  const [selectedCoupon, setSelectedCoupon] = useState<CartCoupon | null>(null);
   const [memo, setMemo] = useState('');
   const [agree, setAgree] = useState(false);
   const [paying, setPaying] = useState(false);
@@ -76,7 +79,10 @@ export default function Checkout() {
 
   const methods = getPaymentMethodOptions();
   const maxMileage = Math.min(member.mileage, Math.floor(order.price / 1000) * 1000);
-  const totalPrice = Math.max(0, order.price - mileageUsed);
+  // 쿠폰 할인 금액 (미선택 시 0)
+  const couponDiscount = selectedCoupon ? selectedCoupon.discount : 0;
+  // 상품금액 - 쿠폰할인 - 마일리지 = 최종 결제금액 (음수 방지)
+  const totalPrice = Math.max(0, order.price - couponDiscount - mileageUsed);
 
   const handlePay = async () => {
     if (!agree) {
@@ -98,6 +104,9 @@ export default function Checkout() {
           amount: totalPrice,
           originalAmount: order.price,
           mileageUsed,
+          // MA-142: 적용 쿠폰 정보
+          couponId: selectedCoupon?.id ?? null,
+          couponDiscount,
           paymentMethod,
           cardCompany: paymentMethod === 'CARD' ? '앱 카드' : paymentMethod === 'NAVERPAY' ? '네이버페이' : paymentMethod === 'KAKAOPAY' ? '카카오페이' : null,
           receiptTitle: order.productName,
@@ -121,6 +130,7 @@ export default function Checkout() {
           category: order.category,
           amount: totalPrice,
           originalAmount: order.price,
+          // MA-142: 쿠폰 할인은 totalPrice(amount)에 이미 반영됨. 마일리지와 합산.
           mileageUsed,
           paymentMethod,
           cardCompany: paymentMethod === 'CARD' ? '앱 카드' : paymentMethod === 'NAVERPAY' ? '네이버페이' : paymentMethod === 'KAKAOPAY' ? '카카오페이' : null,
@@ -164,6 +174,57 @@ export default function Checkout() {
             <InfoRow label="이름" value={member.name} />
             <InfoRow label="연락처" value={member.phone} />
             <InfoRow label="회원 상태" value={member.membershipType || '일반 회원'} />
+          </div>
+        </Card>
+
+        {/* MA-142: 쿠폰 선택 섹션 */}
+        <Card variant="soft" padding="lg">
+          <div className="flex items-center gap-2 mb-3">
+            <Tag className="w-4 h-4 text-primary" />
+            <h3 className="text-body font-semibold">쿠폰 선택</h3>
+          </div>
+          <p className="text-caption text-content-tertiary mb-3">쿠폰은 1장만 적용됩니다.</p>
+          <div className="space-y-2">
+            {AVAILABLE_COUPONS.map((coupon) => {
+              const isEligible = order.price >= coupon.minAmount;
+              const isSelected = selectedCoupon?.id === coupon.id;
+              return (
+                <button
+                  key={coupon.id}
+                  disabled={!isEligible}
+                  onClick={() => setSelectedCoupon(isSelected ? null : coupon)}
+                  className={cn(
+                    'w-full rounded-xl border p-4 text-left transition-colors',
+                    isEligible
+                      ? isSelected
+                        ? 'border-primary bg-primary-light'
+                        : 'border-line bg-surface hover:border-primary/50'
+                      : 'border-line bg-surface-secondary opacity-50 cursor-not-allowed'
+                  )}
+                >
+                  <div className="flex items-center justify-between gap-3">
+                    <div>
+                      <p className="text-body-sm font-semibold">{coupon.name}</p>
+                      {!isEligible && (
+                        <p className="text-caption text-state-warning mt-0.5">
+                          최소 {formatCurrency(coupon.minAmount)} 이상 결제 시 사용 가능
+                        </p>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-2 shrink-0">
+                      <span className={cn('text-body-sm font-bold', isEligible ? 'text-primary' : 'text-content-tertiary')}>
+                        -{formatCurrency(coupon.discount)}
+                      </span>
+                      {isSelected && (
+                        <div className="w-6 h-6 rounded-full bg-primary text-white flex items-center justify-center">
+                          <Check className="w-3.5 h-3.5" />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </button>
+              );
+            })}
           </div>
         </Card>
 
@@ -252,9 +313,28 @@ export default function Checkout() {
 
       <div className="bottom-action-bar">
         <div className="max-w-lg mx-auto space-y-3">
-          <div className="flex items-center justify-between text-body-sm">
-            <span className="text-content-secondary">최종 결제 금액</span>
-            <span className="text-h3 font-bold">{formatCurrency(totalPrice)}</span>
+          {/* 결제 요약: 상품금액 - 쿠폰할인 - 마일리지 = 최종 결제금액 */}
+          <div className="space-y-1.5 text-body-sm">
+            <div className="flex items-center justify-between">
+              <span className="text-content-secondary">상품 금액</span>
+              <span>{formatCurrency(order.price)}</span>
+            </div>
+            {couponDiscount > 0 && (
+              <div className="flex items-center justify-between text-primary">
+                <span>쿠폰 할인</span>
+                <span>-{formatCurrency(couponDiscount)}</span>
+              </div>
+            )}
+            {mileageUsed > 0 && (
+              <div className="flex items-center justify-between text-primary">
+                <span>마일리지 사용</span>
+                <span>-{mileageUsed.toLocaleString()}P</span>
+              </div>
+            )}
+            <div className="flex items-center justify-between pt-1 border-t border-line">
+              <span className="text-content-secondary font-medium">최종 결제 금액</span>
+              <span className="text-h3 font-bold">{formatCurrency(totalPrice)}</span>
+            </div>
           </div>
           <Button
             variant="primary"

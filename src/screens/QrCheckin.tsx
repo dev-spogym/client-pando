@@ -1,12 +1,18 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
-import { ArrowLeft, RefreshCw, Shield } from 'lucide-react';
+import { ArrowLeft, RefreshCw, Shield, CalendarClock } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '@/stores/authStore';
 import { isPreviewMode } from '@/lib/preview';
 import { cn } from '@/lib/utils';
 
-/** QR 체크인 페이지 - 60초 유효 QR 생성 */
+/**
+ * QR 체크인 페이지
+ * MA-110: 7일 회전 토큰 정책 표기 + 보안 코드 60초 갱신 유지
+ *
+ * 화면 밝기 자동 최대화: Web API(Screen Brightness)는 현재 미지원.
+ * 실 앱(WebView)에서는 네이티브 브리지로 처리 필요.
+ */
 export default function QrCheckin() {
   const navigate = useNavigate();
   const { member } = useAuthStore();
@@ -15,6 +21,18 @@ export default function QrCheckin() {
   const [isExpired, setIsExpired] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+
+  // MA-110: 7일 토큰 발급일 — 마운트 시점을 발급일로 사용 (mock)
+  const tokenIssuedAt = useMemo(() => new Date(), []);
+
+  /** 7일 토큰 D-day 계산: 발급일 기준 7일째 만료 */
+  const tokenDday = useMemo(() => {
+    const expiresAt = new Date(tokenIssuedAt);
+    expiresAt.setDate(expiresAt.getDate() + 7);
+    const diffMs = expiresAt.getTime() - Date.now();
+    const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+    return Math.max(0, diffDays);
+  }, [tokenIssuedAt]);
 
   /** 서버 서명 QR 토큰 발급 */
   const generateQr = useCallback(async () => {
@@ -100,6 +118,21 @@ export default function QrCheckin() {
         <h1 className="flex-1 text-center font-semibold text-h4 text-white pr-6">QR 체크인</h1>
       </header>
 
+      {/* MA-110: 7일 회전 토큰 D-day 카드 */}
+      <div className="px-6 pt-2 pb-0">
+        <div className="bg-white/10 rounded-2xl px-4 py-3 flex items-center gap-3">
+          <CalendarClock className="w-5 h-5 text-white/80 shrink-0" />
+          <div className="flex-1 min-w-0">
+            <p className="text-white text-body-sm font-semibold">
+              이 QR은 7일마다 자동 갱신됩니다
+            </p>
+            <p className="text-white/70 text-caption mt-0.5">
+              {tokenDday === 0 ? '오늘 만료 · 자동 갱신 예정' : `유효기간 D-${tokenDday}`}
+            </p>
+          </div>
+        </div>
+      </div>
+
       {/* QR 표시 영역 */}
       <div className="flex-1 flex flex-col items-center justify-center px-8">
         <div className="qr-container flex flex-col items-center w-full max-w-xs">
@@ -157,7 +190,7 @@ export default function QrCheckin() {
                 'text-body font-medium',
                 remainSeconds > 15 ? 'text-white/70' : 'text-state-error'
               )}>
-                {errorMessage || (isExpired ? '만료됨 - 자동 갱신 중...' : `${remainSeconds}초 후 자동 갱신`)}
+                {errorMessage || (isExpired ? '보안 코드 갱신 중...' : `보안 코드 회전 ${remainSeconds}초`)}
               </span>
             </div>
           </div>

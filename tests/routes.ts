@@ -180,6 +180,7 @@ export const SYSTEM_ROUTES: RouteCase[] = [
 export const PUBLIC_ROUTES: RouteCase[] = [
   { label: '로그인', path: '/login', role: 'public', ma: 'MA-001' },
   { label: '앱 가입/연동', path: '/register', role: 'public', ma: 'MA-002' },
+  { label: '퍼블리싱 허브', path: '/publishing', role: 'public', ma: 'MA-960' },
   { label: '디자인 가이드(member)', path: '/publishing/member', role: 'public', ma: 'MA-960' },
   { label: '디자인 가이드(trainer)', path: '/publishing/trainer', role: 'public' },
   { label: '디자인 가이드(fc)', path: '/publishing/fc', role: 'public' },

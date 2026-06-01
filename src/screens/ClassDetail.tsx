@@ -5,6 +5,7 @@ import { toast } from 'sonner';
 import { getPreviewClassById, isPreviewMode, updatePreviewTrainerClass } from '@/lib/preview';
 import {
   createLessonBookingRequest,
+  getLocalLessonCounts,
   getMemberLessonBookingRequests,
   getPendingLessonRequestForClass,
   updateLessonBookingRequestStatus,
@@ -22,6 +23,7 @@ import {
   addWaitlistEntry,
   cancelReservation,
   getReservation,
+  getReservations,
   getWaitlistEntry,
   upsertReservation,
   type WaitlistEntry,
@@ -146,6 +148,30 @@ export default function ClassDetail() {
     if (pendingRequest) {
       toast.info('이미 승인 대기 중인 예약 요청이에요.');
       return;
+    }
+
+    // 동일 시간대 중복 예약 차단 (E_RESERVATION_001)
+    const classStart = new Date(classData.startTime).getTime();
+    const classEnd = new Date(classData.endTime).getTime();
+    const hasTimeOverlap = getReservations(member.id).some((r) =>
+      r.classId !== classData.id
+      && r.status !== 'cancelled'
+      && new Date(r.startTime).getTime() < classEnd
+      && new Date(r.endTime).getTime() > classStart
+    );
+    if (hasTimeOverlap) {
+      toast.error('같은 시간대에 이미 예약된 수업이 있어요.');
+      return;
+    }
+
+    // 횟수제 이용권 잔여 0회 차단 (E_RESERVATION_002) — PT 등 승인형 수업
+    if (classData.type === 'PT') {
+      const counts = getLocalLessonCounts(member.id);
+      const remaining = counts.reduce((sum, c) => sum + Math.max(0, (c.totalCount ?? 0) - (c.usedCount ?? 0)), 0);
+      if (counts.length > 0 && remaining <= 0) {
+        toast.error('이용권 잔여 횟수가 없어요. 이용권을 먼저 구매해 주세요.');
+        return;
+      }
     }
 
     setReserving(true);

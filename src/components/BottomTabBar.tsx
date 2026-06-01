@@ -4,7 +4,7 @@ import { cn } from '@/lib/utils';
 
 const tabs = [
   { path: '/', label: '홈', icon: Home, exact: true },
-  { path: '/orders', label: '예약', icon: CalendarCheck },
+  { path: '/classes', label: '예약', icon: CalendarCheck },
   { path: '/centers', label: '센터', icon: Building2 },
   { path: '/trainers', label: '강사', icon: UserSquare2 },
   { path: '/profile', label: 'MY', icon: User },

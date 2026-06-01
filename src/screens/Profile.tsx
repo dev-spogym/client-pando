@@ -137,6 +137,7 @@ export default function Profile() {
       title: '내 정보',
       items: [
         { icon: Heart, label: '찜한 항목', path: '/scrap', badge: scrapCount > 0 ? `${scrapCount}` : undefined, color: 'text-state-sale' },
+        { icon: CalendarDays, label: '내 주문/예약', path: '/orders', color: 'text-primary' },
         { icon: Scale, label: '체성분 / FMS', path: '/body-composition', color: 'text-primary' },
         { icon: Coins, label: '마일리지', path: '/mileage', badge: `${member.mileage.toLocaleString()}P`, color: 'text-state-warning' },
         { icon: Gift, label: '리워드 센터', path: '/coupons?tab=badge', color: 'text-state-warning' },

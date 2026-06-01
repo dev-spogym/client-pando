@@ -10,7 +10,6 @@ import {
   Train,
   CalendarCheck,
   CreditCard,
-  MessageSquare,
   Activity,
   Star,
   ChevronRight,
@@ -133,10 +132,10 @@ function QuickLocationCards() {
 
 // ─── 퀵 액션 바 ───────────────────────────────────────────────
 const QUICK_ACTIONS = [
-  { label: '예약하기', icon: CalendarCheck, path: '/classes', color: 'text-primary' },
-  { label: '내 회원권', icon: CreditCard, path: '/membership', color: 'text-accent' },
-  { label: '커뮤니티', icon: MessageSquare, path: '/notices', color: 'text-state-info' },
-  { label: '건강기록', icon: Activity, path: '/workout-log', color: 'text-state-success' },
+  { label: '수업 예약', icon: CalendarCheck, path: '/classes', color: 'text-primary' },
+  { label: 'QR 입장', icon: QrIcon, path: '/qr', color: 'text-accent' },
+  { label: '체성분', icon: Activity, path: '/body-composition', color: 'text-state-info' },
+  { label: '스토어', icon: CreditCard, path: '/shop', color: 'text-state-success' },
 ];
 
 function QuickActions() {
@@ -203,7 +202,7 @@ function MyCenterSection() {
         {/* 빠른 액션 3개 */}
         <div className="grid grid-cols-3 gap-2">
           {[
-            { label: '예약', icon: CalendarCheck, path: '/classes' },
+            { label: '내 예약', icon: CalendarCheck, path: '/lessons' },
             { label: 'QR 입장', icon: QrIcon, path: '/qr' },
             { label: '이용권', icon: BookOpen, path: '/membership' },
           ].map(({ label, icon: Icon, path }) => (

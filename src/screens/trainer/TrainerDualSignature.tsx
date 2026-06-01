@@ -9,7 +9,28 @@ import {
   signTrainerForClass,
 } from '@/lib/mockOperations';
 import { formatDateKo, formatTime } from '@/lib/utils';
+import SignaturePad from '@/components/SignaturePad';
 import { PageHeader, Card, Button, Badge, Chip } from '@/components/ui';
+
+/** 회원 서명 거부 → 매니저 에스컬레이션 (MA-312 분쟁 처리) */
+function DeclineButton({ onDecline }: { onDecline: () => void }) {
+  return (
+    <Button
+      variant="ghost"
+      size="md"
+      fullWidth
+      className="mt-2 text-state-error"
+      onClick={() => {
+        const proceed = typeof window === 'undefined'
+          || window.confirm('회원이 "수업을 진행하지 않았습니다"로 서명을 거부합니다. 매니저에게 에스컬레이션할까요?');
+        if (!proceed) return;
+        onDecline();
+      }}
+    >
+      서명 거부
+    </Button>
+  );
+}
 
 export default function TrainerDualSignature() {
   const navigate = useNavigate();
@@ -18,6 +39,8 @@ export default function TrainerDualSignature() {
   const [mode, setMode] = useState<'face_to_face' | 'remote'>('remote');
   const [version, setVersion] = useState(0);
   const [declined, setDeclined] = useState(false);
+  const [trainerSigImg, setTrainerSigImg] = useState<string | null>(null);
+  const [memberSigImg, setMemberSigImg] = useState<string | null>(null);
 
   const trainerClass = useMemo(() => getTrainerClassById(classId), [classId, version]);
   const certificate = useMemo(() => getCertificateByClassId(classId), [classId, version]);
@@ -77,18 +100,25 @@ export default function TrainerDualSignature() {
             <PenTool className="w-4 h-4 text-primary" />
             <p className="text-body font-semibold">1단계. 강사 서명</p>
           </div>
-          <Button
-            variant={trainerSigned ? 'secondary' : 'primary'}
-            size="lg"
-            fullWidth
-            onClick={() => {
-              signTrainerForClass(classId, mode);
-              setVersion((value) => value + 1);
-              toast.success('강사 서명을 저장했어요.');
-            }}
-          >
-            {trainerSigned ? '강사 서명 완료됨' : '강사 서명 저장'}
-          </Button>
+          {trainerSigned ? (
+            <div className="rounded-card bg-surface-secondary p-3 text-center">
+              {trainerSigImg && (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={trainerSigImg} alt="강사 서명" className="mx-auto mb-2 h-20 object-contain" />
+              )}
+              <p className="text-body-sm font-semibold text-state-success">강사 서명 완료됨</p>
+            </div>
+          ) : (
+            <SignaturePad
+              saveLabel="강사 서명 저장"
+              onComplete={({ image }) => {
+                setTrainerSigImg(image);
+                signTrainerForClass(classId, mode);
+                setVersion((value) => value + 1);
+                toast.success('강사 서명을 저장했어요.');
+              }}
+            />
+          )}
         </Card>
 
         <Card variant="elevated" padding="md">
@@ -97,15 +127,6 @@ export default function TrainerDualSignature() {
             <p className="text-body font-semibold">2단계. 회원 서명</p>
           </div>
 
-          {trainerSigned && !memberSigned && !declined && (
-            <div className="mb-3 rounded-card bg-primary-light p-3">
-              <p className="text-body-sm font-bold text-primary">“수업을 정상 수강했습니다”</p>
-              <p className="mt-1 text-caption text-content-secondary">
-                회원님이 위 내용을 확인한 뒤 서명해 주세요. 동의하지 않으면 아래에서 서명을 거부할 수 있어요.
-              </p>
-            </div>
-          )}
-
           {declined ? (
             <div className="rounded-card bg-state-error/10 p-3">
               <p className="text-body-sm font-semibold text-state-error">회원이 서명을 거부했어요</p>
@@ -113,38 +134,53 @@ export default function TrainerDualSignature() {
                 분쟁 처리를 위해 센터 매니저에게 에스컬레이션되었습니다. 앱에서는 추가 처리할 수 없어요.
               </p>
             </div>
+          ) : memberSigned ? (
+            <div className="rounded-card bg-surface-secondary p-3 text-center">
+              {memberSigImg && (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={memberSigImg} alt="회원 서명" className="mx-auto mb-2 h-20 object-contain" />
+              )}
+              <p className="text-body-sm font-semibold text-state-success">회원 서명 완료됨</p>
+            </div>
+          ) : !trainerSigned ? (
+            <p className="rounded-card bg-surface-secondary p-3 text-center text-body-sm text-content-tertiary">
+              강사 서명을 먼저 완료해 주세요.
+            </p>
+          ) : mode === 'face_to_face' ? (
+            <>
+              <SignaturePad
+                notice="수업을 정상 수강했습니다"
+                saveLabel="회원 서명 완료"
+                onComplete={({ image }) => {
+                  setMemberSigImg(image);
+                  signMemberForClass(classId);
+                  setVersion((value) => value + 1);
+                  toast.success('회원 서명을 완료했어요.');
+                }}
+              />
+              <DeclineButton onDecline={() => { setDeclined(true); toast.message('서명이 거부되어 매니저에게 전달했어요.'); }} />
+            </>
           ) : (
             <>
+              <div className="mb-3 rounded-card bg-primary-light p-3">
+                <p className="text-body-sm font-bold text-primary">“수업을 정상 수강했습니다”</p>
+                <p className="mt-1 text-caption text-content-secondary">
+                  회원 앱으로 서명 요청이 발송됩니다. (검수용 시뮬레이션)
+                </p>
+              </div>
               <Button
-                variant={memberSigned ? 'secondary' : 'primary'}
+                variant="primary"
                 size="lg"
                 fullWidth
-                disabled={!trainerSigned}
                 onClick={() => {
                   signMemberForClass(classId);
                   setVersion((value) => value + 1);
                   toast.success('회원 서명을 완료했어요.');
                 }}
               >
-                {memberSigned ? '회원 서명 완료됨' : mode === 'remote' ? '원격 서명 완료 시뮬레이션' : '대면 서명 완료'}
+                원격 서명 완료 시뮬레이션
               </Button>
-              {trainerSigned && !memberSigned && (
-                <Button
-                  variant="ghost"
-                  size="md"
-                  fullWidth
-                  className="mt-2 text-state-error"
-                  onClick={() => {
-                    const proceed = typeof window === 'undefined'
-                      || window.confirm('회원이 "수업을 진행하지 않았습니다"로 서명을 거부합니다. 매니저에게 에스컬레이션할까요?');
-                    if (!proceed) return;
-                    setDeclined(true);
-                    toast.message('서명이 거부되어 매니저에게 전달했어요.');
-                  }}
-                >
-                  서명 거부
-                </Button>
-              )}
+              <DeclineButton onDecline={() => { setDeclined(true); toast.message('서명이 거부되어 매니저에게 전달했어요.'); }} />
             </>
           )}
         </Card>

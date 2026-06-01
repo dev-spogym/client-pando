@@ -24,6 +24,63 @@ const MEMBER_AUTH_DOMAINS = ['member.fitgenie.app', 'member.spogym.app'];
 const EMPLOYEE_AUTH_DOMAINS = ['fitgenie.local', 'spogym.local'];
 let initializePromise: Promise<void> | null = null;
 
+// 로그인 실패 잠금 정책: 5회 연속 실패 시 30분 잠금 (클라이언트 측 가드)
+const LOGIN_MAX_ATTEMPTS = 5;
+const LOGIN_LOCK_MINUTES = 30;
+
+function loginLockKey(identifier: string) {
+  return `login_attempts_${identifier}`;
+}
+
+function getLoginLock(identifier: string): { locked: boolean; minutesLeft: number } {
+  if (typeof window === 'undefined') return { locked: false, minutesLeft: 0 };
+  try {
+    const raw = window.localStorage.getItem(loginLockKey(identifier));
+    if (!raw) return { locked: false, minutesLeft: 0 };
+    const { count, firstAt } = JSON.parse(raw) as { count: number; firstAt: number };
+    const elapsedMin = (Date.now() - firstAt) / 60_000;
+    if (count >= LOGIN_MAX_ATTEMPTS && elapsedMin < LOGIN_LOCK_MINUTES) {
+      return { locked: true, minutesLeft: Math.max(1, Math.ceil(LOGIN_LOCK_MINUTES - elapsedMin)) };
+    }
+    if (elapsedMin >= LOGIN_LOCK_MINUTES) {
+      window.localStorage.removeItem(loginLockKey(identifier));
+    }
+    return { locked: false, minutesLeft: 0 };
+  } catch {
+    return { locked: false, minutesLeft: 0 };
+  }
+}
+
+/** 로그인 실패를 기록하고 남은 시도 횟수를 반환한다. */
+function registerLoginFailure(identifier: string): number {
+  if (typeof window === 'undefined') return LOGIN_MAX_ATTEMPTS;
+  try {
+    const raw = window.localStorage.getItem(loginLockKey(identifier));
+    const prev = raw ? (JSON.parse(raw) as { count: number; firstAt: number }) : { count: 0, firstAt: Date.now() };
+    const elapsedMin = (Date.now() - prev.firstAt) / 60_000;
+    const base = elapsedMin >= LOGIN_LOCK_MINUTES ? { count: 0, firstAt: Date.now() } : prev;
+    const next = { count: base.count + 1, firstAt: base.firstAt };
+    window.localStorage.setItem(loginLockKey(identifier), JSON.stringify(next));
+    return Math.max(0, LOGIN_MAX_ATTEMPTS - next.count);
+  } catch {
+    return LOGIN_MAX_ATTEMPTS;
+  }
+}
+
+function clearLoginFailures(identifier: string) {
+  if (typeof window === 'undefined') return;
+  try {
+    window.localStorage.removeItem(loginLockKey(identifier));
+  } catch {
+    /* noop */
+  }
+}
+
+/** 탈퇴 처리된 회원인지 판정한다. */
+function isWithdrawnMember(row: Record<string, unknown>): boolean {
+  return String(row.status ?? '').toUpperCase() === 'WITHDRAWN';
+}
+
 /** 회원 정보 타입 */
 export interface MemberProfile {
   id: number;
@@ -103,6 +160,13 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     try {
       const cleanPhone = phone.replace(/-/g, '');
 
+      // 0) 로그인 시도 잠금 확인 (5회 실패 → 30분 잠금)
+      const lock = getLoginLock(cleanPhone);
+      if (lock.locked) {
+        set({ loading: false });
+        return { error: `로그인 시도가 5회를 초과했습니다. ${lock.minutesLeft}분 후 다시 시도해 주세요.` };
+      }
+
       // 1) Supabase Auth로 로그인 시도
       const { error: authError } = await signInWithDomains(cleanPhone, password, MEMBER_AUTH_DOMAINS);
 
@@ -120,16 +184,23 @@ export const useAuthStore = create<AuthState>((set, get) => ({
           .limit(1)
           .maybeSingle();
 
-        set({ loading: false });
-
+        // 가입 안내 케이스는 비밀번호 오류가 아니므로 실패 카운트에서 제외
         if (existingMember) {
+          set({ loading: false });
           return {
             error: '앱 가입이 필요합니다. 아래 "앱 연동하기"를 눌러 비밀번호를 설정해 주세요.',
           };
         }
 
-        return { error: '전화번호 또는 비밀번호가 올바르지 않습니다.' };
+        const remaining = registerLoginFailure(cleanPhone);
+        set({ loading: false });
+        if (remaining <= 0) {
+          return { error: '로그인 시도가 5회를 초과해 30분간 잠겼습니다. 잠시 후 다시 시도해 주세요.' };
+        }
+        return { error: `전화번호 또는 비밀번호가 올바르지 않습니다. (남은 시도 ${remaining}회)` };
       }
+
+      clearLoginFailures(cleanPhone);
 
       // 3) Auth 성공 — 회원 정보 조회
       const { data: member } = await supabase
@@ -149,6 +220,11 @@ export const useAuthStore = create<AuthState>((set, get) => ({
           .maybeSingle();
 
         if (memberByPhone) {
+          if (isWithdrawnMember(memberByPhone)) {
+            await supabase.auth.signOut();
+            set({ loading: false });
+            return { error: '탈퇴 처리된 계정입니다. 센터에 문의해 주세요.' };
+          }
           set({
             member: mapMemberProfile(memberByPhone),
             userRole: 'member',
@@ -163,6 +239,12 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
         set({ loading: false });
         return { error: '등록된 회원 정보를 찾을 수 없습니다. 센터에 문의해 주세요.' };
+      }
+
+      if (isWithdrawnMember(member)) {
+        await supabase.auth.signOut();
+        set({ loading: false });
+        return { error: '탈퇴 처리된 계정입니다. 센터에 문의해 주세요.' };
       }
 
       set({

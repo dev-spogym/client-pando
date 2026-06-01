@@ -6,6 +6,7 @@ import { Star, X } from 'lucide-react';
 import { toast } from 'sonner';
 import { PageHeader, Card, Button, Badge } from '@/components/ui';
 import { getCenterById, img } from '@/lib/marketplace';
+import { useAuthStore } from '@/stores/authStore';
 import { cn } from '@/lib/utils';
 
 const FACILITY_ITEMS = ['시설 청결도', '강사 친절', '운동 효과', '편의시설', '가격 만족도'] as const;
@@ -63,6 +64,7 @@ function StarInput({
 export default function CenterReviewWrite() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const member = useAuthStore((s) => s.member);
   const center = getCenterById(Number(id));
 
   const [overallRating, setOverallRating] = useState(0);
@@ -93,6 +95,11 @@ export default function CenterReviewWrite() {
 
   const handleSubmit = () => {
     if (!isValid || submitting) return;
+    // 이용권을 보유(구매)한 회원만 후기 작성 가능 (기획 MA-350)
+    if (!member?.membershipType) {
+      toast.error('이용권을 구매한 회원만 후기를 작성할 수 있어요.');
+      return;
+    }
     setSubmitting(true);
     toast.success('후기가 등록되었어요.');
     setTimeout(() => {

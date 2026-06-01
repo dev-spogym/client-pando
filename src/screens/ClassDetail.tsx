@@ -307,6 +307,16 @@ export default function ClassDetail() {
     }
 
     if (!reserved) return;
+
+    // 취소 마감 정책: 수업 시작 N시간 전(기본 2시간)이 지난 뒤 취소하면 노쇼로 처리될 수 있다.
+    const CANCEL_CUTOFF_HOURS = 2;
+    const hoursUntilStart = (new Date(classData.startTime).getTime() - Date.now()) / 3_600_000;
+    if (hoursUntilStart >= 0 && hoursUntilStart < CANCEL_CUTOFF_HOURS) {
+      const proceed = typeof window === 'undefined'
+        || window.confirm('취소 마감 시간이 지났어요. 지금 취소하면 노쇼로 처리되고 횟수가 복원되지 않을 수 있어요. 그래도 취소할까요?');
+      if (!proceed) return;
+    }
+
     setReserving(true);
 
     if (isPreviewMode()) {

@@ -32,7 +32,7 @@ export const client2ScreenDocs: Client2ScreenDoc[] = [
     patterns: ['/login'],
     purpose: '회원, 트레이너, 골프강사, FC, 스태프가 같은 앱에서 역할별 세션으로 진입하는 화면입니다.',
     ui: ['휴대폰/계정 로그인', '역할별 미리보기 진입', '가입 및 계정 복구 진입'],
-    rules: ['관리자 역할은 회원앱 로그인 대상이 아닙니다.', '로그인 성공 후 역할에 맞는 홈으로 이동합니다.'],
+    rules: ['관리자 역할은 회원앱 로그인 대상이 아닙니다.', '로그인 성공 후 역할에 맞는 홈으로 이동합니다.', '비밀번호 5회 연속 실패 시 30분간 잠금됩니다.', '탈퇴 처리된 계정은 로그인할 수 없습니다.'],
     evidence: COMMON_SOURCE,
   },
   {
@@ -42,8 +42,8 @@ export const client2ScreenDocs: Client2ScreenDoc[] = [
     source: 'client2/C01-공통-회원/회원앱.md',
     patterns: ['/register'],
     purpose: 'CRM에 등록된 회원 정보를 앱 계정과 연결하거나 신규 앱 가입을 진행합니다.',
-    ui: ['본인 확인', '센터/회원 정보 확인', '약관 및 건강 데이터 동의'],
-    rules: ['CRM 회원 매칭 결과에 따라 가입 플로우를 분기합니다.', '필수 동의가 완료되어야 앱 사용이 가능합니다.'],
+    ui: ['본인 확인 (이름·전화번호)', 'SMS 인증번호 6자리 입력', '비밀번호 설정 (영문+숫자 8자 이상)'],
+    rules: ['CRM 회원 매칭 결과에 따라 가입 플로우를 분기합니다.', 'SMS 인증번호는 6자리이며, 비밀번호는 영문과 숫자를 포함해 8자 이상이어야 합니다.', '가입 완료 후 자동 로그인되어 신규 회원 환영(MA-900)으로 진입합니다.'],
     evidence: COMMON_SOURCE,
   },
   {
@@ -87,7 +87,7 @@ export const client2ScreenDocs: Client2ScreenDoc[] = [
     patterns: ['/classes/:id'],
     purpose: '선택한 수업의 상세 정보와 예약/취소 가능 여부를 확인합니다.',
     ui: ['수업 정보', '강사 정보', '예약/취소 CTA'],
-    rules: ['예약 가능 여부는 이용권, 정원, 시간 정책을 모두 반영합니다.', '상세 화면에서는 하단 탭을 숨깁니다.'],
+    rules: ['예약 가능 여부는 이용권, 정원, 시간 정책을 모두 반영합니다.', '취소 마감 시간(수업 시작 2시간 전) 이후 취소는 노쇼로 처리될 수 있어 확인을 받습니다.', '시작 시각이 지난 수업은 예약/취소 행동을 노출하지 않습니다.', '상세 화면에서는 하단 탭을 숨깁니다.'],
     evidence: COMMON_SOURCE,
   },
   {
@@ -252,7 +252,7 @@ export const client2ScreenDocs: Client2ScreenDoc[] = [
     patterns: ['/checkout/:productId', '/checkout/:productId/option', '/checkout/manual', '/payment/personal'],
     purpose: '상품 옵션 선택부터 결제 요청까지 이어지는 구매 흐름입니다.',
     ui: ['옵션 선택', '결제 금액', 'Toss 결제 진입'],
-    rules: ['직접 개인결제는 제한/대체 안내 기준을 따릅니다.', '결제 실패는 MA-812 화면으로 분기합니다.'],
+    rules: ['직접 개인결제는 제한/대체 안내 기준을 따릅니다.', '결제 실패는 완료로 처리하지 않고 결제 실패 화면(MA-812)으로 분기합니다.'],
     evidence: COMMON_SOURCE,
   },
   {
@@ -626,7 +626,7 @@ export const client2ScreenDocs: Client2ScreenDoc[] = [
     patterns: ['/centers/:id/reviews', '/centers/:id/review'],
     purpose: '센터 리뷰를 조회하거나 작성합니다.',
     ui: ['리뷰 목록', '리뷰 작성', '평점/태그'],
-    rules: ['작성 권한과 중복 작성 여부를 확인합니다.', '신고/차단 정책은 C07 기준과 연결합니다.'],
+    rules: ['이용권을 보유(구매)한 회원만 후기를 작성할 수 있습니다.', '별점·동의·30자 이상 본문이 모두 충족되어야 등록됩니다.', '신고/차단 정책은 C07 기준과 연결합니다.'],
     evidence: COMMON_SOURCE,
   },
   {

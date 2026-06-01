@@ -10,6 +10,7 @@ import {
   type PaymentMethod,
   type ProductCategory,
 } from '@/lib/memberExperience';
+import { isPreviewMode } from '@/lib/preview';
 import { cn, formatCurrency } from '@/lib/utils';
 import { Button, Card, PageHeader } from '@/components/ui';
 
@@ -112,21 +113,29 @@ export default function Checkout() {
       toast.success('결제가 완료되었습니다.');
       navigate(`/payments/${result.data.id}`, { replace: true });
     } catch {
-      const payment = createMockPayment(member.id, {
-        productId: order.productId,
-        productName: order.productName,
-        category: order.category,
-        amount: totalPrice,
-        originalAmount: order.price,
-        mileageUsed,
-        paymentMethod,
-        cardCompany: paymentMethod === 'CARD' ? '앱 카드' : paymentMethod === 'NAVERPAY' ? '네이버페이' : paymentMethod === 'KAKAOPAY' ? '카카오페이' : null,
-        receiptTitle: order.productName,
-        orderMemo: memo || null,
-      });
+      // preview(데모) 모드에서만 mock 결제를 생성해 완료 화면 흐름을 보여준다.
+      if (isPreviewMode()) {
+        const payment = createMockPayment(member.id, {
+          productId: order.productId,
+          productName: order.productName,
+          category: order.category,
+          amount: totalPrice,
+          originalAmount: order.price,
+          mileageUsed,
+          paymentMethod,
+          cardCompany: paymentMethod === 'CARD' ? '앱 카드' : paymentMethod === 'NAVERPAY' ? '네이버페이' : paymentMethod === 'KAKAOPAY' ? '카카오페이' : null,
+          receiptTitle: order.productName,
+          orderMemo: memo || null,
+        });
 
-      toast.success('결제가 완료되었습니다.');
-      navigate(`/payments/${payment.id}`, { replace: true });
+        toast.success('결제가 완료되었습니다.');
+        navigate(`/payments/${payment.id}`, { replace: true });
+        return;
+      }
+
+      // 실서비스: 결제 실패는 완료로 처리하지 않고 실패 화면으로 분기한다.
+      toast.error('결제에 실패했습니다. 다시 시도해주세요.');
+      navigate('/checkout/failure', { replace: true });
     } finally {
       setPaying(false);
     }

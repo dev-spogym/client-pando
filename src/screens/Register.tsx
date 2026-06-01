@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { Lock, Phone, ShieldCheck, User } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase } from '@/lib/supabase';
+import { useAuthStore } from '@/stores/authStore';
 import { cn } from '@/lib/utils';
 import { Button, PageHeader } from '@/components/ui';
 
@@ -54,17 +55,19 @@ export default function Register() {
   };
 
   const handleVerify = () => {
-    if (verifyCode === '0000' || verifyCode.length === 4) {
-      toast.success('휴대폰 인증이 완료되었습니다.');
-      setStep('password');
-    } else {
-      toast.error('인증번호가 올바르지 않습니다.');
+    // SMS 인증번호는 6자리 (기획 MA-002)
+    if (!/^\d{6}$/.test(verifyCode)) {
+      toast.error('인증번호 6자리를 정확히 입력해 주세요.');
+      return;
     }
+    toast.success('휴대폰 인증이 완료되었습니다.');
+    setStep('password');
   };
 
   const handleSetPassword = async () => {
-    if (password.length < 6) {
-      toast.error('비밀번호는 6자 이상이어야 합니다.');
+    // 비밀번호는 영문+숫자 조합 8자 이상 (기획 MA-002)
+    if (password.length < 8 || !/[A-Za-z]/.test(password) || !/[0-9]/.test(password)) {
+      toast.error('비밀번호는 영문과 숫자를 포함해 8자 이상이어야 합니다.');
       return;
     }
     if (password !== confirmPassword) {
@@ -105,8 +108,10 @@ export default function Register() {
         return;
       }
 
-      toast.success('앱 연동이 완료되었습니다. 로그인 후 온보딩을 진행해 주세요.');
-      navigate('/login', { replace: true });
+      // 가입 완료 → 자동 로그인 후 신규 회원 환영(MA-900)으로 진입
+      toast.success('앱 연동이 완료되었습니다. 환영합니다!');
+      const { error: loginError } = await useAuthStore.getState().login(cleanPhone, password);
+      navigate(loginError ? '/login' : '/onboarding-welcome', { replace: true });
     } catch {
       toast.error('네트워크 오류가 발생했습니다.');
     }
@@ -195,15 +200,15 @@ export default function Register() {
           <div className="space-y-6">
             <div>
               <h2 className="text-h2 font-bold mb-2">휴대폰 인증을 진행해 주세요</h2>
-              <p className="text-body text-content-secondary">{phone}로 전송된 4자리 코드를 입력하세요.</p>
+              <p className="text-body text-content-secondary">{phone}로 전송된 6자리 코드를 입력하세요.</p>
             </div>
             <div className="relative">
               <ShieldCheck className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-content-tertiary" />
               <input
                 type="number"
                 value={verifyCode}
-                onChange={(event) => setVerifyCode(event.target.value.slice(0, 4))}
-                placeholder="인증번호 4자리"
+                onChange={(event) => setVerifyCode(event.target.value.replace(/\D/g, '').slice(0, 6))}
+                placeholder="인증번호 6자리"
                 className="w-full pl-12 pr-4 py-4 rounded-input border border-line bg-surface text-content placeholder:text-content-tertiary focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary text-body-lg tracking-widest"
                 inputMode="numeric"
               />

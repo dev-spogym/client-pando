@@ -10,6 +10,9 @@ import {
   type AttendanceStatus,
 } from '@/lib/mockOperations';
 import { cn, formatDateKo, formatTime } from '@/lib/utils';
+
+/** MA-212: 수업 시작 가능 시각 범위(분) */
+const START_WINDOW_MINUTES = 15;
 import { PageHeader, Button, Card, Badge, EmptyState } from '@/components/ui';
 
 const STATUS_OPTIONS: Array<{ key: AttendanceStatus; label: string }> = [
@@ -34,7 +37,25 @@ export default function TrainerClassDetail() {
 
   const refresh = () => setVersion((value) => value + 1);
 
+  /** MA-212: 수업 시작 가능 시각 범위 계산(시작시각 ±15분) */
+  const startWindowLabel = useMemo(() => {
+    const base = new Date(trainerClass.startTime);
+    const from = new Date(base.getTime() - START_WINDOW_MINUTES * 60 * 1000);
+    const to = new Date(base.getTime() + START_WINDOW_MINUTES * 60 * 1000);
+    const fmt = (d: Date) =>
+      `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+    return `시작 가능: ${fmt(from)} ~ ${fmt(to)}`;
+  }, [trainerClass.startTime]);
+
   const handleStart = () => {
+    // MA-212: 수업 시작 버튼은 예정 시각 ±15분 범위 내에서만 허용
+    const now = Date.now();
+    const base = new Date(trainerClass.startTime).getTime();
+    const window = START_WINDOW_MINUTES * 60 * 1000;
+    if (now < base - window || now > base + window) {
+      toast.error('수업 시작은 예정 시각 전후 15분 이내에만 가능해요.');
+      return;
+    }
     setTrainerClassStatus(trainerClass.id, 'in_progress');
     toast.success('수업 시작되었어요.');
     refresh();
@@ -140,6 +161,10 @@ export default function TrainerClassDetail() {
             <CircleAlert className="w-4 h-4 text-state-warning" />
             <p className="text-body font-semibold">운영 액션</p>
           </div>
+          {/* MA-212: 수업 시작 가능 시각 범위 안내 */}
+          {trainerClass.status === 'scheduled' && (
+            <p className="mb-3 text-caption text-content-tertiary">{startWindowLabel}</p>
+          )}
           <div className="grid grid-cols-2 gap-3">
             <Button
               variant="primary"

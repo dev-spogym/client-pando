@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 import { PenTool, ShieldCheck } from 'lucide-react';
@@ -41,6 +41,61 @@ export default function TrainerDualSignature() {
   const [declined, setDeclined] = useState(false);
   const [trainerSigImg, setTrainerSigImg] = useState<string | null>(null);
   const [memberSigImg, setMemberSigImg] = useState<string | null>(null);
+
+  // MA-312: 원격 서명 요청 발송 시각 (null = 아직 요청 전)
+  const [remoteSentAt, setRemoteSentAt] = useState<Date | null>(null);
+  // 카운트다운 표시용 잔여 초
+  const [remainSecs, setRemainSecs] = useState(0);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  const EXPIRE_MS = 24 * 60 * 60 * 1000;   // 24시간
+  const REMIND_MS = 12 * 60 * 60 * 1000;   // 12시간
+
+  useEffect(() => {
+    if (!remoteSentAt) return;
+
+    // 인터벌 시작
+    const tick = () => {
+      const elapsed = Date.now() - remoteSentAt.getTime();
+      const remain = Math.max(0, EXPIRE_MS - elapsed);
+      setRemainSecs(Math.floor(remain / 1000));
+    };
+    tick();
+    intervalRef.current = setInterval(tick, 1000);
+
+    return () => {
+      if (intervalRef.current !== null) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+    };
+  }, [remoteSentAt]);
+
+  /** HH:MM:SS 포맷 변환 */
+  const formatCountdown = (secs: number) => {
+    const h = Math.floor(secs / 3600);
+    const m = Math.floor((secs % 3600) / 60);
+    const s = secs % 60;
+    return [h, m, s].map((v) => String(v).padStart(2, '0')).join(':');
+  };
+
+  const isExpired = remoteSentAt !== null && remainSecs === 0;
+  const isRemindDue =
+    remoteSentAt !== null &&
+    !isExpired &&
+    Date.now() - remoteSentAt.getTime() >= REMIND_MS;
+
+  /** 원격 서명 요청 발송 (타이머 시작) */
+  const handleRemoteRequest = () => {
+    setRemoteSentAt(new Date());
+    toast.success('회원 앱으로 서명 요청을 발송했어요.');
+  };
+
+  /** 만료 후 재요청 — 타이머 리셋 */
+  const handleRemoteReset = () => {
+    setRemoteSentAt(new Date());
+    toast.success('서명 요청을 재발송했어요.');
+  };
 
   const trainerClass = useMemo(() => getTrainerClassById(classId), [classId, version]);
   const certificate = useMemo(() => getCertificateByClassId(classId), [classId, version]);
@@ -163,23 +218,70 @@ export default function TrainerDualSignature() {
           ) : (
             <>
               <div className="mb-3 rounded-card bg-primary-light p-3">
-                <p className="text-body-sm font-bold text-primary">“수업을 정상 수강했습니다”</p>
+                <p className="text-body-sm font-bold text-primary">"수업을 정상 수강했습니다"</p>
                 <p className="mt-1 text-caption text-content-secondary">
-                  회원 앱으로 서명 요청이 발송됩니다. (검수용 시뮬레이션)
+                  회원 앱으로 서명 요청을 발송합니다. 24시간 내 서명이 없으면 만료돼요.
                 </p>
               </div>
-              <Button
-                variant="primary"
-                size="lg"
-                fullWidth
-                onClick={() => {
-                  signMemberForClass(classId);
-                  setVersion((value) => value + 1);
-                  toast.success('회원 서명을 완료했어요.');
-                }}
-              >
-                원격 서명 완료 시뮬레이션
-              </Button>
+
+              {/* MA-312: 요청 전 — 발송 버튼 */}
+              {!remoteSentAt && (
+                <Button variant="primary" size="lg" fullWidth onClick={handleRemoteRequest}>
+                  원격 서명 요청 발송
+                </Button>
+              )}
+
+              {/* MA-312: 요청 후 — 카운트다운 / 리마인드 배지 / 만료 처리 */}
+              {remoteSentAt && (
+                <div className="space-y-2">
+                  {isExpired ? (
+                    <div className="rounded-card bg-state-error/10 p-3 text-center">
+                      <p className="text-body-sm font-semibold text-state-error">
+                        원격 서명 요청이 만료되었어요. 재요청이 필요해요.
+                      </p>
+                      <Button
+                        variant="primary"
+                        size="md"
+                        fullWidth
+                        className="mt-2"
+                        onClick={handleRemoteReset}
+                      >
+                        재요청 발송
+                      </Button>
+                    </div>
+                  ) : (
+                    <>
+                      <div className="rounded-card bg-surface-secondary p-3 flex items-center justify-between">
+                        <p className="text-caption text-content-secondary">서명 만료까지</p>
+                        <p className="text-body font-bold tabular-nums text-primary">
+                          {formatCountdown(remainSecs)}
+                        </p>
+                      </div>
+                      {isRemindDue && (
+                        <div className="rounded-card bg-state-warning/10 px-3 py-2">
+                          <p className="text-caption font-semibold text-state-warning">
+                            리마인드 발송됨 — 회원에게 서명 안내를 재전송했어요.
+                          </p>
+                        </div>
+                      )}
+                      {/* 검수용: 서명 완료 시뮬레이션 */}
+                      <Button
+                        variant="secondary"
+                        size="lg"
+                        fullWidth
+                        onClick={() => {
+                          signMemberForClass(classId);
+                          setVersion((value) => value + 1);
+                          toast.success('회원 서명을 완료했어요.');
+                        }}
+                      >
+                        원격 서명 완료 시뮬레이션
+                      </Button>
+                    </>
+                  )}
+                </div>
+              )}
+
               <DeclineButton onDecline={() => { setDeclined(true); toast.message('서명이 거부되어 매니저에게 전달했어요.'); }} />
             </>
           )}

@@ -299,7 +299,7 @@ function QnaWriteModal({ nextId, onClose, onSubmit }: QnaWriteModalProps) {
               rows={5}
               className="w-full p-3 rounded-input border border-line bg-surface text-body resize-none focus:outline-none focus:border-primary"
             />
-            <p className="mt-1 text-caption text-content-tertiary text-right">{body.length}/500</p>
+            <p className="mt-1 text-caption text-content-tertiary text-right">{body.length}/2000</p>
           </div>
 
           <button

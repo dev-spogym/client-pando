@@ -236,7 +236,7 @@ export default function CenterReviewWrite() {
           </p>
           <label className="flex items-center gap-3 cursor-pointer select-none">
             <div
-              onClick={() => setAgreed((v) => !v)}
+              onClick={() => setAgreed(!agreed)}
               className={cn(
                 'w-5 h-5 rounded border-2 flex items-center justify-center transition-colors shrink-0',
                 agreed ? 'bg-primary border-primary' : 'border-line-strong bg-surface'

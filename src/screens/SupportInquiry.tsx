@@ -5,6 +5,7 @@ import { toast } from 'sonner';
 import { CheckCircle2, Clock3, MessageSquareText, Paperclip, Send } from 'lucide-react';
 import { Badge, Button, Card, Input, PageHeader } from '@/components/ui';
 import { useAuthStore } from '@/stores/authStore';
+import { isPreviewMode } from '@/lib/preview';
 
 const CATEGORIES = ['이용문의', '결제문의', '시설문의', '수업문의', '기타'] as const;
 
@@ -53,6 +54,18 @@ export default function SupportInquiry() {
 
     if (!member) {
       toast.error('로그인 후 문의를 접수할 수 있어요');
+      return;
+    }
+
+    // preview 모드: 서버/DB 없이 접수 결과를 로컬에 반영한다.
+    if (isPreviewMode()) {
+      setRecentInquiries((items) => [
+        { id: `preview-${Date.now()}`, title: title.trim(), status: '접수', createdAt: new Date().toISOString() },
+        ...items,
+      ]);
+      toast.success('문의가 접수되었어요', { description: '영업일 기준 1~2일 안에 답변드릴게요.' });
+      setTitle('');
+      setBody('');
       return;
     }
 

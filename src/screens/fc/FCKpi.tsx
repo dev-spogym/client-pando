@@ -7,7 +7,7 @@ import {
   PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid,
   Tooltip, Legend, ResponsiveContainer,
 } from 'recharts';
-import { getFcKpi } from '@/lib/mockOperations';
+import { getFcKpi, getFcDashboard } from '@/lib/mockOperations';
 import { Card } from '@/components/ui';
 
 // ─── Mock Data ────────────────────────────────────────────────────────────────
@@ -98,6 +98,8 @@ const FunnelTooltip = ({ active, payload, label }: { active?: boolean; payload?:
 
 export default function FCKpi() {
   const kpi = getFcKpi();
+  // 만료 예정 회원 수를 실제 데이터(getFcDashboard)에서 가져옴
+  const dashboard = getFcDashboard();
   const [period, setPeriod] = useState<Period>('이번 달');
 
   const statCards = [
@@ -130,7 +132,8 @@ export default function FCKpi() {
     },
     {
       label: '만료 예정 회원',
-      value: '47명',
+      // 하드코딩 '47명' 대신 실제 getFcDashboard 기반 값으로 교체
+      value: `${dashboard.expiringMembers}명`,
       sub: '30일 이내 만료',
       up: false,
       icon: AlertCircle,
@@ -346,7 +349,7 @@ export default function FCKpi() {
               <div className="mt-2 grid grid-cols-2 gap-2">
                 {[
                   { label: '월 매출', value: '21,000,000원' },
-                  { label: '신규 상담', value: '42건' },
+                  { label: '신규 상담', value: '35건' },
                   { label: '전환율', value: '78%' },
                   { label: '만족도', value: '4.9 ★' },
                 ].map((r) => (

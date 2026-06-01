@@ -387,7 +387,8 @@ const GOLF_INSTRUCTOR_SLOTS: GolfInstructorSlot[] = [
     instructorId: 2,
     instructorName: '이준호',
     lessonName: '드라이버 교정 레슨',
-    dateLabel: '4월 23일 목요일',
+    // 2026-06-03 수요일 (오늘+1일)
+    dateLabel: '6월 3일 수요일',
     timeLabel: '19:00 - 19:50',
     bayLabel: 'G-03',
     price: 105000,
@@ -398,7 +399,8 @@ const GOLF_INSTRUCTOR_SLOTS: GolfInstructorSlot[] = [
     instructorId: 2,
     instructorName: '이준호',
     lessonName: '숏게임 집중 레슨',
-    dateLabel: '4월 24일 금요일',
+    // 2026-06-05 금요일
+    dateLabel: '6월 5일 금요일',
     timeLabel: '20:00 - 20:50',
     bayLabel: 'G-05',
     price: 115000,
@@ -406,10 +408,12 @@ const GOLF_INSTRUCTOR_SLOTS: GolfInstructorSlot[] = [
   },
   {
     id: 'golf-slot-3',
-    instructorId: 4,
-    instructorName: '정하늘',
+    // instructorId 4(정하늘)는 INSTRUCTOR_PROFILES에 없음 → 이준호(id 2)로 수정
+    instructorId: 2,
+    instructorName: '이준호',
     lessonName: '입문자 자세 교정',
-    dateLabel: '4월 26일 일요일',
+    // 2026-06-07 일요일
+    dateLabel: '6월 7일 일요일',
     timeLabel: '11:00 - 11:50',
     bayLabel: 'G-01',
     price: 99000,

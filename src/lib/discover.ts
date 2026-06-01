@@ -148,7 +148,8 @@ export interface DiscoverEvent {
   badgeLabel?: string;
 }
 
-const TODAY = new Date('2026-04-29');
+// 기준일을 고정값 대신 실제 오늘로 사용 (상태 계산이 항상 현재 기준)
+const TODAY = new Date();
 
 function buildEvent(args: {
   id: number;
@@ -209,11 +210,11 @@ export const MOCK_EVENTS: DiscoverEvent[] = [
   buildEvent({
     id: 1,
     title: '신규 가입 50% 할인',
-    subtitle: '4월 한 달 첫 구매 한정',
+    subtitle: '6월 한 달 첫 구매 한정',
     description: '센터 회원권을 처음 구매하시는 분께 절반 가격으로 드려요.',
     heroSeed: 'event-1-hero',
-    startsAt: '2026-04-01',
-    endsAt: '2026-05-06',
+    startsAt: '2026-06-01',
+    endsAt: '2026-06-30',
     ctaPath: '/centers',
     ctaLabel: '50% 할인 받으러 가기',
     productIds: MOCK_PRODUCTS.filter((p) => p.productCategory === '이용권').slice(0, 4).map((p) => p.id),
@@ -235,16 +236,16 @@ export const MOCK_EVENTS: DiscoverEvent[] = [
   }),
   buildEvent({
     id: 2,
-    title: '4월 PT 이벤트',
+    title: '6월 PT 이벤트',
     subtitle: '10회권 결제 시 추가 2회 무료',
     description: 'PT 10회권 결제 회원께 PT 2회를 추가로 드려요.',
     heroSeed: 'event-2-hero',
-    startsAt: '2026-04-10',
-    endsAt: '2026-05-02',
+    startsAt: '2026-06-01',
+    endsAt: '2026-06-08',
     ctaPath: '/shop',
     ctaLabel: 'PT 10회권 보러가기',
     productIds: MOCK_PRODUCTS.filter((p) => p.name.includes('PT 10회')).slice(0, 5).map((p) => p.id),
-    eligibility: ['전 지점 PT 10회권 결제 회원', '4월 30일까지 결제 완료'],
+    eligibility: ['전 지점 PT 10회권 결제 회원', '6월 8일까지 결제 완료'],
     notice: [
       '추가 2회는 PT 첫 진행 후 자동 부여됩니다.',
       '환불 시 추가 회차는 자동 소멸됩니다.',
@@ -256,12 +257,12 @@ export const MOCK_EVENTS: DiscoverEvent[] = [
   }),
   buildEvent({
     id: 3,
-    title: '봄맞이 필라테스 무제한 1+1',
+    title: '여름맞이 필라테스 무제한 1+1',
     subtitle: '그룹 50회권 결제 시 1개월 추가',
     description: '필라테스 그룹레슨 50회권에 무제한 1개월을 더 드려요.',
     heroSeed: 'event-3-hero',
-    startsAt: '2026-04-15',
-    endsAt: '2026-05-11',
+    startsAt: '2026-06-01',
+    endsAt: '2026-06-22',
     ctaPath: '/shop',
     ctaLabel: '필라테스 50회권 보기',
     productIds: MOCK_PRODUCTS.filter((p) => p.name.includes('필라테스 그룹')).slice(0, 4).map((p) => p.id),
@@ -277,8 +278,8 @@ export const MOCK_EVENTS: DiscoverEvent[] = [
     subtitle: '체험 1회 + 1:1 레슨 4회 199,000원',
     description: '골프 입문자를 위한 4주 입문 패키지를 특가로 드려요.',
     heroSeed: 'event-4-hero',
-    startsAt: '2026-04-20',
-    endsAt: '2026-05-29',
+    startsAt: '2026-05-26',
+    endsAt: '2026-06-06',
     ctaPath: '/centers',
     ctaLabel: '골프 입문하기',
     productIds: MOCK_PRODUCTS.filter((p) => p.category === 'golf').slice(0, 4).map((p) => p.id),
@@ -313,8 +314,8 @@ export const MOCK_EVENTS: DiscoverEvent[] = [
     subtitle: '토요일 오전 GX 클래스 1회 무료',
     description: 'FitGenie 모든 지점의 토요일 오전 GX 클래스 1회를 무료로 제공해 드려요.',
     heroSeed: 'event-6-hero',
-    startsAt: '2026-04-25',
-    endsAt: '2026-05-31',
+    startsAt: '2026-05-31',
+    endsAt: '2026-06-28',
     ctaPath: '/centers',
     ctaLabel: '주말 GX 예약하기',
     productIds: MOCK_PRODUCTS.filter((p) => p.category === 'group').slice(0, 3).map((p) => p.id),
@@ -326,12 +327,12 @@ export const MOCK_EVENTS: DiscoverEvent[] = [
   }),
   buildEvent({
     id: 7,
-    title: '5월 가정의 달 패밀리 PT',
+    title: '6월 여름 패밀리 PT',
     subtitle: '2인 동반 결제 시 30% 할인',
     description: '가족과 함께하는 PT, 두 분이 함께 결제하면 30% 할인해 드려요.',
     heroSeed: 'event-7-hero',
-    startsAt: '2026-05-01',
-    endsAt: '2026-05-31',
+    startsAt: '2026-06-01',
+    endsAt: '2026-06-30',
     ctaPath: '/centers',
     ctaLabel: '패밀리 PT 알아보기',
     productIds: MOCK_PRODUCTS.filter((p) => p.category === 'pt').slice(0, 6).map((p) => p.id),
@@ -347,8 +348,8 @@ export const MOCK_EVENTS: DiscoverEvent[] = [
     subtitle: '거북목·허리 통증 회원 우선',
     description: '재활 필라테스 전문 강사와의 1:1 상담을 무료로 제공해 드려요.',
     heroSeed: 'event-8-hero',
-    startsAt: '2026-04-22',
-    endsAt: '2026-05-15',
+    startsAt: '2026-06-01',
+    endsAt: '2026-06-05',
     ctaPath: '/trainers',
     ctaLabel: '재활 필라테스 강사 보기',
     productIds: MOCK_PRODUCTS.filter((p) => p.category === 'pilates').slice(0, 5).map((p) => p.id),

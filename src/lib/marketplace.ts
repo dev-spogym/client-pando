@@ -311,7 +311,8 @@ export const MOCK_CENTERS: MarketCenter[] = [
     openingHours: { weekday: '07:00 - 22:00', weekend: '09:00 - 21:00', holiday: '10:00 - 18:00' },
     phone: '02-1234-5681',
     description: '종로3가 도보 5분 헬스장. 필라테스 1:1 룸 보유.',
-    representativeProduct: { name: 'PT 10회', price: 700000 },
+    // PT 10회 가격 590,000원으로 통일
+    representativeProduct: { name: 'PT 10회', price: 590000 },
     branchCode: 'BR004',
     districtZone: '1지부',
   },
@@ -334,7 +335,8 @@ export const MOCK_CENTERS: MarketCenter[] = [
     openingHours: { weekday: '06:00 - 23:00', weekend: '08:00 - 22:00', holiday: '09:00 - 20:00' },
     phone: '02-1234-5682',
     description: '홍대 인근 트렌디 헬스장. 크로스핏 박스 + PT + 요가 + 그룹 클래스.',
-    representativeProduct: { name: '회원권 8개월', price: 50000, originalPrice: 100000 },
+    // 자릿수 오류 수정: 8개월 회원권은 50만/100만원 수준이 적정
+    representativeProduct: { name: '회원권 8개월', price: 500000, originalPrice: 1000000 },
     isPromoted: true,
     branchCode: 'BR005',
     districtZone: '1지부',
@@ -754,7 +756,8 @@ function buildProductsForCenter(center: MarketCenter): MarketProduct[] {
       category: 'pt',
       productCategory: '개인',
       name: 'PT 10회',
-      price: 700000,
+      // memberExperience SHOP_PRODUCTS 기준 590,000원으로 통일
+      price: 590000,
       duration: '3개월 이내',
       sessions: 10,
       thumbnailUrl: img(`product-${center.id}-pt10`, 600, 400),

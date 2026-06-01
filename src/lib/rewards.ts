@@ -320,7 +320,8 @@ export const SAMPLE_BADGES: MilestoneBadge[] = [
   { id: 'streak-10', title: '10회 연속 출석', description: '10일 연속 방문', icon: 'streak-10', earnedAt: '2025-10-04', earned: true },
   { id: 'review-1', title: '첫 후기', description: '첫 리뷰 작성', icon: 'review-1', earnedAt: '2025-10-15', earned: true },
   { id: 'streak-30', title: '한달 개근', description: '30일 연속 출석', icon: 'streak-30', earnedAt: '2025-11-30', earned: true },
-  { id: 'big-spender', title: '플래티넘 패밀리', description: '누적 결제 200만원', icon: 'big-spender', earnedAt: '2026-02-10', earned: true },
+  // 200만원 임계값은 GOLD 등급 → 배지 명칭을 골드 기준으로 수정
+  { id: 'big-spender', title: '골드 패밀리', description: '누적 결제 200만원', icon: 'big-spender', earnedAt: '2026-02-10', earned: true },
   { id: 'inviter', title: '친구초대 마스터', description: '친구 5명 초대', icon: 'inviter', earnedAt: '2026-04-12', earned: true },
   { id: 'early-bird', title: '얼리버드', description: '오전 7시 운동 10회', icon: 'early-bird', earnedAt: null, earned: false },
   { id: 'marathon', title: '마라토너', description: '연속 100일 출석', icon: 'marathon', earnedAt: null, earned: false },
@@ -331,7 +332,8 @@ export const SAMPLE_TIMELINE: TimelineEntry[] = [
   { id: 't2', date: '2026-04-29', action: 'reservation', title: '김태형 강사 PT 예약', meta: '5/2 19:00' },
   { id: 't3', date: '2026-04-28', action: 'review', title: '필라테스 그룹 클래스 후기 작성', meta: '+1,000P' },
   { id: 't4', date: '2026-04-26', action: 'visit', title: 'FitGenie 강남점 방문', meta: '오후 6:15' },
-  { id: 't5', date: '2026-04-25', action: 'payment', title: 'PT 10회권 결제', meta: '카드', amount: 660_000 },
+  // PT 10회 가격 590,000원으로 통일 (SHOP_PRODUCTS 기준)
+  { id: 't5', date: '2026-04-25', action: 'payment', title: 'PT 10회권 결제', meta: '카드', amount: 590_000 },
   { id: 't6', date: '2026-04-23', action: 'visit', title: 'FitGenie 잠실점 방문', meta: '오후 8:02' },
   { id: 't7', date: '2026-04-22', action: 'reservation', title: '요가 클래스 예약', meta: '4/24 18:00' },
   { id: 't8', date: '2026-04-20', action: 'payment', title: '단백질 쉐이크 정기배송', meta: '간편결제', amount: 38_000 },

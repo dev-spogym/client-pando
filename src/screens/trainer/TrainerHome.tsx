@@ -104,7 +104,7 @@ export default function TrainerHome() {
   return (
     <div className="pull-to-refresh">
       {/* 상단 헤더 - 트레이너 테마 */}
-      <header className="bg-gradient-to-br from-teal-600 to-emerald-600 px-5 pt-safe-top pb-6">
+      <header className="bg-gradient-to-br from-primary to-primary-dark px-5 pt-safe-top pb-6">
         <div className="pt-4 flex items-center justify-between mb-4">
           <div>
             <p className="text-white/80 text-body">트레이너</p>

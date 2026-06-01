@@ -617,7 +617,7 @@ export default function TrainerSchedule() {
 
   return (
     <div className="pull-to-refresh">
-      <header className="bg-gradient-to-br from-teal-600 to-emerald-600 px-5 pt-safe-top pb-4">
+      <header className="bg-gradient-to-br from-primary to-primary-dark px-5 pt-safe-top pb-4">
         <div className="pt-4 flex items-center justify-between">
           <h1 className="text-white text-h4 font-bold">일정 관리</h1>
           <Button

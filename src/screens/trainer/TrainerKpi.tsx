@@ -145,7 +145,7 @@ export default function TrainerKpi() {
   return (
     <div className="min-h-screen bg-surface-secondary">
       {/* Header */}
-      <header className="bg-gradient-to-br from-teal-600 to-cyan-600 px-5 pt-safe-top pb-6">
+      <header className="bg-gradient-to-br from-primary to-primary-dark px-5 pt-safe-top pb-6">
         <div className="pt-4">
           <p className="text-white/70 text-caption tracking-wide">강사 성과 대시보드</p>
           <h1 className="text-white text-h1 font-bold mt-1">KPI</h1>

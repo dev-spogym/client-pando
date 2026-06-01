@@ -219,7 +219,7 @@ export default function TrainerFeedback() {
   return (
     <div className="pull-to-refresh">
       {/* 헤더 */}
-      <header className="bg-gradient-to-br from-teal-600 to-emerald-600 px-5 pt-safe-top pb-4">
+      <header className="bg-gradient-to-br from-primary to-primary-dark px-5 pt-safe-top pb-4">
         <div className="pt-4 flex items-center gap-3">
           {view === 'feedback' && (
             <button onClick={() => setView('list')} className="text-white">

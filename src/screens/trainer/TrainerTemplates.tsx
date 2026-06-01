@@ -31,7 +31,7 @@ export default function TrainerTemplates() {
 
   return (
     <div className="min-h-screen bg-surface-secondary">
-      <header className="bg-gradient-to-br from-teal-600 to-emerald-600 px-5 pt-safe-top pb-5">
+      <header className="bg-gradient-to-br from-primary to-primary-dark px-5 pt-safe-top pb-5">
         <div className="pt-4">
           <p className="text-white/70 text-body">MA-214</p>
           <h1 className="text-white text-h2 font-bold mt-1">수업 템플릿 관리</h1>

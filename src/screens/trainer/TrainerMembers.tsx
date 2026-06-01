@@ -144,7 +144,7 @@ export default function TrainerMembers() {
 
   return (
     <div className="pull-to-refresh">
-      <header className="bg-gradient-to-br from-teal-600 to-emerald-600 px-5 pt-safe-top pb-4">
+      <header className="bg-gradient-to-br from-primary to-primary-dark px-5 pt-safe-top pb-4">
         <h1 className="pt-4 text-white text-h4 font-bold">회원 관리</h1>
       </header>
 

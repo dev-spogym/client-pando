@@ -397,7 +397,7 @@ export default function TrainerMemberDetail() {
   return (
     <div className="pull-to-refresh">
       {/* 헤더 */}
-      <header className="bg-gradient-to-br from-teal-600 to-emerald-600 px-5 pt-safe-top pb-4">
+      <header className="bg-gradient-to-br from-primary to-primary-dark px-5 pt-safe-top pb-4">
         <div className="pt-4 flex items-center gap-3">
           <button onClick={() => navigate(-1)} className="text-white">
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">

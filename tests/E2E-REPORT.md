@@ -1,6 +1,85 @@
 # 회원앱 E2E 검증 리포트
 
-작성일: 2026-06-01 · 기준 기획: `admin-pando/client2` (C01~C08), `docs/회원앱/APP-사용자시나리오.md`
+작성일: 2026-06-01 (최종 실행 2026-06-02) · 기준 기획: `admin-pando/client2` (C01~C08), `docs/회원앱/APP-사용자시나리오.md`
+
+---
+
+## 📌 최신 실행 결과 (2026-06-02) — 역할별 전수 E2E + client2/docs4 읽기전용 감사
+
+### E2E 실행 결과: ✅ 141/141 PASS (0 failed, 0 flaky, 3.6분)
+
+| 역할 | 범위 | 결과 |
+|---|---|---|
+| member(회원) | 홈·예약·QR·이용권·결제·환불·식단·커뮤니티·운동/식단일지·이벤트·레슨서명·온보딩/에러화면 | ✅ |
+| trainer(트레이너) | 홈·캘린더·수업목록/상세·서명·노쇼/페널티·템플릿·회원관리·평가·KPI·프로필·메신저·확인서 | ✅ |
+| golf_trainer(골프강사) | 홈·골프수업상세·쌍방서명·확인서 | ✅ |
+| fc(상담) | 홈·리드/상담·등록/수정·회원·만료예정·재등록·KPI·알림·설정 | ✅ |
+| staff(스태프) | 홈·회원조회/상세·수동출석·일정·알림·설정 | ✅ |
+| public | 로그인·가입·퍼블리싱 허브·디자인가이드(4역할) | ✅ |
+
+- 저니 J1–J10(예약 취소/대기 취소/QR/후기/체크아웃 pt-10/환불/트레이너 시작·출석·완료/골프 서명/FC 상담/스태프 출석) 전부 통과.
+- 리뷰체크 R1–R4(예약탭→/classes, 프로필→/orders, 갤러리 iframe) 전부 통과.
+- 콘솔 에러 사이드카: unexpected 0. `/publishing/member`의 `[EMPTY]` 메모는 갤러리가 404 데모문서(MA-911, "존재하지 않" 문구)를 나열해 잡힌 **오탐**(라우트 자체는 ✓ 통과).
+
+### 역할별 빠진 것 (client2 정본 읽기전용 감사 — 화면 셸은 전부 존재, 아래는 요구사항 충실도 갭)
+
+**FC(상담) — 가장 심각:**
+- ⚠️ MA-411 상담 등록폼이 4필드(회원명/연락처/내용/후속조치)뿐 → 정본은 상담유형·방식·7단계·결과·유입경로 9종·조건부 후속조치 필수·1000자 제한. (`FCConsultationEditor.tsx`)
+- ⚠️ MA-410 리드 상태가 3종(scheduled/completed/no_show) → 정본은 7단계 칸반. (`FCConsultations.tsx` + `mockOperations` enum)
+- ❌ FC 등록완료 수동저장 차단 + "등록 요청 전환" 안내 미구현.
+
+**staff(스태프):**
+- ❌ MA-500 본인 출퇴근 1탭 기록 + 본인 인증 미구현(`StaffHome.tsx`는 대시보드만).
+
+**trainer/golf:**
+- ⚠️ MA-212 수업 시작 ±15분 범위 가드 미반영.
+- ⚠️ MA-312 골프 원격 서명 24h 만료/12h 리마인드 카운트다운 미반영.
+- ⚠️ MA-213 노쇼 1회경고/3회누적 단계 표현 미반영.
+
+**member:**
+- ⚠️ MA-142 결제화면 쿠폰 1장 적용 UI 없음(쿠폰함은 별도 존재, 결제 연결 누락).
+- ⚠️ MA-110 QR 갱신 60초 → 정본은 7일 회전 토큰 + D-day 표시(정책 표기 불일치).
+- ⚠️ MA-001 5회실패 30분잠금/role불일치차단은 로직 일부만, 비번만료 강제이동 미반영.
+
+### docs4 연동 감사 (관리자↔클라이언트, 읽기전용)
+
+- ✅ **회원→CRM 단방향 쓰기 전부 실DB 연동**: 예약/대기(`/api/reservations`+`lesson_bookings`), 결제(`/api/payments`+`sales`), 환불접수(`/api/payments/[id]/refund`+`app_refund_requests`), 문의(`/api/inquiries`), 탈퇴(`/api/withdrawal-requests`), 식단(`/api/diet-logs`), QR출석(`/api/kiosk/checkin`+`/api/qr-token`+`attendance`), 가입(`/api/register-member`+Supabase Auth), 체성분 조회(`body_compositions`).
+- ⚠️ **mock 잔존(클라이언트 wiring만 필요, CRM 테이블 존재 시)**: 스태프 수동출석, FC 상담/리드, 상품 카탈로그, 레슨 서명 정본(회원 측은 `classes` 실DB지만 트레이너 양자서명은 mock — 정본 미공유).
+- ❌ **백엔드/인프라 필요(클라이언트 단독 불가)**: 회원앱 Push(EXT-MSG-01), Health Connect 실연동(웹앱 한계), 락커 만료/회수 알림(EXT-DEVICE-03), 환불 큐 정본 통합(admin 처리), PG 결제링크(EXT-PAY-02, V2 대기).
+
+### 결론
+- **실행 검증 측면**: 5개 역할 전 화면·핵심 저니 무결성 100% 통과. 크래시·런타임 에러·깨진 라우트 없음. 배포 가능 상태.
+- **기획 충실도 측면**: 화면 누락은 없음. 클라이언트만으로 메울 수 있는 우선 갭은 **FC 도메인(MA-411 폼/MA-410 칸반/등록완료 차단)** > 스태프 출퇴근 > 수업 ±15분/골프 서명 타이머 > 결제 쿠폰. 나머지(Push·Health·락커)는 백엔드/인프라 의존.
+
+---
+
+## 🛠 갭 구현 결과 (2026-06-02, "백엔드 필요분도 mock으로 전부 구현")
+
+감사에서 도출한 client2 갭을 mock 데이터로 전부 구현. **E2E 145/145 통과**(신규 J11~J14 포함), 프로덕션 빌드 성공, `tsc --noEmit` 0 에러, architect 검증 PASS(Critical/High 0).
+
+| 영역 | 구현 | 파일 |
+|---|---|---|
+| FC MA-411 상담 등록폼 | 상담유형·방식(대면/유선/부재)·7단계·결과·유입경로 9종·1000자 카운터·후속조치 조건부 필수·등록완료 차단→등록요청 전환 | `fc/FCConsultationEditor.tsx` |
+| FC MA-410 리드 칸반 | 7단계(신규~보류) 가로스크롤 필터 + 단계 배지 | `fc/FCConsultations.tsx` |
+| FC MA-412 상세 | 새 필드 표시 + 7일 수정제한 + 후속조치 가드 | `fc/FCConsultationDetail.tsx` |
+| 데이터 모델 | `Consultation`에 `stage/method/inflowSource/createdAt` 추가, `channel` 제거 | `lib/mockOperations.ts` |
+| staff MA-500 출퇴근 | 본인 인증 모달(생체/비번)+출근/퇴근 1탭+근태 전송 시뮬레이션+최근 기록 | `lib/staffShift.ts`(신규)·`staff/StaffHome.tsx` |
+| trainer MA-212 | 수업 시작 ±15분 범위 가드 + 시작 가능 시간 안내 | `trainer/TrainerClassDetail.tsx` |
+| golf MA-312 | 원격 서명 24h 만료/12h 리마인드 카운트다운 + 만료 시 재요청 | `trainer/TrainerDualSignature.tsx` |
+| trainer MA-213 | 노쇼 누적 단계 배지(경고/주의/예약 제한) | `trainer/TrainerPenaltyBoard.tsx` |
+| member MA-142 | 쿠폰 1장 선택 + 결제 요약(상품/쿠폰/마일리지/최종) | `Checkout.tsx` |
+| member MA-110 | 7일 토큰 D-day 카드 + 보안 코드 회전 표기 | `QrCheckin.tsx` |
+| 설명 패널 | 6개 엔트리(ui/rules) 정책 동기화 | `lib/client2ScreenDocs.ts` |
+| E2E | J3 카피 정합 수정 + J11~J14 신규(등록완료 차단/후속조치 필수/출퇴근/쿠폰) | `tests/journeys.spec.ts` |
+
+### mock으로 대체 불가(정본 화면 부재 또는 외부 기기 의존 — 날조 금지)
+- **락커 만료/회수 알림**(EXT-DEVICE-03): 회원앱에 호스팅할 client2 정본 화면이 없어 미구현(락커 컨트롤러 외부 이벤트). 임의 UI 날조하지 않음.
+- **실 푸시 인프라**(EXT-MSG-01): 역할별 알림센터는 이미 mock으로 존재. 디바이스 토큰 등록/발송은 인프라 영역.
+- **Health Connect 실연동**: 웹앱 한계로 기존 mock 상태머신 유지.
+- **PG 결제링크**(EXT-PAY-02): docs4상 V2 개발 대기(의도된 미구현).
+
+---
+
 
 ## 검증 방식
 

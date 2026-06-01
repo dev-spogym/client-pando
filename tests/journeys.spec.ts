@@ -46,8 +46,10 @@ test('J2 대기 예약 관리 — 대기 항목 취소 (MA-124)', async ({ page 
 test('J3 QR 입장 — preview 토큰으로 QR 정상 발급 (MA-110)', async ({ page }) => {
   await page.goto(`/qr${M}`, { waitUntil: 'domcontentloaded' });
   await settle(page);
-  // 수정 후: preview에서 만료/실패가 아니라 정상 카운트다운이 보여야 한다
-  await expect(page.getByText(/초 후 자동 갱신/)).toBeVisible();
+  // 수정 후(MA-110): preview에서 만료/실패가 아니라 7일 토큰 카드 + 보안 코드 회전 카운트다운이 보여야 한다
+  // (설명 패널에도 유사 문구가 있어 카드 고유 문구로 좁힌다)
+  await expect(page.getByText('이 QR은 7일마다 자동 갱신됩니다')).toBeVisible();
+  await expect(page.getByText(/보안 코드 회전 \d+초/)).toBeVisible();
   await expect(page.getByRole('button', { name: /갱신하기/ })).toHaveCount(0);
   // QR SVG 렌더 확인
   await expect(page.locator('svg').first()).toBeVisible();
@@ -133,4 +135,48 @@ test('J10 수동 출석 처리 — 데스크 출석 기록 (MA-520)', async ({ p
   await page.locator('textarea').first().fill('QR 인식 불가');
   await page.getByRole('button', { name: '출석 처리' }).click();
   await expectToast(page, /출석/);
+});
+
+// ───────────────────────── 신규 구현 검증 (client2 갭 보강) ─────────────────────────
+
+test('J11 FC 상담 등록완료 차단 — 권한 없어 등록 요청 전환 (MA-411)', async ({ page }) => {
+  await page.goto(`/fc/leads/new${F}`, { waitUntil: 'domcontentloaded' });
+  await settle(page);
+  // 상담 단계에서 "등록완료" 선택 시도 → FC 권한 차단 + 등록 요청 전환 안내
+  await page.getByText('등록완료', { exact: true }).click();
+  await expectToast(page, /회원 등록 권한이 없어 등록 요청으로 전환/);
+  await expect(page.getByText('등록 요청 전송됨')).toBeVisible();
+});
+
+test('J12 FC 후속조치 필수 — 미등록 결과 시 후속조치 미입력 차단 (MA-411)', async ({ page }) => {
+  await page.goto(`/fc/leads/new${F}`, { waitUntil: 'domcontentloaded' });
+  await settle(page);
+  await page.getByPlaceholder('회원명').fill('김미등록');
+  await page.getByPlaceholder('연락처').fill('010-0000-1111');
+  await page.getByPlaceholder('상담 내용').fill('체험만 하고 미등록');
+  // 결과 "미등록" 선택 → 후속조치 필수
+  await page.getByText('미등록', { exact: true }).click();
+  await page.getByRole('button', { name: '저장' }).click();
+  await expectToast(page, /후속 조치를 입력/);
+});
+
+test('J13 스태프 본인 출퇴근 — 본인 인증 후 출근 기록 (MA-500)', async ({ page }) => {
+  await page.goto(`/staff${S}`, { waitUntil: 'domcontentloaded' });
+  await settle(page);
+  // 출근 1탭 → 본인 인증 모달 → 생체 인증 시뮬레이션 → 확인
+  await page.getByRole('button', { name: '출근', exact: true }).click();
+  // 설명 패널에도 "본인 인증" 문구가 있어 모달 heading으로 좁힌다
+  await expect(page.getByRole('heading', { name: '본인 인증' })).toBeVisible();
+  await page.getByRole('button', { name: /생체 인증/ }).click();
+  await page.getByRole('button', { name: '확인' }).click();
+  await expectToast(page, /근태 시스템 전송됨/);
+});
+
+test('J14 결제 쿠폰 적용 — 쿠폰 1장 선택 시 할인 반영 (MA-142)', async ({ page }) => {
+  await page.goto(`/checkout/pt-10${M}`, { waitUntil: 'domcontentloaded' });
+  await settle(page);
+  // 신규 회원 5,000원 할인 쿠폰 선택 → 결제 요약에 쿠폰 할인 반영
+  await page.getByText('신규 회원 5,000원 할인').click();
+  // 설명 패널에도 "쿠폰 할인" 문구가 있어 결제 요약 라벨로 정확히 좁힌다
+  await expect(page.getByText('쿠폰 할인', { exact: true })).toBeVisible();
 });

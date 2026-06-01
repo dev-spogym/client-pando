@@ -805,6 +805,17 @@ export const client2ScreenDocs: Client2ScreenDoc[] = [
     rules: ['클라이언트 검수용으로 실제 앱 화면과 같은 토큰을 사용합니다.', '운영 사용자용 주요 기능 화면은 아닙니다.'],
     evidence: COMMON_SOURCE,
   },
+  {
+    id: 'MA-911',
+    title: '404 페이지를 찾을 수 없음',
+    domain: 'C08 시스템공통',
+    source: 'client2/C08-시스템공통/회원앱.md',
+    patterns: ['/missing-preview-page'],
+    purpose: '존재하지 않는 경로로 진입했을 때 표시되는 의도된 404 상태 화면입니다. 퍼블리싱 갤러리의 404 데모 카드가 이 화면을 노출합니다.',
+    ui: ['404 안내 문구', '뒤로가기 CTA', '홈으로 CTA', '하단 탭/앱 프레임 유지'],
+    rules: ['존재하지 않는 경로 진입 시 노출되는 정상 동작이며, 누락된 화면이 아닙니다.', '오류 상태에서도 사용자가 홈/뒤로가기로 흐름을 이어갈 수 있어야 합니다.'],
+    evidence: COMMON_SOURCE,
+  },
 ];
 
 function normalizePath(pathname: string): string {

@@ -270,6 +270,26 @@ export default function Home() {
           </div>
         </Card>
 
+        {/* HQ-09 이용권 만료 알림 배너 (D-7 이내) → 재등록 추천(MA-138) */}
+        {ddayUrgent && (
+          <button
+            type="button"
+            onClick={() => navigate('/renewal')}
+            className="w-full rounded-card-lg border border-state-error/30 bg-state-error/5 p-4 flex items-center gap-3 active:bg-state-error/10 transition-colors text-left"
+          >
+            <div className="w-10 h-10 bg-state-error/10 rounded-card flex items-center justify-center shrink-0">
+              <CreditCard className="w-5 h-5 text-state-error" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-body-sm font-semibold text-state-error">
+                {dday !== null && dday >= 0 ? `이용권이 ${dday}일 남았어요` : '이용권이 만료되었어요'}
+              </p>
+              <p className="text-caption text-content-secondary mt-0.5">재등록 추천 플랜을 확인해보세요</p>
+            </div>
+            <ChevronRight className="w-5 h-5 text-state-error" />
+          </button>
+        )}
+
         {/* QR 체크인 액션 */}
         <button
           type="button"

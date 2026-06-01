@@ -33,6 +33,15 @@ export default function Login() {
         toast.error('전화번호와 비밀번호를 입력하세요.');
         return;
       }
+      const phoneDigits = phone.replace(/\D/g, '');
+      if (phoneDigits.length !== 11 || !phoneDigits.startsWith('01')) {
+        toast.error('올바른 전화번호를 입력해주세요.');
+        return;
+      }
+      if (password.length < 8) {
+        toast.error('비밀번호는 8자 이상이어야 합니다.');
+        return;
+      }
       const { error } = await login(phone, password);
       if (error) toast.error(error);
       else {

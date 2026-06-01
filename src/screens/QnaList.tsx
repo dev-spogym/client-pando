@@ -284,7 +284,7 @@ function QnaWriteModal({ nextId, onClose, onSubmit }: QnaWriteModalProps) {
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="질문 제목을 입력하세요"
-              maxLength={60}
+              maxLength={50}
               className="w-full h-12 px-4 rounded-input border border-line bg-surface text-body focus:outline-none focus:border-primary"
             />
           </div>
@@ -295,7 +295,7 @@ function QnaWriteModal({ nextId, onClose, onSubmit }: QnaWriteModalProps) {
               value={body}
               onChange={(e) => setBody(e.target.value)}
               placeholder="궁금한 내용을 자세히 알려주세요"
-              maxLength={500}
+              maxLength={2000}
               rows={5}
               className="w-full p-3 rounded-input border border-line bg-surface text-body resize-none focus:outline-none focus:border-primary"
             />

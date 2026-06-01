@@ -52,7 +52,7 @@ export default function FCHome() {
                 className="w-full rounded-xl bg-surface-secondary px-3 py-3 text-left"
               >
                 <p className="text-body font-semibold">{item.memberName}</p>
-                <p className="mt-1 text-caption text-content-secondary">{item.type} · {item.scheduledAt.slice(11, 16)} · {item.channel}</p>
+                <p className="mt-1 text-caption text-content-secondary">{item.type} · {item.scheduledAt.slice(11, 16)} · {item.method}</p>
               </button>
             ))}
           </div>

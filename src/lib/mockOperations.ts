@@ -1,6 +1,12 @@
 export type MockMemberStatus = 'ACTIVE' | 'EXPIRED' | 'SCHEDULED' | 'EXPIRING' | 'HOLDING' | 'UNREGISTERED' | 'WITHDRAWN';
 export type ConsultationStatus = 'scheduled' | 'completed' | 'cancelled' | 'no_show';
 export type ConsultationType = '상담' | 'OT' | '체험' | '재등록상담';
+// 리드 단계 7종 (운영정책 기준)
+export type LeadStage = '신규' | '연락완료' | '상담예정' | '방문완료' | '등록완료' | '미전환' | '보류';
+// 상담 방식 3종
+export type ConsultationMethod = '대면' | '유선' | '부재';
+// 유입경로 9종
+export type InflowSource = '간판' | '인터넷' | '전단지' | '추천' | 'SNS' | '카카오톡' | '전화문의' | '방문' | '기타';
 export type ClassStatus = 'scheduled' | 'in_progress' | 'completed' | 'cancelled' | 'no_show' | 'pending_member_sign';
 export type AttendanceStatus = 'pending' | 'attended' | 'late' | 'no_show';
 export type NotificationRole = 'trainer' | 'fc' | 'staff';
@@ -83,8 +89,11 @@ export interface Consultation {
   memberName: string;
   phone: string;
   type: ConsultationType;
-  channel: '방문' | '전화' | '카카오톡' | 'SNS';
+  method: ConsultationMethod; // 상담 방식 (기존 channel 대체)
+  stage: LeadStage; // 리드 단계 7종
+  inflowSource: InflowSource; // 유입경로 9종
   scheduledAt: string;
+  createdAt: string; // 등록 시각 (7일 수정제한 판정용)
   status: ConsultationStatus;
   result: '등록' | '미등록' | '보류' | null;
   summary: string;
@@ -407,8 +416,11 @@ const INITIAL_STATE: MockOperationsState = {
       memberName: '김회원',
       phone: '01012345678',
       type: '상담',
-      channel: '방문',
+      method: '대면',
+      stage: '상담예정',
+      inflowSource: '방문',
       scheduledAt: offsetIso(0, 16, 0),
+      createdAt: offsetIso(-1, 10, 0),
       status: 'scheduled',
       result: null,
       summary: '잔여 회차 이후 재등록 상담 예정',
@@ -420,8 +432,11 @@ const INITIAL_STATE: MockOperationsState = {
       memberName: '정유나',
       phone: '01099887766',
       type: '재등록상담',
-      channel: '전화',
+      method: '유선',
+      stage: '연락완료',
+      inflowSource: '전화문의',
       scheduledAt: offsetIso(1, 11, 30),
+      createdAt: offsetIso(-2, 9, 30),
       status: 'scheduled',
       result: null,
       summary: '만료 D-5 재등록 설득',
@@ -433,8 +448,11 @@ const INITIAL_STATE: MockOperationsState = {
       memberName: '이재원',
       phone: '01011112222',
       type: 'OT',
-      channel: '카카오톡',
+      method: '부재',
+      stage: '보류',
+      inflowSource: '카카오톡',
       scheduledAt: offsetIso(-1, 9, 0),
+      createdAt: offsetIso(-3, 14, 0),
       status: 'completed',
       result: '보류',
       summary: '출장 복귀 일정 확인',
@@ -789,10 +807,13 @@ export function getConsultationById(consultationId: number) {
   return getConsultations().find((item) => item.id === consultationId) || null;
 }
 
-export function addConsultation(consultation: Omit<Consultation, 'id'>) {
+export function addConsultation(consultation: Omit<Consultation, 'id' | 'createdAt'> & { createdAt?: string }) {
   return mutateState((state) => ({
     ...state,
-    consultations: [...state.consultations, { ...consultation, id: Date.now() }],
+    consultations: [
+      ...state.consultations,
+      { ...consultation, id: Date.now(), createdAt: consultation.createdAt || new Date().toISOString() },
+    ],
   }));
 }
 

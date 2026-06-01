@@ -1,7 +1,8 @@
 'use client';
 
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Bell, CalendarDays, ScanLine, Users, TrendingUp } from 'lucide-react';
+import { Bell, CalendarDays, ScanLine, Users, TrendingUp, Clock, CheckCircle } from 'lucide-react';
 import {
   LineChart, Line, BarChart, Bar, AreaChart, Area,
   PieChart, Pie, Cell,
@@ -11,6 +12,13 @@ import {
 import { getMockProfile, getStaffDashboard } from '@/lib/mockOperations';
 import { useAuthStore } from '@/stores/authStore';
 import { Card } from '@/components/ui';
+import {
+  getTodayShift,
+  getShiftRecords,
+  recordShift,
+  type ShiftType,
+  type ShiftRecord,
+} from '@/lib/staffShift';
 
 // ─── Mock Data ────────────────────────────────────────────────────────────────
 
@@ -86,6 +94,105 @@ const CustomTooltip = ({ active, payload, label }: { active?: boolean; payload?:
   );
 };
 
+// ─── 본인 인증 모달 ───────────────────────────────────────────────────────────
+
+interface AuthModalProps {
+  shiftType: ShiftType;
+  onConfirm: () => void;
+  onCancel: () => void;
+}
+
+function AuthModal({ shiftType, onConfirm, onCancel }: AuthModalProps) {
+  const [pin, setPin] = useState('');
+  const [bioSimulated, setBioSimulated] = useState(false);
+  const [error, setError] = useState('');
+
+  // 생체 인증 시뮬레이션: 버튼 클릭으로 통과
+  function handleBio() {
+    setBioSimulated(true);
+    setError('');
+  }
+
+  // 비밀번호 4자리 이상 입력 후 확인
+  function handleConfirm() {
+    if (!bioSimulated && pin.length < 4) {
+      setError('비밀번호 4자리 이상 입력하거나 생체 인증을 사용하세요.');
+      return;
+    }
+    onConfirm();
+  }
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-6">
+      <div className="w-full max-w-sm rounded-2xl bg-surface p-6 shadow-xl">
+        <h2 className="text-h4 font-bold text-content mb-1">본인 인증</h2>
+        <p className="text-caption text-content-tertiary mb-5">
+          {shiftType} 기록을 위해 본인 인증이 필요합니다.
+        </p>
+
+        {/* 생체 인증 버튼 */}
+        <button
+          onClick={handleBio}
+          className={`w-full rounded-xl border py-3 mb-4 text-body font-semibold transition-colors ${
+            bioSimulated
+              ? 'border-primary bg-primary/10 text-primary'
+              : 'border-surface-secondary bg-surface-secondary text-content-secondary'
+          }`}
+        >
+          {bioSimulated ? '✓ 생체 인증 완료' : '생체 인증 (Face ID / Touch ID)'}
+        </button>
+
+        <p className="text-center text-caption text-content-tertiary mb-3">또는</p>
+
+        {/* 비밀번호 입력 */}
+        <input
+          type="password"
+          placeholder="비밀번호 4자리 이상 입력"
+          value={pin}
+          onChange={(e) => { setPin(e.target.value); setError(''); }}
+          className="w-full rounded-xl border border-surface-secondary bg-surface-secondary px-4 py-3 text-body text-content outline-none focus:border-primary"
+        />
+        {error && <p className="mt-2 text-caption text-state-error">{error}</p>}
+
+        <div className="mt-5 flex gap-3">
+          <button
+            onClick={onCancel}
+            className="flex-1 rounded-xl border border-surface-secondary py-3 text-body font-semibold text-content-secondary"
+          >
+            취소
+          </button>
+          <button
+            onClick={handleConfirm}
+            className="flex-1 rounded-xl bg-primary py-3 text-body font-semibold text-white"
+          >
+            확인
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── 시각 포맷 헬퍼 ───────────────────────────────────────────────────────────
+
+function formatTime(iso: string): string {
+  const d = new Date(iso);
+  const hh = String(d.getHours()).padStart(2, '0');
+  const mm = String(d.getMinutes()).padStart(2, '0');
+  return `${hh}:${mm}`;
+}
+
+function formatDateTime(iso: string): string {
+  const d = new Date(iso);
+  const mo = d.getMonth() + 1;
+  const dd = d.getDate();
+  return `${mo}/${dd} ${formatTime(iso)}`;
+}
+
+// ─── Toast 유틸 (간단한 인라인 상태 토스트) ──────────────────────────────────
+
+// ─── 메인 컴포넌트 ────────────────────────────────────────────────────────────
+
 export default function StaffHome() {
   const navigate = useNavigate();
   const trainer = useAuthStore((state) => state.trainer);
@@ -93,6 +200,35 @@ export default function StaffHome() {
   const mockProfile = getMockProfile('staff');
   const displayName = trainer?.staffName || trainer?.name || mockProfile.name;
   const branchLabel = trainer ? `지점 ID ${trainer.branchId}` : mockProfile.branch;
+
+  // 출퇴근 섹션 상태
+  const [shiftVersion, setShiftVersion] = useState(0); // 변경 시 리렌더 트리거
+  const [authTarget, setAuthTarget] = useState<ShiftType | null>(null); // 인증 모달 대상
+  const [toast, setToast] = useState<string | null>(null);
+
+  // shiftVersion이 바뀔 때마다 리렌더되어 최신값 재계산
+  const todayShiftData = shiftVersion >= 0 ? getTodayShift() : getTodayShift();
+  const recentRecords: ShiftRecord[] = getShiftRecords().slice(0, 5);
+
+  const canCheckIn = !todayShiftData.checkInAt;
+  const canCheckOut = !!todayShiftData.checkInAt && !todayShiftData.checkOutAt;
+
+  // 인증 통과 후 실제 기록
+  function handleAuthConfirm() {
+    if (!authTarget) return;
+    try {
+      recordShift(authTarget);
+      setShiftVersion((v) => v + 1);
+      const msg = `${authTarget} 기록 완료 · 근태 시스템 전송됨`;
+      setToast(msg);
+      setTimeout(() => setToast(null), 3000);
+    } catch (e) {
+      const errMsg = e instanceof Error ? e.message : '기록 실패';
+      setToast(errMsg);
+      setTimeout(() => setToast(null), 3000);
+    }
+    setAuthTarget(null);
+  }
 
   const kpiCards = [
     { label: '오늘 입장', value: `${dashboard.todayAttendanceCount}건`, sub: '+12 어제 대비', up: true, color: '#0E7C7B' },
@@ -129,6 +265,88 @@ export default function StaffHome() {
         <QuickMenu label="회원 조회" icon={<Users className="w-5 h-5 text-content-secondary" />} onClick={() => navigate('/staff/members')} />
         <QuickMenu label="수동 출석" icon={<ScanLine className="w-5 h-5 text-state-success" />} onClick={() => navigate('/staff/attendance/manual')} />
         <QuickMenu label="일정 조회" icon={<CalendarDays className="w-5 h-5 text-primary" />} onClick={() => navigate('/staff/schedule')} />
+      </div>
+
+      {/* ── 본인 출퇴근 카드 (헤더 아래·차트 위) ── */}
+      <div className="px-4 pt-4">
+        <Card variant="elevated" padding="md">
+          {/* 카드 헤더 */}
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2">
+              <Clock className="w-4 h-4 text-primary" />
+              <p className="text-body font-bold text-content">근태 / 본인 출퇴근</p>
+            </div>
+            <span className="rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-semibold text-primary">본인 기록만</span>
+          </div>
+
+          {/* 오늘 출근·퇴근 시각 */}
+          <div className="grid grid-cols-2 gap-3 mb-4">
+            <div className="rounded-xl bg-surface-secondary px-4 py-3">
+              <p className="text-[10px] text-content-tertiary mb-1">오늘 출근</p>
+              <p className="text-body-lg font-bold text-content">
+                {todayShiftData.checkInAt ? formatTime(todayShiftData.checkInAt) : '-'}
+              </p>
+            </div>
+            <div className="rounded-xl bg-surface-secondary px-4 py-3">
+              <p className="text-[10px] text-content-tertiary mb-1">오늘 퇴근</p>
+              <p className="text-body-lg font-bold text-content">
+                {todayShiftData.checkOutAt ? formatTime(todayShiftData.checkOutAt) : '-'}
+              </p>
+            </div>
+          </div>
+
+          {/* 출근 / 퇴근 버튼 */}
+          <div className="flex gap-3 mb-4">
+            <button
+              disabled={!canCheckIn}
+              onClick={() => canCheckIn && setAuthTarget('출근')}
+              className={`flex-1 rounded-xl py-3 text-body font-semibold transition-colors ${
+                canCheckIn
+                  ? 'bg-primary text-white'
+                  : 'bg-surface-secondary text-content-tertiary cursor-not-allowed'
+              }`}
+            >
+              출근
+            </button>
+            <button
+              disabled={!canCheckOut}
+              onClick={() => canCheckOut && setAuthTarget('퇴근')}
+              className={`flex-1 rounded-xl py-3 text-body font-semibold transition-colors ${
+                canCheckOut
+                  ? 'bg-content text-white'
+                  : 'bg-surface-secondary text-content-tertiary cursor-not-allowed'
+              }`}
+            >
+              퇴근
+            </button>
+          </div>
+
+          {/* 최근 본인 기록 (최근 5건) */}
+          {recentRecords.length > 0 && (
+            <div className="space-y-2 mb-3">
+              <p className="text-[10px] font-semibold text-content-tertiary uppercase tracking-wide">최근 기록</p>
+              {recentRecords.map((r) => (
+                <div key={r.id} className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className={`text-caption font-semibold ${r.type === '출근' ? 'text-primary' : 'text-content-secondary'}`}>
+                      {r.type}
+                    </span>
+                    <span className="text-caption text-content-tertiary">{formatDateTime(r.at)}</span>
+                  </div>
+                  {r.synced && (
+                    <div className="flex items-center gap-1 rounded-full bg-state-success/10 px-2 py-0.5">
+                      <CheckCircle className="w-3 h-3 text-state-success" />
+                      <span className="text-[9px] font-semibold text-state-success">전송됨</span>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* 안내 문구 */}
+          <p className="text-[10px] text-content-tertiary">본인 기록만 표시됩니다.</p>
+        </Card>
       </div>
 
       {/* ── Chart Section ── */}
@@ -320,6 +538,21 @@ export default function StaffHome() {
         </Card>
 
       </div>
+      {/* 본인 인증 모달 */}
+      {authTarget && (
+        <AuthModal
+          shiftType={authTarget}
+          onConfirm={handleAuthConfirm}
+          onCancel={() => setAuthTarget(null)}
+        />
+      )}
+
+      {/* Toast 알림 */}
+      {toast && (
+        <div className="fixed bottom-24 left-1/2 -translate-x-1/2 z-50 rounded-xl bg-content px-5 py-3 shadow-xl">
+          <p className="text-caption font-semibold text-white whitespace-nowrap">{toast}</p>
+        </div>
+      )}
     </div>
   );
 }

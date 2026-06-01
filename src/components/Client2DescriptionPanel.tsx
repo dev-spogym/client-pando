@@ -187,48 +187,6 @@ function getStateNotes(doc: Client2ScreenDoc): string[] {
   ];
 }
 
-function getPublishingCheckpoints(doc: Client2ScreenDoc): string[] {
-  const base = [
-    '모바일 앱 폭에서 정보가 잘리지 않고, 데스크톱 검수 화면에서는 왼쪽 앱과 오른쪽 설명이 동시에 보여야 합니다.',
-    '버튼, 탭, 카드, 리스트, 배지, 빈 상태가 같은 디자인 톤으로 정리되어야 합니다.',
-    '문구는 개발 용어가 아니라 사용자가 이해하는 업무/서비스 용어로 표시해야 합니다.',
-  ];
-
-  if (doc.domain.includes('결제')) {
-    return [
-      ...base,
-      '금액과 상태 배지는 한눈에 구분되어야 하고, 실패/환불 상태는 성공 상태와 색상과 문구가 섞이면 안 됩니다.',
-    ];
-  }
-
-  if (
-    doc.domain.includes('트레이너') ||
-    doc.domain.includes('FC') ||
-    doc.domain.includes('스태프')
-  ) {
-    return [
-      ...base,
-      '업무 화면은 반복 사용을 전제로 하므로 핵심 정보와 처리 버튼이 스크롤 없이 먼저 인지되어야 합니다.',
-    ];
-  }
-
-  if (doc.domain.includes('탐색')) {
-    return [
-      ...base,
-      '검색/필터/상세 이동이 자연스럽게 이어지고, 카드 정보 밀도가 과하지 않아야 합니다.',
-    ];
-  }
-
-  if (doc.domain.includes('커뮤니티')) {
-    return [
-      ...base,
-      '작성, 신고, 차단 같은 행동은 버튼 문구와 완료 피드백이 명확해야 합니다.',
-    ];
-  }
-
-  return base;
-}
-
 function getCurrentScreenComposition(doc: Client2ScreenDoc): string[] {
   if (doc.id === 'MA-100') {
     return [
@@ -259,8 +217,8 @@ function getCurrentScreenComposition(doc: Client2ScreenDoc): string[] {
   if (doc.id.includes('MA-320')) {
     return [
       '강사 탐색은 프로필 이미지, 전문 분야, 소속 센터, 평점, 후기 수를 중심으로 카드 목록을 구성합니다.',
-      '강사 상세는 소개, 전문 영역, 수업 가능 정보, 후기 흐름이 순서대로 이어져야 합니다.',
-      '예약 가능한 수업이 있는 경우 수업 예약 또는 문의 행동이 상세 하단에서 분명하게 보여야 합니다.',
+      '강사 상세는 소개, 전문 영역, 가능 시간, 후기 흐름이 순서대로 이어져야 합니다.',
+      '강사 상세 하단에는 1:1 톡과 예약 요청 버튼이 항상 노출되며, 예약 요청은 메신저 상담으로 연결됩니다.',
     ];
   }
 
@@ -336,7 +294,7 @@ function getCommonUiElements(doc: Client2ScreenDoc): string[] {
   if (doc.domain.includes('탐색')) {
     return [
       ...base,
-      '탐색 카드에는 이미지, 위치, 거리, 별점, 가격, 시설 태그를 같은 순서로 배치합니다.',
+      '탐색 카드는 화면 성격에 맞는 핵심 정보(센터는 위치·거리·가격, 강사는 전문 분야·평점·후기)를 일관된 순서로 배치합니다.',
       '가로 스크롤 카드와 세로 리스트 카드는 같은 정보 체계를 유지하되 화면 밀도만 다르게 조정합니다.',
     ];
   }
@@ -429,7 +387,6 @@ export default function Client2DescriptionPanel() {
   const flowSteps = getFlowSteps(doc);
   const mockDataNotes = getMockDataNotes(doc);
   const stateNotes = getStateNotes(doc);
-  const publishingCheckpoints = getPublishingCheckpoints(doc);
   const currentScreenComposition = getCurrentScreenComposition(doc);
   const commonUiElements = getCommonUiElements(doc);
   const interactionStandards = getInteractionStandards(doc);
@@ -525,15 +482,6 @@ export default function Client2DescriptionPanel() {
           <h3>목업 데이터 기준</h3>
           <ul>
             {mockDataNotes.map((item) => (
-              <li key={item}>{item}</li>
-            ))}
-          </ul>
-        </div>
-
-        <div className="client2-doc-section">
-          <h3>퍼블리싱 검수 기준</h3>
-          <ul>
-            {publishingCheckpoints.map((item) => (
               <li key={item}>{item}</li>
             ))}
           </ul>

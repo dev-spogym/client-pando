@@ -74,7 +74,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
-    await supabase.from('sale_payment_lines').insert({
+    const { error: lineError } = await supabase.from('sale_payment_lines').insert({
       saleId: sale.id,
       branchId,
       memberId,
@@ -88,6 +88,13 @@ export async function POST(req: Request) {
       externalTransactionId: approvalNo,
       memo: body.orderMemo ?? null,
     });
+
+    // 결제 원장(sales)은 생성됐으나 결제 라인 insert가 실패하면 원장 정합성이 깨진다.
+    // 결제 자체는 완료로 처리하되, 정합성 불일치를 로깅하고 응답에 경고를 surface한다.
+    if (lineError) {
+      console.error('[payments] sale_payment_lines insert failed', { saleId: sale.id, error: lineError.message });
+      return NextResponse.json({ success: true, data: sale, lineWarning: lineError.message }, { status: 201 });
+    }
 
     return NextResponse.json({ success: true, data: sale }, { status: 201 });
   } catch (error) {

@@ -78,21 +78,18 @@ export async function POST(req: Request) {
       return NextResponse.json({ success: true, data: existing, duplicate: true });
     }
 
-    const booked = Number(classData.booked ?? 0);
     const capacity = Number(classData.capacity ?? 0);
-    const isFull = capacity > 0 && booked >= capacity;
-    const status = mode === 'pending' ? 'PENDING' : mode === 'waitlist' || isFull ? 'WAITLIST' : 'BOOKED';
 
-    if (status === 'BOOKED') {
-      const { error: updateError } = await supabase
-        .from('classes')
-        .update({ booked: booked + 1 })
-        .eq('id', classId)
-        .lt('booked', capacity);
-
-      if (updateError) {
-        return NextResponse.json({ error: updateError.message }, { status: 500 });
-      }
+    // 예약 의도에 따라 상태를 정한다. 일반 예약은 동시 예약 overbooking을 막기 위해
+    // booked 값을 조건으로 한 compare-and-swap으로 정원을 확보하고, 실패하면 대기열로 폴백한다.
+    let status: 'PENDING' | 'WAITLIST' | 'BOOKED';
+    if (mode === 'pending') {
+      status = 'PENDING';
+    } else if (mode === 'waitlist') {
+      status = 'WAITLIST';
+    } else {
+      const claimed = await claimSlot(supabase, classId, capacity);
+      status = claimed ? 'BOOKED' : 'WAITLIST';
     }
 
     const waitlistPosition = status === 'WAITLIST'
@@ -123,7 +120,7 @@ export async function POST(req: Request) {
 
     if (error) {
       if (status === 'BOOKED') {
-        await supabase.from('classes').update({ booked }).eq('id', classId);
+        await releaseSlot(supabase, classId);
       }
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
@@ -186,6 +183,62 @@ export async function DELETE(req: Request) {
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Unexpected server error';
     return NextResponse.json({ error: message }, { status: 500 });
+  }
+}
+
+/**
+ * 동시 예약 overbooking 방지: 현재 booked 값을 조건(`eq`)으로 한 compare-and-swap 증가를
+ * 재시도한다. 정원이 다 찼으면 false, 다른 요청과 경합이 계속되면(읽은 값이 바뀌어 update가
+ * 0행) 재시도 후 false를 반환해 호출 측에서 대기열로 폴백하게 한다. capacity가 0이면 무제한.
+ */
+async function claimSlot(
+  supabase: ReturnType<typeof createSupabaseAdminClient>,
+  classId: number,
+  capacity: number
+): Promise<boolean> {
+  for (let attempt = 0; attempt < 4; attempt += 1) {
+    const { data: cls } = await supabase
+      .from('classes')
+      .select('booked')
+      .eq('id', classId)
+      .maybeSingle();
+
+    const current = Number(cls?.booked ?? 0);
+    if (capacity > 0 && current >= capacity) {
+      return false;
+    }
+
+    const { data: updated } = await supabase
+      .from('classes')
+      .update({ booked: current + 1 })
+      .eq('id', classId)
+      .eq('booked', current) // 읽은 값이 그대로일 때만 성공(compare-and-swap)
+      .select('id');
+
+    if (updated && updated.length > 0) {
+      return true;
+    }
+    // 다른 요청이 먼저 증가시킴 → 재시도
+  }
+  return false;
+}
+
+/** 예약 insert 실패 시 확보한 정원 1칸을 되돌린다. */
+async function releaseSlot(
+  supabase: ReturnType<typeof createSupabaseAdminClient>,
+  classId: number
+) {
+  const { data: cls } = await supabase
+    .from('classes')
+    .select('booked')
+    .eq('id', classId)
+    .maybeSingle();
+
+  if (cls) {
+    await supabase
+      .from('classes')
+      .update({ booked: Math.max(0, Number(cls.booked ?? 0) - 1) })
+      .eq('id', classId);
   }
 }
 

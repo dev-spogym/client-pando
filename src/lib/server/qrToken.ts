@@ -11,12 +11,24 @@ export interface QrTokenPayload {
   exp: number;
 }
 
+let warnedSecretFallback = false;
+
 function getSecret() {
-  const secret = process.env.QR_TOKEN_SECRET ?? process.env.SUPABASE_SERVICE_ROLE_KEY;
-  if (!secret) {
-    throw new Error('QR_TOKEN_SECRET or SUPABASE_SERVICE_ROLE_KEY is required');
+  const dedicated = process.env.QR_TOKEN_SECRET;
+  if (dedicated) {
+    return dedicated;
   }
-  return secret;
+  // 폴백: service_role 키를 HMAC 서명 비밀로 재사용하면 키 노출면이 넓어지고 회전이 어렵다.
+  // 배포 중단을 막기 위해 폴백은 유지하되, 전용 QR_TOKEN_SECRET 설정을 강하게 경고한다.
+  const fallback = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!fallback) {
+    throw new Error('QR_TOKEN_SECRET is required');
+  }
+  if (!warnedSecretFallback) {
+    warnedSecretFallback = true;
+    console.warn('[qrToken] QR_TOKEN_SECRET이 설정되지 않아 SUPABASE_SERVICE_ROLE_KEY로 폴백합니다. 전용 비밀키를 설정하세요.');
+  }
+  return fallback;
 }
 
 function encodeBase64Url(value: string) {

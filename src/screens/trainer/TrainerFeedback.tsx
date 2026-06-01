@@ -200,7 +200,7 @@ export default function TrainerFeedback() {
     const { error } = await supabase.from('member_evaluations').insert(inserts);
 
     if (error) {
-      toast.error('피드백 저장에 실패했습니다.');
+      toast.error('피드백 저장에 실패했어요.');
     } else {
       toast.success(`${entries.length}건의 피드백이 저장되었습니다.`);
       setView('list');

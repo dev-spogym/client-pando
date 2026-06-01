@@ -16,7 +16,7 @@ export default function TrainerNotifications() {
           <button
             onClick={() => {
               markAllNotificationsRead('trainer');
-              toast.success('모든 알림을 읽음 처리했습니다.');
+              toast.success('모든 알림을 읽음 처리했어요.');
             }}
             className="text-body font-medium text-primary"
           >
@@ -34,7 +34,7 @@ export default function TrainerNotifications() {
             interactive
             onClick={() => {
               markNotificationRead(item.id);
-              toast.success('알림을 확인했습니다.');
+              toast.success('알림을 확인했어요.');
             }}
           >
             <div className="flex items-start justify-between gap-3">

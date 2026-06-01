@@ -10,7 +10,6 @@ import {
   ClipboardList,
   X,
 } from 'lucide-react';
-import { toast } from 'sonner';
 import { Avatar, Card, Chip } from '@/components/ui';
 import { avatarImg } from '@/lib/marketplace';
 import { useAuthStore } from '@/stores/authStore';
@@ -291,6 +290,7 @@ export default function TrainerMessageRoom() {
   const [inputValue, setInputValue] = useState('');
   const [showNoteModal, setShowNoteModal] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'auto' });
@@ -362,7 +362,7 @@ export default function TrainerMessageRoom() {
         <button
           type="button"
           aria-label="옵션"
-          onClick={() => toast.info('대화방 옵션은 곧 제공됩니다.')}
+          onClick={() => navigate('/trainer/members')}
           className="w-10 h-10 inline-flex items-center justify-center rounded-full active:bg-surface-tertiary text-content shrink-0"
         >
           <MoreVertical className="w-5 h-5" />
@@ -517,11 +517,21 @@ export default function TrainerMessageRoom() {
           <button
             type="button"
             aria-label="첨부"
-            onClick={() => toast.info('파일 첨부는 곧 제공됩니다.')}
+            onClick={() => fileInputRef.current?.click()}
             className="w-10 h-10 inline-flex items-center justify-center rounded-full active:bg-surface-tertiary text-content-secondary shrink-0"
           >
             <Paperclip className="w-5 h-5" />
           </button>
+          <input
+            ref={fileInputRef}
+            type="file"
+            className="sr-only"
+            onChange={(event) => {
+              const fileName = event.target.files?.[0]?.name;
+              if (fileName) setInputValue((prev) => `${prev}${prev ? ' ' : ''}[첨부] ${fileName}`);
+              event.target.value = '';
+            }}
+          />
           <input
             type="text"
             value={inputValue}

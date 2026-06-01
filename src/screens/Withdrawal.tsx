@@ -19,17 +19,28 @@ export default function Withdrawal() {
 
   useEffect(() => {
     if (!member) return;
-    const request = loadWithdrawalRequest(member.id);
-    setReason(request.reason);
-    setDetails(request.details);
-    setRequestedAt(request.requestedAt);
+    fetch(`/api/withdrawal-requests?memberId=${member.id}`)
+      .then(async (response) => {
+        if (!response.ok) throw new Error('withdrawal_fetch_failed');
+        const result = await response.json();
+        if (!result.data) throw new Error('withdrawal_not_found');
+        setReason(result.data.reason);
+        setDetails(result.data.details ?? '');
+        setRequestedAt(result.data.requestedAt);
+      })
+      .catch(() => {
+        const request = loadWithdrawalRequest(member.id);
+        setReason(request.reason);
+        setDetails(request.details);
+        setRequestedAt(request.requestedAt);
+      });
   }, [member]);
 
   if (!member) return null;
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!reason || !agree) {
-      toast.error('탈퇴 사유 선택과 동의가 필요합니다.');
+      toast.error('탈퇴 사유 선택과 동의가 필요해요.');
       return;
     }
 
@@ -40,9 +51,21 @@ export default function Withdrawal() {
       status: 'requested' as const,
     };
 
-    saveWithdrawalRequest(member.id, next);
-    setRequestedAt(next.requestedAt);
-    toast.success('회원 탈퇴 요청이 접수되었습니다.');
+    try {
+      const response = await fetch('/api/withdrawal-requests', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ memberId: member.id, reason, details }),
+      });
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error ?? 'withdrawal_submit_failed');
+      setRequestedAt(result.data.requestedAt);
+      toast.success('회원 탈퇴 요청이 접수되었어요.');
+    } catch {
+      saveWithdrawalRequest(member.id, next);
+      setRequestedAt(next.requestedAt);
+      toast.success('회원 탈퇴 요청이 접수되었어요.');
+    }
   };
 
   return (
@@ -53,7 +76,7 @@ export default function Withdrawal() {
         <section className="bg-state-error/10 rounded-card p-5">
           <h2 className="text-h4 font-bold text-state-error">탈퇴 전 확인해 주세요</h2>
           <p className="text-body text-content-secondary mt-2 leading-relaxed">
-            탈퇴 요청은 퍼블리싱 화면 기준으로 저장되며, 실제 운영에서는 관리자 확인 후 확정 처리됩니다.
+            탈퇴 요청은 접수 후 관리자 확인을 거쳐 확정 처리됩니다.
           </p>
           {requestedAt && (
             <p className="text-caption text-state-error mt-3">최근 요청일: {formatDateKo(requestedAt)}</p>

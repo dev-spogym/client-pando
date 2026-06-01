@@ -36,7 +36,7 @@ export default function QnaList() {
   const handleSubmit = (next: QnaItem) => {
     setItems((prev) => [next, ...prev]);
     setShowWrite(false);
-    toast.success('질문이 등록되었습니다');
+    toast.success('질문이 등록되었어요');
   };
 
   return (

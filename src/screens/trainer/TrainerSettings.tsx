@@ -7,7 +7,7 @@ export default function TrainerSettings() {
 
   const toggle = (key: 'pushEnabled' | 'systemEnabled' | 'reservationEnabled') => {
     updateRoleSettings('trainer', { [key]: !settings[key] });
-    toast.success('설정을 저장했습니다.');
+    toast.success('설정을 저장했어요.');
   };
 
   return (

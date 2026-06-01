@@ -53,17 +53,17 @@ export default function RoleSettingsScreen({ role, title, screenId, fields }: Ro
     const nextValue = !settings[key];
     updateRoleSettings(role, { [key]: nextValue });
     setSettings((current) => ({ ...current, [key]: nextValue }));
-    toast.success('설정을 저장했습니다.');
+    toast.success('설정을 저장했어요.');
   };
 
   const handleLogout = async () => {
     try {
       setIsLoggingOut(true);
       await logout();
-      toast.success('로그아웃 되었습니다.');
+      toast.success('로그아웃되었어요.');
       navigate('/login', { replace: true });
     } catch {
-      toast.error('로그아웃에 실패했습니다.');
+      toast.error('로그아웃에 실패했어요.');
     } finally {
       setIsLoggingOut(false);
       setLogoutConfirmOpen(false);

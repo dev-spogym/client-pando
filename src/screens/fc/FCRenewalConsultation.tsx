@@ -65,7 +65,7 @@ export default function FCRenewalConsultation() {
               summary: summary.trim(),
               followUp: followUp.trim(),
             });
-            toast.success('재등록 상담을 등록했습니다.');
+            toast.success('재등록 상담이 등록되었어요.');
             navigate('/fc/leads');
           }}
         >

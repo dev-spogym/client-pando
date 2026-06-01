@@ -1,7 +1,13 @@
 import { NextResponse } from 'next/server';
 
 export async function POST(req: Request) {
-  const { email, password, memberId, phone, name } = await req.json();
+  const body = await req.json();
+  const metadata = body.user_metadata ?? {};
+  const email = body.email;
+  const password = body.password;
+  const memberId = body.memberId ?? metadata.member_id;
+  const phone = body.phone ?? metadata.phone;
+  const name = body.name ?? metadata.name;
 
   if (!email || !password || !phone) {
     return NextResponse.json(
@@ -31,7 +37,7 @@ export async function POST(req: Request) {
       body: JSON.stringify({
         email,
         password,
-        email_confirm: true,
+        email_confirm: body.email_confirm ?? true,
         user_metadata: { member_id: memberId, phone, name },
       }),
     });

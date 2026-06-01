@@ -85,6 +85,9 @@ export default function Register() {
         body: JSON.stringify({
           email,
           password,
+          memberId,
+          phone: cleanPhone,
+          name,
           email_confirm: true,
           user_metadata: { member_id: memberId, phone: cleanPhone, name },
         }),

@@ -58,7 +58,7 @@ export default function PersonalPayment() {
       <div className="px-4 py-4 space-y-4 pb-20">
         <Card variant="soft" padding="lg">
           <h2 className="text-h3 text-content">상품을 빠르게 선택해 결제합니다</h2>
-          <p className="text-body-sm text-content-secondary mt-2">헬스장 이용권, 골프장 이용권, PT, 골프 레슨을 바로 결제할 수 있는 퍼블리싱 화면입니다.</p>
+          <p className="text-body-sm text-content-secondary mt-2">헬스장 이용권, 골프장 이용권, PT, 골프 레슨을 바로 결제할 수 있습니다.</p>
         </Card>
 
         <Card variant="soft" padding="lg">

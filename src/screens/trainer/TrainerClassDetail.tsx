@@ -36,7 +36,7 @@ export default function TrainerClassDetail() {
 
   const handleStart = () => {
     setTrainerClassStatus(trainerClass.id, 'in_progress');
-    toast.success('수업을 시작 처리했습니다.');
+    toast.success('수업 시작되었어요.');
     refresh();
   };
 
@@ -57,7 +57,7 @@ export default function TrainerClassDetail() {
     }
 
     completeTrainerClass(trainerClass.id);
-    toast.success('수업을 완료 처리했습니다.');
+    toast.success('수업 완료되었어요.');
     refresh();
   };
 

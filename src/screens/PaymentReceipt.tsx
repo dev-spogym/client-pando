@@ -1,17 +1,63 @@
 import { Download, Receipt } from 'lucide-react';
+import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAuthStore } from '@/stores/authStore';
-import { getMockPayment } from '@/lib/memberExperience';
+import { getMockPayment, type MockPaymentRecord } from '@/lib/memberExperience';
 import { formatCurrency, formatDateKo } from '@/lib/utils';
 import { Button, Card, PageHeader } from '@/components/ui';
+
+interface RemotePayment {
+  id: number;
+  productName: string | null;
+  type: string | null;
+  amount: number;
+  originalPrice: number | null;
+  discountPrice: number | null;
+  mileageUsed: number | null;
+  paymentMethod: string;
+  saleDate: string;
+  cardCompany: string | null;
+  cardNumber: string | null;
+  approvalNo: string | null;
+  memo: string | null;
+}
 
 /** 영수증 상세 */
 export default function PaymentReceipt() {
   const navigate = useNavigate();
   const { paymentId } = useParams<{ paymentId: string }>();
   const { member } = useAuthStore();
+  const [remotePayment, setRemotePayment] = useState<RemotePayment | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  const payment = member && paymentId ? getMockPayment(member.id, paymentId) : null;
+  useEffect(() => {
+    if (!member || !paymentId) return;
+
+    if (!/^\d+$/.test(paymentId)) {
+      setLoading(false);
+      return;
+    }
+
+    fetch(`/api/payments/${paymentId}?memberId=${member.id}`)
+      .then(async (response) => {
+        if (!response.ok) throw new Error('payment_fetch_failed');
+        const result = await response.json();
+        setRemotePayment(result.data);
+      })
+      .catch(() => setRemotePayment(null))
+      .finally(() => setLoading(false));
+  }, [member, paymentId]);
+
+  const mockPayment = member && paymentId ? getMockPayment(member.id, paymentId) : null;
+  const payment = remotePayment ? mapRemotePayment(remotePayment) : mockPayment;
+
+  if (loading && member) {
+    return (
+      <div className="min-h-screen bg-surface-secondary flex items-center justify-center">
+        <p className="text-body-sm text-content-tertiary">불러오는 중...</p>
+      </div>
+    );
+  }
 
   if (!member || !payment) {
     return (
@@ -57,6 +103,24 @@ export default function PaymentReceipt() {
       </div>
     </div>
   );
+}
+
+function mapRemotePayment(payment: RemotePayment): MockPaymentRecord {
+  return {
+    id: String(payment.id),
+    productId: null,
+    productName: payment.productName ?? payment.type ?? '결제',
+    category: 'renewal',
+    amount: Number(payment.amount),
+    originalAmount: Number(payment.originalPrice ?? payment.amount),
+    mileageUsed: Number(payment.mileageUsed ?? 0),
+    paymentMethod: payment.paymentMethod as MockPaymentRecord['paymentMethod'],
+    cardCompany: payment.cardCompany ?? payment.cardNumber ?? payment.paymentMethod,
+    receiptTitle: payment.productName ?? '영수증',
+    orderMemo: payment.memo ?? payment.approvalNo,
+    saleDate: payment.saleDate,
+    status: 'COMPLETED',
+  };
 }
 
 function ReceiptRow({ label, value }: { label: string; value: string }) {

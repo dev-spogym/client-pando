@@ -84,7 +84,7 @@ export default function CenterReviewWrite() {
 
   const addSamplePhoto = () => {
     if (photos.length >= 5) {
-      toast.info('사진은 최대 5장까지 첨부할 수 있습니다.');
+      toast.info('사진은 최대 5장까지 첨부할 수 있어요.');
       return;
     }
     const next = img(`review-extra-${Date.now()}`, 400, 400);
@@ -94,7 +94,7 @@ export default function CenterReviewWrite() {
   const handleSubmit = () => {
     if (!isValid || submitting) return;
     setSubmitting(true);
-    toast.success('리뷰가 등록되었습니다.');
+    toast.success('후기가 등록되었어요.');
     setTimeout(() => {
       navigate(`/centers/${id}/reviews`);
     }, 300);

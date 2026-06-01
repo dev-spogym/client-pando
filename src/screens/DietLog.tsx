@@ -5,6 +5,7 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { PageHeader, Button, EmptyState } from '@/components/ui';
+import { useAuthStore } from '@/stores/authStore';
 
 type MealType = '아침' | '점심' | '저녁' | '간식';
 
@@ -12,9 +13,11 @@ const MEAL_TYPES: MealType[] = ['아침', '점심', '저녁', '간식'];
 
 interface FoodEntry {
   id: string;
+  remoteId?: number;
   name: string;
   calories: number;
   memo: string;
+  photoName?: string | null;
 }
 
 interface MealLog {
@@ -24,6 +27,16 @@ interface MealLog {
 interface DayDietLog {
   date: string;
   meals: MealLog;
+}
+
+interface RemoteDietLog {
+  id: number;
+  date: string;
+  mealType: MealType;
+  name: string;
+  calories: number;
+  memo: string | null;
+  photoName: string | null;
 }
 
 const STORAGE_KEY = 'fitgenie-diet-logs';
@@ -53,6 +66,58 @@ function saveLogs(logs: Record<string, DayDietLog>) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(logs));
 }
 
+function appendEntry(
+  logs: Record<string, DayDietLog>,
+  date: string,
+  meal: MealType,
+  entry: FoodEntry,
+): Record<string, DayDietLog> {
+  const updated = { ...logs };
+  const day = updated[date] ?? { date, meals: {} };
+  const entries = day.meals[meal] ?? [];
+  updated[date] = {
+    ...day,
+    meals: {
+      ...day.meals,
+      [meal]: [...entries, entry],
+    },
+  };
+  return updated;
+}
+
+function removeEntry(logs: Record<string, DayDietLog>, date: string, meal: MealType, entryId: string): Record<string, DayDietLog> {
+  const updated = { ...logs };
+  const day = updated[date];
+  if (!day?.meals[meal]) return updated;
+
+  const nextEntries = day.meals[meal].filter((entry) => entry.id !== entryId);
+  const nextMeals = { ...day.meals };
+  if (nextEntries.length === 0) {
+    delete nextMeals[meal];
+  } else {
+    nextMeals[meal] = nextEntries;
+  }
+
+  if (Object.keys(nextMeals).length === 0) {
+    delete updated[date];
+    return updated;
+  }
+
+  updated[date] = { ...day, meals: nextMeals };
+  return updated;
+}
+
+function remoteLogsToDayLogs(items: RemoteDietLog[]): Record<string, DayDietLog> {
+  return items.reduce<Record<string, DayDietLog>>((acc, item) => appendEntry(acc, item.date, item.mealType, {
+    id: `remote-${item.id}`,
+    remoteId: item.id,
+    name: item.name,
+    calories: item.calories,
+    memo: item.memo ?? '',
+    photoName: item.photoName,
+  }), {});
+}
+
 const mealIcon: Record<MealType, string> = {
   '아침': '🌅',
   '점심': '☀️',
@@ -64,6 +129,7 @@ const mealIcon: Record<MealType, string> = {
 export default function DietLog() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const member = useAuthStore((state) => state.member);
   const [currentDate, setCurrentDate] = useState(new Date());
   const [showModal, setShowModal] = useState(searchParams.get('modal') === 'add');
   const [selectedMeal, setSelectedMeal] = useState<MealType>(() => {
@@ -76,13 +142,45 @@ export default function DietLog() {
   const [formName, setFormName] = useState('');
   const [formCalories, setFormCalories] = useState(0);
   const [formMemo, setFormMemo] = useState('');
+  const [formPhotoName, setFormPhotoName] = useState('');
 
   const dateStr = getDateStr(currentDate);
   const dayLog = logs?.[dateStr];
 
   useEffect(() => {
-    setLogs(loadLogs());
-  }, []);
+    let ignore = false;
+
+    async function loadRemoteLogs() {
+      if (!member) {
+        setLogs(loadLogs());
+        return;
+      }
+
+      try {
+        const response = await fetch(`/api/diet-logs?memberId=${member.id}`);
+        const result = await response.json();
+        if (!response.ok || !result.success) {
+          throw new Error(result.error ?? 'diet_logs_fetch_failed');
+        }
+        if (!ignore) {
+          setLogs(remoteLogsToDayLogs(result.data ?? []));
+        }
+      } catch (error) {
+        if (typeof window !== 'undefined') {
+          // eslint-disable-next-line no-console
+          console.warn('[DietLog] remote load failed, using local logs:', error);
+        }
+        if (!ignore) {
+          setLogs(loadLogs());
+        }
+      }
+    }
+
+    loadRemoteLogs();
+    return () => {
+      ignore = true;
+    };
+  }, [member]);
 
   useEffect(() => {
     const nextMeal = searchParams.get('meal');
@@ -113,9 +211,10 @@ export default function DietLog() {
     setFormName('');
     setFormCalories(0);
     setFormMemo('');
+    setFormPhotoName('');
   };
 
-  const handleAddFood = () => {
+  const handleAddFood = async () => {
     if (!formName.trim() || !logs) return;
 
     const newEntry: FoodEntry = {
@@ -123,38 +222,76 @@ export default function DietLog() {
       name: formName.trim(),
       calories: formCalories,
       memo: formMemo.trim(),
+      photoName: formPhotoName || null,
     };
 
-    const updated = { ...logs };
-    if (!updated[dateStr]) {
-      updated[dateStr] = { date: dateStr, meals: {} };
+    let entry = newEntry;
+    if (member) {
+      try {
+        const response = await fetch('/api/diet-logs', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            memberId: member.id,
+            date: dateStr,
+            mealType: selectedMeal,
+            name: newEntry.name,
+            calories: newEntry.calories,
+            memo: newEntry.memo,
+            photoName: newEntry.photoName,
+          }),
+        });
+        const result = await response.json();
+        if (!response.ok || !result.success) {
+          throw new Error(result.error ?? 'diet_log_create_failed');
+        }
+        entry = {
+          ...newEntry,
+          id: `remote-${result.data.id}`,
+          remoteId: result.data.id,
+        };
+      } catch (error) {
+        if (typeof window !== 'undefined') {
+          // eslint-disable-next-line no-console
+          console.warn('[DietLog] remote create failed, saving locally:', error);
+        }
+        toast.warning('네트워크 문제로 이 기기 안에 임시 저장했어요.');
+      }
     }
-    if (!updated[dateStr].meals[selectedMeal]) {
-      updated[dateStr].meals[selectedMeal] = [];
-    }
-    updated[dateStr].meals[selectedMeal].push(newEntry);
+
+    const updated = appendEntry(logs, dateStr, selectedMeal, entry);
     setLogs(updated);
     saveLogs(updated);
     setShowModal(false);
     resetForm();
   };
 
-  const handleDeleteFood = (meal: MealType, entryId: string) => {
+  const handleDeleteFood = async (meal: MealType, entryId: string) => {
     if (!logs) return;
+    const entry = logs[dateStr]?.meals[meal]?.find((item) => item.id === entryId);
 
-    const updated = { ...logs };
-    if (updated[dateStr]?.meals[meal]) {
-      updated[dateStr].meals[meal] = updated[dateStr].meals[meal].filter((e) => e.id !== entryId);
-      if (updated[dateStr].meals[meal].length === 0) {
-        delete updated[dateStr].meals[meal];
+    if (member && entry?.remoteId) {
+      try {
+        const response = await fetch(`/api/diet-logs?memberId=${member.id}&id=${entry.remoteId}`, {
+          method: 'DELETE',
+        });
+        const result = await response.json();
+        if (!response.ok || !result.success) {
+          throw new Error(result.error ?? 'diet_log_delete_failed');
+        }
+      } catch (error) {
+        if (typeof window !== 'undefined') {
+          // eslint-disable-next-line no-console
+          console.warn('[DietLog] remote delete failed:', error);
+        }
+        toast.error('삭제에 실패했어요. 잠시 후 다시 시도해 주세요.');
+        return;
       }
-      // 모든 끼니가 비었으면 날짜 삭제
-      if (Object.keys(updated[dateStr].meals).length === 0) {
-        delete updated[dateStr];
-      }
-      setLogs(updated);
-      saveLogs(updated);
     }
+
+    const updated = removeEntry(logs, dateStr, meal, entryId);
+    setLogs(updated);
+    saveLogs(updated);
   };
 
   const openAddModal = (meal: MealType) => {
@@ -241,9 +378,10 @@ export default function DietLog() {
                       <div key={entry.id} className="flex items-center gap-3 p-3 bg-surface-secondary rounded-card">
                         <div className="flex-1 min-w-0">
                           <p className="text-body font-medium truncate">{entry.name}</p>
-                          <div className="flex items-center gap-2 text-caption text-content-tertiary">
+                          <div className="flex flex-wrap items-center gap-2 text-caption text-content-tertiary">
                             <span>{entry.calories}kcal</span>
                             {entry.memo && <span>· {entry.memo}</span>}
+                            {entry.photoName && <span>· 사진 {entry.photoName}</span>}
                           </div>
                         </div>
                         <button onClick={() => handleDeleteFood(meal, entry.id)} className="p-1">
@@ -296,18 +434,22 @@ export default function DietLog() {
                 />
               </div>
 
-              {/* 사진 첨부 (placeholder) */}
+              {/* 사진 첨부 */}
               <div>
                 <label className="text-body font-medium text-content-secondary mb-2 block">사진 첨부</label>
-                <button
-                  type="button"
-                  onClick={() => toast.info('식단 사진 업로드는 곧 제공됩니다.')}
-                  className="w-full py-8 border-2 border-dashed border-line rounded-card flex flex-col items-center gap-2 text-content-tertiary active:bg-surface-secondary"
-                >
+                <label className="w-full py-8 border-2 border-dashed border-line rounded-card flex flex-col items-center gap-2 text-content-tertiary active:bg-surface-secondary cursor-pointer">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="sr-only"
+                    onChange={(event) => setFormPhotoName(event.target.files?.[0]?.name ?? '')}
+                  />
                   <Camera className="w-8 h-8" />
-                  <span className="text-body">사진을 추가하세요</span>
-                  <span className="text-caption">(준비 중)</span>
-                </button>
+                  <span className="text-body">{formPhotoName ? '사진이 선택되었습니다' : '사진을 추가하세요'}</span>
+                  <span className="max-w-full px-4 text-caption truncate">
+                    {formPhotoName || '선택된 사진 없음'}
+                  </span>
+                </label>
               </div>
 
               {/* 메모 */}

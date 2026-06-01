@@ -26,7 +26,7 @@ export default function TrainerTemplates() {
     setName('');
     setSummary('');
     setVersion((value) => value + 1);
-    toast.success('템플릿을 추가했습니다.');
+    toast.success('템플릿을 추가했어요.');
   };
 
   return (

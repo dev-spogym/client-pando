@@ -83,7 +83,7 @@ export default function TrainerDualSignature() {
             onClick={() => {
               signTrainerForClass(classId, mode);
               setVersion((value) => value + 1);
-              toast.success('강사 서명을 저장했습니다.');
+              toast.success('강사 서명을 저장했어요.');
             }}
           >
             {trainerSigned ? '강사 서명 완료됨' : '강사 서명 저장'}
@@ -103,7 +103,7 @@ export default function TrainerDualSignature() {
             onClick={() => {
               signMemberForClass(classId);
               setVersion((value) => value + 1);
-              toast.success('회원 서명을 완료 처리했습니다.');
+              toast.success('회원 서명을 완료했어요.');
             }}
           >
             {memberSigned ? '회원 서명 완료됨' : mode === 'remote' ? '원격 서명 완료 시뮬레이션' : '대면 서명 완료'}

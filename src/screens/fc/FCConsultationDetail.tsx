@@ -40,7 +40,7 @@ export default function FCConsultationDetail() {
                 active={consultation.status === status}
                 onClick={() => {
                   updateConsultation(consultation.id, { status });
-                  toast.success('상담 상태를 저장했습니다.');
+                  toast.success('상담 상태를 저장했어요.');
                   setVersion((value) => value + 1);
                 }}
               >
@@ -56,7 +56,7 @@ export default function FCConsultationDetail() {
                 active={consultation.result === result}
                 onClick={() => {
                   updateConsultation(consultation.id, { result, status: 'completed' });
-                  toast.success('상담 결과를 저장했습니다.');
+                  toast.success('상담 결과를 저장했어요.');
                   setVersion((value) => value + 1);
                 }}
               >

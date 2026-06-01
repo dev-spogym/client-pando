@@ -3,7 +3,7 @@
 import { Suspense, useEffect } from 'react';
 import { usePathname, useSearchParams } from 'next/navigation';
 import { Toaster } from 'sonner';
-import PwaInstallBanner from '@/components/PwaInstallBanner';
+import CacheGuard from '@/components/CacheGuard';
 import { useAuthStore } from '@/stores/authStore';
 
 function AuthBootstrap() {
@@ -22,11 +22,11 @@ function AuthBootstrap() {
 export default function Providers({ children }: { children: React.ReactNode }) {
   return (
     <>
+      <CacheGuard />
       <Suspense fallback={null}>
         <AuthBootstrap />
         {children}
       </Suspense>
-      <PwaInstallBanner />
       <Toaster
         position="top-center"
         toastOptions={{

@@ -30,7 +30,7 @@ export default function FCConsultationEditor() {
       followUp: followUp.trim(),
     });
 
-    toast.success('상담 이력을 등록했습니다.');
+    toast.success('상담이 등록되었어요.');
     navigate('/fc/leads');
   };
 

@@ -66,7 +66,7 @@ export default function PaymentHistory() {
     const remote = sales.map((sale) => ({
       ...sale,
       source: 'supabase' as const,
-      receiptId: null,
+      receiptId: String(sale.id),
     }));
 
     const local = mockPayments.map((payment) => ({
@@ -141,13 +141,13 @@ export default function PaymentHistory() {
               <div className="space-y-2">
                 {items.map((payment) => {
                   const status = statusConfig[payment.status] || { text: payment.status, tone: 'neutral' as const };
-                  const isMock = payment.source === 'mock';
+                  const canOpenReceipt = Boolean(payment.receiptId);
 
                   return (
                     <button
                       key={`${payment.source}-${payment.id}`}
                       onClick={() => {
-                        if (isMock && payment.receiptId) navigate(`/payments/${payment.receiptId}`);
+                        if (payment.receiptId) navigate(`/payments/${payment.receiptId}`);
                       }}
                       className="w-full bg-surface rounded-card shadow-card-soft p-4 flex items-center gap-3 text-left"
                     >
@@ -157,7 +157,7 @@ export default function PaymentHistory() {
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2">
                           <p className="font-medium text-body-sm truncate">{payment.productName || payment.type}</p>
-                          {isMock && (
+                          {canOpenReceipt && (
                             <Badge tone="info" size="sm">영수증 보기</Badge>
                           )}
                         </div>

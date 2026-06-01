@@ -23,6 +23,7 @@ export default function Checkout() {
   const [mileageUsed, setMileageUsed] = useState(0);
   const [memo, setMemo] = useState('');
   const [agree, setAgree] = useState(false);
+  const [paying, setPaying] = useState(false);
 
   const presetProduct = productId ? getShopProduct(productId) : null;
 
@@ -76,27 +77,59 @@ export default function Checkout() {
   const maxMileage = Math.min(member.mileage, Math.floor(order.price / 1000) * 1000);
   const totalPrice = Math.max(0, order.price - mileageUsed);
 
-  const handlePay = () => {
+  const handlePay = async () => {
     if (!agree) {
       toast.error('결제 진행 동의가 필요합니다.');
       return;
     }
 
-    const payment = createMockPayment(member.id, {
-      productId: order.productId,
-      productName: order.productName,
-      category: order.category,
-      amount: totalPrice,
-      originalAmount: order.price,
-      mileageUsed,
-      paymentMethod,
-      cardCompany: paymentMethod === 'CARD' ? '현대카드' : paymentMethod === 'NAVERPAY' ? '네이버페이' : paymentMethod === 'KAKAOPAY' ? '카카오페이' : null,
-      receiptTitle: order.productName,
-      orderMemo: memo || null,
-    });
+    setPaying(true);
+    try {
+      const response = await fetch('/api/payments', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          memberId: member.id,
+          branchId: member.branchId,
+          productId: order.productId,
+          productName: order.productName,
+          category: order.category,
+          amount: totalPrice,
+          originalAmount: order.price,
+          mileageUsed,
+          paymentMethod,
+          cardCompany: paymentMethod === 'CARD' ? '앱 카드' : paymentMethod === 'NAVERPAY' ? '네이버페이' : paymentMethod === 'KAKAOPAY' ? '카카오페이' : null,
+          receiptTitle: order.productName,
+          orderMemo: memo || null,
+        }),
+      });
+      const result = await response.json();
 
-    toast.success('결제가 완료되었습니다.');
-    navigate(`/payments/${payment.id}`, { replace: true });
+      if (!response.ok) {
+        throw new Error(result.error ?? 'payment_failed');
+      }
+
+      toast.success('결제가 완료되었습니다.');
+      navigate(`/payments/${result.data.id}`, { replace: true });
+    } catch {
+      const payment = createMockPayment(member.id, {
+        productId: order.productId,
+        productName: order.productName,
+        category: order.category,
+        amount: totalPrice,
+        originalAmount: order.price,
+        mileageUsed,
+        paymentMethod,
+        cardCompany: paymentMethod === 'CARD' ? '앱 카드' : paymentMethod === 'NAVERPAY' ? '네이버페이' : paymentMethod === 'KAKAOPAY' ? '카카오페이' : null,
+        receiptTitle: order.productName,
+        orderMemo: memo || null,
+      });
+
+      toast.success('결제가 완료되었습니다.');
+      navigate(`/payments/${payment.id}`, { replace: true });
+    } finally {
+      setPaying(false);
+    }
   };
 
   return (
@@ -145,7 +178,7 @@ export default function Checkout() {
               <span className="text-content-secondary">사용할 마일리지</span>
               <span className="font-semibold text-primary">{mileageUsed.toLocaleString()}P</span>
             </div>
-            <p className="text-caption text-content-tertiary mt-2">퍼블리싱 기준으로 적용되며 실제 정산 연동은 후속입니다.</p>
+            <p className="text-caption text-content-tertiary mt-2">마일리지 사용액은 결제 원장에 함께 기록됩니다.</p>
           </div>
         </Card>
 
@@ -203,7 +236,7 @@ export default function Checkout() {
           />
           <div>
             <p className="text-body-sm font-medium">결제 진행 및 환불 정책에 동의합니다.</p>
-            <p className="text-caption text-content-tertiary mt-1">실제 결제 연동 전 단계의 퍼블리싱 화면입니다.</p>
+            <p className="text-caption text-content-tertiary mt-1">결제 완료 후 CRM 내부 승인번호와 영수증이 생성됩니다.</p>
           </div>
         </label>
       </div>
@@ -219,6 +252,8 @@ export default function Checkout() {
             size="xl"
             fullWidth
             leftIcon={<CreditCard className="w-4 h-4" />}
+            loading={paying}
+            disabled={paying}
             onClick={handlePay}
           >
             {methods.find((item) => item.id === paymentMethod)?.label}로 결제

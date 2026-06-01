@@ -58,7 +58,7 @@ function ReviewCard({ review }: { review: CenterReview }) {
   };
 
   const handleReport = () => {
-    toast.info('신고가 접수되었습니다. 운영팀이 검토합니다.');
+    toast.info('신고가 접수되었어요. 검토 후 처리됩니다.');
   };
 
   return (

@@ -1,35 +1,92 @@
 'use client';
 
-import { useState, type FormEvent } from 'react';
+import { useEffect, useState, type FormEvent } from 'react';
 import { toast } from 'sonner';
 import { CheckCircle2, Clock3, MessageSquareText, Paperclip, Send } from 'lucide-react';
 import { Badge, Button, Card, Input, PageHeader } from '@/components/ui';
+import { useAuthStore } from '@/stores/authStore';
 
-const CATEGORIES = ['예약', '결제', '이용권', '출입', '기타'] as const;
+const CATEGORIES = ['이용문의', '결제문의', '시설문의', '수업문의', '기타'] as const;
 
 const RECENT_INQUIRIES = [
-  { id: 'q-101', title: '결제 영수증 재발급 문의', status: '답변완료', date: '2026-05-22' },
-  { id: 'q-102', title: '대기 예약 알림이 오지 않아요', status: '접수', date: '2026-05-18' },
+  { id: 'q-101', title: '결제 영수증 재발급 문의', status: '답변완료', createdAt: '2026-05-22T00:00:00Z' },
+  { id: 'q-102', title: '대기 예약 알림이 오지 않아요', status: '접수', createdAt: '2026-05-18T00:00:00Z' },
 ];
 
+type Inquiry = {
+  id: number | string;
+  title: string;
+  status: string;
+  createdAt: string;
+};
+
 export default function SupportInquiry() {
-  const [category, setCategory] = useState<(typeof CATEGORIES)[number]>('예약');
+  const { member } = useAuthStore();
+  const [category, setCategory] = useState<(typeof CATEGORIES)[number]>('이용문의');
   const [title, setTitle] = useState('');
   const [body, setBody] = useState('');
+  const [recentInquiries, setRecentInquiries] = useState<Inquiry[]>(RECENT_INQUIRIES);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const canSubmit = title.trim().length >= 2 && body.trim().length >= 10;
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  useEffect(() => {
+    if (!member) return;
+
+    fetch(`/api/inquiries?memberId=${member.id}`)
+      .then(async (response) => {
+        if (!response.ok) throw new Error('inquiry_fetch_failed');
+        const result = await response.json();
+        setRecentInquiries(result.data?.length ? result.data : []);
+      })
+      .catch(() => {
+        setRecentInquiries(RECENT_INQUIRIES);
+      });
+  }, [member]);
+
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!canSubmit) {
       toast.error('제목과 문의 내용을 입력해 주세요');
       return;
     }
-    toast.success('문의가 접수되었습니다', {
-      description: '영업일 기준 1~2일 안에 답변드릴게요.',
-    });
-    setTitle('');
-    setBody('');
+
+    if (!member) {
+      toast.error('로그인 후 문의를 접수할 수 있어요');
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      const response = await fetch('/api/inquiries', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          memberId: member.id,
+          memberName: member.name,
+          branchId: member.branchId,
+          category,
+          title,
+          content: body,
+        }),
+      });
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error ?? 'inquiry_submit_failed');
+      }
+
+      setRecentInquiries((items) => [result.data, ...items]);
+      toast.success('문의가 접수되었어요', {
+        description: '영업일 기준 1~2일 안에 답변드릴게요.',
+      });
+      setTitle('');
+      setBody('');
+    } catch {
+      toast.error('문의 접수에 실패했어요. 잠시 후 다시 시도해 주세요.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -100,16 +157,16 @@ export default function SupportInquiry() {
             스크린샷 첨부
           </button>
 
-          <Button type="submit" variant="primary" size="lg" fullWidth disabled={!canSubmit}>
+          <Button type="submit" variant="primary" size="lg" fullWidth disabled={!canSubmit || isSubmitting}>
             <Send className="h-4 w-4" />
-            문의 접수
+            {isSubmitting ? '접수 중' : '문의 접수'}
           </Button>
         </form>
 
         <section>
           <h2 className="mb-3 text-h4 text-content">최근 문의</h2>
           <div className="space-y-3">
-            {RECENT_INQUIRIES.map((item) => (
+            {recentInquiries.map((item) => (
               <Card key={item.id} variant="elevated" padding="md">
                 <div className="flex items-start gap-3">
                   {item.status === '답변완료' ? (
@@ -119,7 +176,7 @@ export default function SupportInquiry() {
                   )}
                   <div className="flex-1">
                     <p className="text-body font-semibold text-content">{item.title}</p>
-                    <p className="mt-1 text-caption text-content-tertiary">{item.date}</p>
+                    <p className="mt-1 text-caption text-content-tertiary">{formatDate(item.createdAt)}</p>
                   </div>
                   <Badge tone={item.status === '답변완료' ? 'success' : 'primary'} variant="soft">
                     {item.status}
@@ -132,4 +189,8 @@ export default function SupportInquiry() {
       </div>
     </div>
   );
+}
+
+function formatDate(value: string) {
+  return value.slice(0, 10);
 }

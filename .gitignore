@@ -82,3 +82,9 @@ temp/
 *.pid
 *.seed
 *.pid.lock
+
+# Playwright 테스트 아티팩트
+/test-results/
+/playwright-report/
+/tests/.shots/
+/tests/.report/

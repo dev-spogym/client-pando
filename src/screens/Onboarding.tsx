@@ -68,7 +68,7 @@ export default function Onboarding() {
     };
     completeOnboarding(member.id, completedDraft);
     setDraft(completedDraft);
-    toast.success('온보딩이 저장되었습니다.');
+    toast.success('온보딩이 저장되었어요.');
     navigate('/', { replace: true });
   };
 

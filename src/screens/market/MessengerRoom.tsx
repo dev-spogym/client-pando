@@ -3,7 +3,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, MoreVertical, Paperclip, Send, ClipboardList } from 'lucide-react';
-import { toast } from 'sonner';
 import { Avatar, Card, Chip } from '@/components/ui';
 import { getConversationById, getMessagesByConversation } from '@/lib/marketplace';
 import { useMarketStore } from '@/stores/marketStore';
@@ -41,14 +40,16 @@ export default function MessengerRoom() {
   const navigate = useNavigate();
   const { markConversationRead } = useMarketStore();
   const [inputValue, setInputValue] = useState('');
+  const [messages, setMessages] = useState<MarketMessage[]>([]);
   const bottomRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const numId = Number(id);
   const conversation = getConversationById(numId);
-  const messages = getMessagesByConversation(numId);
 
   useEffect(() => {
     if (numId) markConversationRead(numId);
+    setMessages(getMessagesByConversation(numId));
     bottomRef.current?.scrollIntoView({ behavior: 'auto' });
   }, [numId, markConversationRead]);
 
@@ -61,6 +62,22 @@ export default function MessengerRoom() {
   }
 
   const grouped = groupByDate(messages);
+
+  const sendMessage = () => {
+    const content = inputValue.trim();
+    if (!content) return;
+    setMessages((prev) => [...prev, {
+      id: Date.now(),
+      conversationId: numId,
+      senderId: 'me',
+      type: 'text',
+      content,
+      sentAt: new Date().toISOString(),
+      isRead: false,
+    }]);
+    setInputValue('');
+    setTimeout(() => bottomRef.current?.scrollIntoView({ behavior: 'smooth' }), 50);
+  };
 
   return (
     <div className="flex flex-col h-screen bg-surface-secondary">
@@ -85,7 +102,7 @@ export default function MessengerRoom() {
         <button
           type="button"
           aria-label="옵션"
-          onClick={() => toast.info('대화방 옵션은 곧 제공됩니다.')}
+          onClick={() => navigate('/support')}
           className="w-10 h-10 inline-flex items-center justify-center rounded-full active:bg-surface-tertiary text-content shrink-0"
         >
           <MoreVertical className="w-5 h-5" />
@@ -237,11 +254,21 @@ export default function MessengerRoom() {
           <button
             type="button"
             aria-label="첨부"
-            onClick={() => toast.info('파일 첨부는 곧 제공됩니다.')}
+            onClick={() => fileInputRef.current?.click()}
             className="w-10 h-10 inline-flex items-center justify-center rounded-full active:bg-surface-tertiary text-content-secondary shrink-0"
           >
             <Paperclip className="w-5 h-5" />
           </button>
+          <input
+            ref={fileInputRef}
+            type="file"
+            className="sr-only"
+            onChange={(event) => {
+              const fileName = event.target.files?.[0]?.name;
+              if (fileName) setInputValue((prev) => `${prev}${prev ? ' ' : ''}[첨부] ${fileName}`);
+              event.target.value = '';
+            }}
+          />
           <input
             type="text"
             value={inputValue}
@@ -249,14 +276,14 @@ export default function MessengerRoom() {
             placeholder="메시지 보내기..."
             className="flex-1 h-11 px-4 rounded-input border border-line bg-surface-secondary text-body text-content placeholder:text-content-tertiary outline-none focus:border-primary/70 transition-colors"
             onKeyDown={(e) => {
-              if (e.key === 'Enter' && inputValue.trim()) setInputValue('');
+              if (e.key === 'Enter' && inputValue.trim()) sendMessage();
             }}
           />
           <button
             type="button"
             aria-label="전송"
             disabled={!inputValue.trim()}
-            onClick={() => setInputValue('')}
+            onClick={sendMessage}
             className={cn(
               'w-11 h-11 inline-flex items-center justify-center rounded-button shrink-0 transition-colors',
               inputValue.trim()

@@ -25,6 +25,11 @@ import {
   updateLessonBookingRequestStatus,
   type LessonBookingRequestEntry,
 } from '@/lib/lessonPlanning';
+import {
+  approveRemoteLessonBooking,
+  getTrainerPendingLessonRequests,
+  rejectRemoteLessonBooking,
+} from '@/lib/remoteReservations';
 import { supabase } from '@/lib/supabase';
 import { cn, formatTime } from '@/lib/utils';
 import { markReservationCompleted, upsertReservation } from '@/lib/memberExperience';
@@ -174,7 +179,19 @@ export default function TrainerSchedule() {
 
   const refreshPendingRequests = () => {
     if (!trainer?.staffId) return;
-    setPendingRequests(getTrainerLessonBookingRequests(trainer.staffId, ['pending']));
+    const localRequests = getTrainerLessonBookingRequests(trainer.staffId, ['pending']);
+    if (isPreviewMode()) {
+      setPendingRequests(localRequests);
+      return;
+    }
+
+    getTrainerPendingLessonRequests(trainer.staffId)
+      .then((remoteRequests) => {
+        const remoteKeys = new Set(remoteRequests.map((item) => `${item.memberId}-${item.startTime}-${item.endTime}`));
+        const mergedLocal = localRequests.filter((item) => !remoteKeys.has(`${item.memberId}-${item.startTime}-${item.endTime}`));
+        setPendingRequests([...remoteRequests, ...mergedLocal]);
+      })
+      .catch(() => setPendingRequests(localRequests));
   };
 
   const prevWeek = () => {
@@ -310,7 +327,7 @@ export default function TrainerSchedule() {
       });
       markReservationCompleted(cls.memberId, cls.id, completedAt);
       await applyLessonCountUsage(cls.memberId, cls.id, cls.title, completedAt);
-      toast.success('수업 완료 처리 후 차감 이력을 반영했습니다.');
+      toast.success('수업 완료 처리 후 차감 이력을 반영했어요.');
       setCompletingClassId(null);
       void fetchClasses();
       return;
@@ -322,14 +339,14 @@ export default function TrainerSchedule() {
       .eq('id', cls.id);
 
     if (error) {
-      toast.error('수업 완료 처리에 실패했습니다.');
+      toast.error('수업 완료 처리에 실패했어요.');
       setCompletingClassId(null);
       return;
     }
 
     markReservationCompleted(cls.memberId, cls.id, completedAt);
     await applyLessonCountUsage(cls.memberId, cls.id, cls.title, completedAt);
-    toast.success('수업 완료 처리 후 차감 이력을 반영했습니다.');
+    toast.success('수업 완료 처리 후 차감 이력을 반영했어요.');
     setCompletingClassId(null);
     await fetchClasses();
   };
@@ -406,7 +423,7 @@ export default function TrainerSchedule() {
       .single();
 
     if (error) {
-      toast.error('수업 추가에 실패했습니다.');
+      toast.error('수업 추가에 실패했어요.');
       setSubmitting(false);
       return;
     }
@@ -493,7 +510,7 @@ export default function TrainerSchedule() {
         room: normalizedRoom,
         source: 'trainer_request',
       });
-      toast.success('예약 요청을 승인했습니다. 차감은 수업 완료 시 반영됩니다.');
+      toast.success('예약 요청을 승인했어요. 차감은 수업 완료 시 반영돼요.');
       setProcessingRequestId(null);
       refreshPendingRequests();
       void fetchClasses();
@@ -544,16 +561,24 @@ export default function TrainerSchedule() {
     }
 
     if (approvalError) {
-      toast.error('요청 승인에 실패했습니다.');
+      toast.error('요청 승인에 실패했어요.');
       setProcessingRequestId(null);
       return;
     }
 
-    updateLessonBookingRequestStatus(request.id, 'approved', '트레이너 승인 완료', {
-      classId: approvedClassId,
-      title: finalTitle,
-      room: normalizedRoom,
-    });
+    if (request.id.startsWith('remote-')) {
+      await approveRemoteLessonBooking(request.id, {
+        classId: approvedClassId,
+        title: finalTitle,
+        room: normalizedRoom,
+      });
+    } else {
+      updateLessonBookingRequestStatus(request.id, 'approved', '트레이너 승인 완료', {
+        classId: approvedClassId,
+        title: finalTitle,
+        room: normalizedRoom,
+      });
+    }
     upsertReservation(request.memberId, {
       classId: approvedClassId,
       title: finalTitle,
@@ -565,16 +590,20 @@ export default function TrainerSchedule() {
       room: normalizedRoom,
       source: 'trainer_request',
     });
-    toast.success('예약 요청을 승인했습니다. 차감은 수업 완료 시 반영됩니다.');
+    toast.success('예약 요청을 승인했어요. 차감은 수업 완료 시 반영돼요.');
     setProcessingRequestId(null);
     refreshPendingRequests();
     await fetchClasses();
   };
 
-  const handleRejectRequest = (request: LessonBookingRequestEntry) => {
+  const handleRejectRequest = async (request: LessonBookingRequestEntry) => {
     setProcessingRequestId(request.id);
-    updateLessonBookingRequestStatus(request.id, 'rejected', '트레이너가 요청을 반려함');
-    toast.success('예약 요청을 반려했습니다.');
+    if (request.id.startsWith('remote-')) {
+      await rejectRemoteLessonBooking(request.id, '트레이너가 요청을 반려함');
+    } else {
+      updateLessonBookingRequestStatus(request.id, 'rejected', '트레이너가 요청을 반려함');
+    }
+    toast.success('예약 요청을 반려했어요.');
     setProcessingRequestId(null);
     refreshPendingRequests();
   };

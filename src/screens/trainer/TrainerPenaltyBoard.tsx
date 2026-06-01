@@ -11,7 +11,7 @@ export default function TrainerPenaltyBoard() {
 
   const handleWaive = (penaltyId: number) => {
     waivePenalty(penaltyId);
-    toast.success('페널티를 면제 처리했습니다.');
+    toast.success('페널티를 면제 처리했어요.');
     setVersion((value) => value + 1);
   };
 

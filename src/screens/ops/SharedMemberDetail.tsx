@@ -110,16 +110,16 @@ export default function SharedMemberDetail({ role }: { role: SharedRole }) {
     }
 
     if (!isEditing && notes.length >= MAX_MEMBER_NOTES) {
-      toast.error('메모는 최대 50개까지 등록 가능합니다. 이전 메모를 삭제해주세요.');
+      toast.error('메모는 최대 50개까지 등록 가능해요. 이전 메모를 삭제해주세요.');
       return;
     }
 
     if (editingNoteId) {
       updateMemberNote(editingNoteId, { content: trimmedNote, type: noteType });
-      toast.success('메모를 수정했습니다.');
+      toast.success('메모를 수정했어요.');
     } else {
       addMemberNote(member.id, 'fc', currentFcName, trimmedNote, noteType);
-      toast.success('메모를 저장했습니다.');
+      toast.success('메모를 저장했어요.');
     }
 
     resetNoteForm();
@@ -141,7 +141,7 @@ export default function SharedMemberDetail({ role }: { role: SharedRole }) {
       resetNoteForm();
     }
     setNotes(getMemberNotes(member.id));
-    toast.success('메모를 삭제했습니다.');
+    toast.success('메모를 삭제했어요.');
   };
 
   const tabs: Array<{ key: TabKey; label: string }> = role === 'fc'

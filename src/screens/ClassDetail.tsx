@@ -11,6 +11,12 @@ import {
   type LessonBookingRequestEntry,
 } from '@/lib/lessonPlanning';
 import { supabase } from '@/lib/supabase';
+import {
+  cancelLessonBooking,
+  createLessonBooking,
+  getActiveLessonBooking,
+  type LessonBookingRecord,
+} from '@/lib/remoteReservations';
 import { useAuthStore } from '@/stores/authStore';
 import {
   addWaitlistEntry,
@@ -48,6 +54,7 @@ export default function ClassDetail() {
   const [reserved, setReserved] = useState(false);
   const [waitlistEntry, setWaitlistEntry] = useState<WaitlistEntry | null>(null);
   const [pendingRequest, setPendingRequest] = useState<LessonBookingRequestEntry | null>(null);
+  const [remoteBooking, setRemoteBooking] = useState<LessonBookingRecord | null>(null);
 
   useEffect(() => {
     if (id) fetchClass();
@@ -55,9 +62,60 @@ export default function ClassDetail() {
 
   useEffect(() => {
     if (!member || !classData) return;
-    setReserved(Boolean(getReservation(member.id, classData.id)));
-    setWaitlistEntry(getWaitlistEntry(member.id, classData.id));
-    setPendingRequest(getPendingLessonRequestForClass(member.id, classData.id));
+
+    if (isPreviewMode()) {
+      setReserved(Boolean(getReservation(member.id, classData.id)));
+      setWaitlistEntry(getWaitlistEntry(member.id, classData.id));
+      setPendingRequest(getPendingLessonRequestForClass(member.id, classData.id));
+      return;
+    }
+
+    getActiveLessonBooking(member.id, classData.id)
+      .then((booking) => {
+        setRemoteBooking(booking);
+        setReserved(booking?.status === 'BOOKED');
+        setPendingRequest(booking?.status === 'PENDING'
+          ? {
+              id: `remote-${booking.id}`,
+              classId: classData.id,
+              memberId: member.id,
+              memberName: member.name,
+              trainerId: classData.staffId ?? 0,
+              trainerName: classData.staffName,
+              title: classData.title,
+              type: classData.type,
+              startTime: classData.startTime,
+              endTime: classData.endTime,
+              room: classData.room,
+              status: 'pending',
+              source: 'member_request',
+              requestedAt: booking.createdAt,
+              resolvedAt: null,
+              note: null,
+            }
+          : null);
+        setWaitlistEntry(booking?.status === 'WAITLIST'
+          ? {
+              classId: classData.id,
+              title: classData.title,
+              type: classData.type,
+              staffId: classData.staffId ?? 0,
+              staffName: classData.staffName,
+              room: classData.room,
+              startTime: classData.startTime,
+              endTime: classData.endTime,
+              position: 1,
+              status: 'waiting',
+              autoPromoted: true,
+              createdAt: booking.createdAt,
+            }
+          : null);
+      })
+      .catch(() => {
+        setReserved(Boolean(getReservation(member.id, classData.id)));
+        setWaitlistEntry(getWaitlistEntry(member.id, classData.id));
+        setPendingRequest(getPendingLessonRequestForClass(member.id, classData.id));
+      });
   }, [member, classData]);
 
   const fetchClass = async () => {
@@ -82,17 +140,37 @@ export default function ClassDetail() {
   const handleReserve = async () => {
     if (!member || !classData) return;
     if (reserved) {
-      toast.info('이미 예약된 수업입니다.');
+      toast.info('이미 예약된 수업이에요.');
       return;
     }
     if (pendingRequest) {
-      toast.info('이미 승인 대기 중인 예약 요청입니다.');
+      toast.info('이미 승인 대기 중인 예약 요청이에요.');
       return;
     }
 
     setReserving(true);
 
     if (classData.type === 'PT') {
+      if (!isPreviewMode()) {
+        try {
+          const booking = await createLessonBooking({
+            classId: classData.id,
+            memberId: member.id,
+            memberName: member.name,
+            branchId: member.branchId,
+            status: 'PENDING',
+            classSnapshot: classData,
+            source: 'member_request',
+            note: '회원이 PT 수업 상세에서 예약 요청함',
+          });
+          setRemoteBooking(booking);
+        } catch {
+          toast.error('예약 요청 접수에 실패했어요.');
+          setReserving(false);
+          return;
+        }
+      }
+
       const request = createLessonBookingRequest({
         classId: classData.id,
         memberId: member.id,
@@ -110,7 +188,7 @@ export default function ClassDetail() {
 
       setPendingRequest(request);
       setReserving(false);
-      toast.success('예약 요청이 접수되었습니다. 트레이너 승인 후 확정됩니다.');
+      toast.success('예약 요청이 접수되었어요. 트레이너 승인 후 확정돼요.');
       return;
     }
 
@@ -128,7 +206,7 @@ export default function ClassDetail() {
       setReserved(true);
       setClassData({ ...classData, booked: Math.min(classData.booked + 1, classData.capacity) });
       setReserving(false);
-      toast.success('예약이 완료되었습니다.');
+      toast.success('예약되었어요.');
       return;
     }
 
@@ -140,16 +218,17 @@ export default function ClassDetail() {
         .lt('booked', classData.capacity);
 
       if (error) {
-        toast.error('예약에 실패했습니다. 정원이 찼을 수 있습니다.');
+        toast.error('예약에 실패했어요. 정원이 찼을 수 있어요.');
       } else {
-        await supabase.from('attendance').insert({
+        const booking = await createLessonBooking({
+          classId: classData.id,
           memberId: member.id,
           memberName: member.name,
-          checkInAt: classData.startTime,
-          type: classData.type === 'PT' ? 'PT' : 'GX',
-          checkInMethod: 'APP',
           branchId: member.branchId,
+          status: 'BOOKED',
+          classSnapshot: classData,
         });
+        setRemoteBooking(booking);
 
         upsertReservation(member.id, {
           classId: classData.id,
@@ -164,20 +243,37 @@ export default function ClassDetail() {
 
         setReserved(true);
         setClassData({ ...classData, booked: classData.booked + 1 });
-        toast.success('예약이 완료되었습니다.');
+        toast.success('예약되었어요.');
       }
     } catch {
-      toast.error('예약 중 오류가 발생했습니다.');
+      toast.error('예약 중 오류가 발생했어요.');
     }
 
     setReserving(false);
   };
 
-  const handleWaitlist = () => {
+  const handleWaitlist = async () => {
     if (!member || !classData) return;
     if (waitlistEntry) {
       navigate('/waitlist');
       return;
+    }
+
+    if (!isPreviewMode()) {
+      try {
+        const booking = await createLessonBooking({
+          classId: classData.id,
+          memberId: member.id,
+          memberName: member.name,
+          branchId: member.branchId,
+          status: 'WAITLIST',
+          classSnapshot: classData,
+        });
+        setRemoteBooking(booking);
+      } catch {
+        toast.error('대기 등록에 실패했어요.');
+        return;
+      }
     }
 
     const entry = addWaitlistEntry(member.id, {
@@ -200,9 +296,13 @@ export default function ClassDetail() {
     if (!member || !classData) return;
 
     if (pendingRequest && !reserved) {
+      if (remoteBooking) {
+        await cancelLessonBooking(remoteBooking.id, '회원이 예약 요청을 취소함');
+        setRemoteBooking(null);
+      }
       updateLessonBookingRequestStatus(pendingRequest.id, 'cancelled', '회원이 예약 요청을 취소함');
       setPendingRequest(null);
-      toast.success('예약 요청이 취소되었습니다.');
+      toast.success('예약 요청이 취소되었어요.');
       return;
     }
 
@@ -225,7 +325,7 @@ export default function ClassDetail() {
       setReserved(false);
       setClassData({ ...classData, booked: Math.max(0, classData.booked - 1) });
       setReserving(false);
-      toast.success('예약이 취소되었습니다.');
+      toast.success('예약이 취소되었어요.');
       return;
     }
 
@@ -238,8 +338,12 @@ export default function ClassDetail() {
       .eq('id', classData.id);
 
     if (error) {
-      toast.error('취소에 실패했습니다.');
+      toast.error('취소에 실패했어요.');
     } else {
+      if (remoteBooking) {
+        await cancelLessonBooking(remoteBooking.id, '회원이 확정 예약을 취소함');
+        setRemoteBooking(null);
+      }
       cancelReservation(member.id, classData.id);
       const approvedRequest = getMemberLessonBookingRequests(member.id, ['approved']).find((item) => item.classId === classData.id);
       if (approvedRequest) {
@@ -247,7 +351,7 @@ export default function ClassDetail() {
       }
       setReserved(false);
       setClassData({ ...classData, booked: Math.max(0, classData.booked - 1) });
-      toast.success('예약이 취소되었습니다.');
+      toast.success('예약이 취소되었어요.');
     }
 
     setReserving(false);

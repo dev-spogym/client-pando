@@ -354,14 +354,13 @@ function ProductTab({
 function ClassTab({ navigate }: { navigate: ReturnType<typeof useNavigate> }) {
   return (
     <EmptyState
-      title="수업 찜은 곧 제공됩니다"
-      description="업데이트 후 이용 가능해집니다. 먼저 센터나 강사를 찜해보세요."
+      title="찜한 수업이 없습니다"
+      description="예약 가능한 수업을 둘러보고 관심 수업을 추가해보세요."
       action={
-        <Button variant="secondary" size="md" onClick={() => navigate('/centers')}>
-          센터 둘러보기
+        <Button variant="secondary" size="md" onClick={() => navigate('/classes')}>
+          수업 둘러보기
         </Button>
       }
     />
   );
 }
-

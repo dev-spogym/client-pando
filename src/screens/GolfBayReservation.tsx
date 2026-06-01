@@ -100,7 +100,7 @@ export default function GolfBayReservation() {
   };
 
   const handleWaitlist = () => {
-    toast.info('골프 타석 대기열에 등록되었습니다. 예상 대기 시간: 약 30분');
+    toast.info('골프 타석 대기열에 등록되었어요. 예상 대기 시간: 약 30분');
   };
 
   const statusConfig: Record<string, { label: string; color: string; bgColor: string }> = {

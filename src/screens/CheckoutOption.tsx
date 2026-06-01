@@ -17,9 +17,9 @@ import {
 import {
   MOCK_PRODUCTS,
   MOCK_TRAINERS,
-  type MarketProduct,
   type MarketTrainer,
 } from '@/lib/marketplace';
+import { getShopProduct } from '@/lib/memberExperience';
 import {
   SESSION_PLANS,
   START_DATE_OPTIONS,
@@ -29,11 +29,21 @@ import {
   type StartDateOption,
   type WeekdayCode,
   addToCart,
-  buildCartItemFromProduct,
   buildOptionSummary,
 } from '@/lib/orders';
 import { useAuthStore } from '@/stores/authStore';
 import { cn, formatCurrency } from '@/lib/utils';
+
+/** CheckoutOption이 사용하는 정규화 상품 형태 (마켓/스토어 공통) */
+interface OptionProduct {
+  name: string;
+  centerId: number | null;
+  centerName: string;
+  category: string | null;
+  price: number;
+  originalPrice?: number;
+  thumbnailUrl: string | null;
+}
 
 /** 결제 전 옵션 선택 — 강사/시간/회차/시작일 */
 export default function CheckoutOption() {
@@ -41,15 +51,45 @@ export default function CheckoutOption() {
   const { productId } = useParams<{ productId: string }>();
   const { member } = useAuthStore();
 
-  const product = useMemo<MarketProduct | null>(() => {
+  // 상품 id는 두 체계가 들어온다: 마켓(MOCK_PRODUCTS, 숫자) / 스토어(SHOP_PRODUCTS, 문자열).
+  // 재구매·카탈로그 진입은 문자열 id를 쓰므로 두 경우를 모두 해석한다.
+  const product = useMemo<OptionProduct | null>(() => {
     if (!productId) return null;
+
     const numericId = Number(productId);
-    if (Number.isNaN(numericId)) return null;
-    return MOCK_PRODUCTS.find((p) => p.id === numericId) || null;
+    if (!Number.isNaN(numericId)) {
+      const marketProduct = MOCK_PRODUCTS.find((p) => p.id === numericId);
+      if (marketProduct) {
+        return {
+          name: marketProduct.name,
+          centerId: marketProduct.centerId,
+          centerName: marketProduct.centerName,
+          category: marketProduct.category,
+          price: marketProduct.price,
+          originalPrice: marketProduct.originalPrice,
+          thumbnailUrl: marketProduct.thumbnailUrl,
+        };
+      }
+    }
+
+    const shopProduct = getShopProduct(productId);
+    if (shopProduct) {
+      return {
+        name: shopProduct.name,
+        centerId: null,
+        centerName: shopProduct.subtitle,
+        category: null,
+        price: shopProduct.price,
+        originalPrice: shopProduct.originalPrice,
+        thumbnailUrl: null,
+      };
+    }
+
+    return null;
   }, [productId]);
 
   const trainers = useMemo<MarketTrainer[]>(() => {
-    if (!product) return [];
+    if (!product || product.centerId == null) return [];
     const sameCenterAndCategory = MOCK_TRAINERS.filter(
       (t) => t.centerId === product.centerId && t.category === product.category
     );
@@ -126,13 +166,16 @@ export default function CheckoutOption() {
       return;
     }
     if (!member) {
-      toast.error('로그인이 필요합니다.');
+      toast.error('로그인이 필요해요.');
       return;
     }
 
-    const base = buildCartItemFromProduct(product);
+    // 마켓(숫자 id)·스토어(문자열 id) 상품을 모두 담을 수 있도록 인라인 구성
     addToCart(member.id, {
-      ...base,
+      productId: Number(productId) || 0,
+      centerId: product.centerId ?? 0,
+      centerName: product.centerName,
+      thumbnailUrl: product.thumbnailUrl ?? '',
       productName: `${product.name} (${plan.label})`,
       productSubtitle: optionSummary,
       unitPrice: optionUnitPrice,
@@ -153,8 +196,14 @@ export default function CheckoutOption() {
         <Card variant="soft" padding="md">
           <div className="flex gap-3">
             <div className="w-20 h-20 rounded-card overflow-hidden bg-surface-tertiary shrink-0">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={product.thumbnailUrl} alt={product.name} className="w-full h-full object-cover" />
+              {product.thumbnailUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={product.thumbnailUrl} alt={product.name} className="w-full h-full object-cover" />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center text-content-tertiary">
+                  <ShoppingCart className="w-6 h-6" />
+                </div>
+              )}
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-caption text-primary font-medium">{product.centerName}</p>

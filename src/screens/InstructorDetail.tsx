@@ -197,19 +197,19 @@ export default function InstructorDetail() {
 
   const handleRequest = (slot: AvailableSlot) => {
     if (!member) {
-      toast.error('로그인 후 예약을 요청할 수 있습니다.');
+      toast.error('로그인 후 예약을 요청할 수 있어요.');
       return;
     }
 
     const existing = requestMap.get(slot.id);
     if (existing?.status === 'pending') {
-      toast.info('이미 승인 대기 중인 예약 요청입니다.');
+      toast.info('이미 승인 대기 중인 예약 요청이에요.');
       return;
     }
 
     const occupiedByAnotherRequest = trainerRequestMap.get(`${slot.startTime}-${slot.endTime}`);
     if (occupiedByAnotherRequest && occupiedByAnotherRequest.memberId !== member.id) {
-      toast.info('이미 다른 회원의 승인 대기 요청이 있는 시간대입니다.');
+      toast.info('이미 다른 회원의 승인 대기 요청이 있는 시간대예요.');
       return;
     }
 
@@ -238,9 +238,9 @@ export default function InstructorDetail() {
     setRequestingId(null);
 
     if (created.status === 'pending') {
-      toast.success('예약 요청이 접수되었습니다. 트레이너 승인 후 확정됩니다.');
+      toast.success('예약 요청이 접수되었어요. 트레이너 승인 후 확정돼요.');
     } else {
-      toast.info('이미 처리된 요청입니다.');
+      toast.info('이미 처리된 요청이에요.');
     }
   };
 

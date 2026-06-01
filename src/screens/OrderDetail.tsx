@@ -250,7 +250,11 @@ export default function OrderDetail() {
               fullWidth
               leftIcon={<Receipt className="w-3.5 h-3.5" />}
               onClick={() => {
-                toast.message('영수증 화면을 준비 중입니다.');
+                if (order.paymentId) {
+                  navigate(`/payments/${order.paymentId}`);
+                  return;
+                }
+                navigate('/payments');
               }}
             >
               영수증 보기
@@ -315,7 +319,7 @@ export default function OrderDetail() {
               <Button
                 variant="primary"
                 size="lg"
-                onClick={() => toast.message('후기 작성 화면을 준비 중입니다.')}
+                onClick={() => navigate('/centers')}
                 className="flex-1"
                 leftIcon={<PencilLine className="w-4 h-4" />}
               >

@@ -3,6 +3,7 @@ import { QRCodeSVG } from 'qrcode.react';
 import { ArrowLeft, RefreshCw, Shield } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '@/stores/authStore';
+import { isPreviewMode } from '@/lib/preview';
 import { cn } from '@/lib/utils';
 
 /** QR 체크인 페이지 - 60초 유효 QR 생성 */
@@ -12,25 +13,47 @@ export default function QrCheckin() {
   const [qrValue, setQrValue] = useState('');
   const [remainSeconds, setRemainSeconds] = useState(60);
   const [isExpired, setIsExpired] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
 
-  /** QR 값 생성 (회원ID + 타임스탬프 + 간단한 해시) */
-  const generateQr = useCallback(() => {
+  /** 서버 서명 QR 토큰 발급 */
+  const generateQr = useCallback(async () => {
     if (!member) return;
-    const timestamp = Date.now();
-    // 간단한 HMAC 시뮬레이션 (실제로는 서버사이드 HMAC 사용 권장)
-    const payload = `${member.id}:${timestamp}`;
-    const hash = simpleHash(payload);
-    const qrData = JSON.stringify({
-      memberId: member.id,
-      memberName: member.name,
-      branchId: member.branchId,
-      timestamp,
-      hash,
-      type: 'CHECKIN',
-    });
-    setQrValue(qrData);
-    setRemainSeconds(60);
-    setIsExpired(false);
+    setIsLoading(true);
+    setErrorMessage('');
+
+    // preview 모드: 서버/DB 없이 클라이언트에서 mock 토큰을 생성한다.
+    if (isPreviewMode()) {
+      const mockToken = `preview-qr.${member.id}.${Date.now()}`;
+      setQrValue(mockToken);
+      setRemainSeconds(60);
+      setIsExpired(false);
+      setIsLoading(false);
+      return;
+    }
+
+    try {
+      const response = await fetch('/api/qr-token', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ memberId: member.id }),
+      });
+      const result = await response.json();
+
+      if (!response.ok || !result.token) {
+        throw new Error(result.error ?? 'qr_token_failed');
+      }
+
+      setQrValue(result.token);
+      setRemainSeconds(60);
+      setIsExpired(false);
+    } catch {
+      setQrValue('');
+      setIsExpired(true);
+      setErrorMessage('QR 발급에 실패했습니다. 네트워크 상태를 확인해 주세요.');
+    } finally {
+      setIsLoading(false);
+    }
   }, [member]);
 
   // 초기 QR 생성
@@ -103,10 +126,11 @@ export default function QrCheckin() {
               <div className="absolute inset-0 flex items-center justify-center">
                 <button
                   onClick={generateQr}
+                  disabled={isLoading}
                   className="bg-primary text-white px-4 py-2 rounded-button font-medium flex items-center gap-2 shadow-card-elevated"
                 >
                   <RefreshCw className="w-5 h-5" />
-                  갱신하기
+                  {isLoading ? '발급 중' : '갱신하기'}
                 </button>
               </div>
             )}
@@ -133,7 +157,7 @@ export default function QrCheckin() {
                 'text-body font-medium',
                 remainSeconds > 15 ? 'text-white/70' : 'text-state-error'
               )}>
-                {isExpired ? '만료됨 - 자동 갱신 중...' : `${remainSeconds}초 후 자동 갱신`}
+                {errorMessage || (isExpired ? '만료됨 - 자동 갱신 중...' : `${remainSeconds}초 후 자동 갱신`)}
               </span>
             </div>
           </div>
@@ -146,15 +170,4 @@ export default function QrCheckin() {
       </div>
     </div>
   );
-}
-
-/** 간단한 해시 함수 (실제 환경에서는 crypto-js 등 사용) */
-function simpleHash(input: string): string {
-  let hash = 0;
-  for (let i = 0; i < input.length; i++) {
-    const char = input.charCodeAt(i);
-    hash = ((hash << 5) - hash) + char;
-    hash |= 0;
-  }
-  return Math.abs(hash).toString(36);
 }

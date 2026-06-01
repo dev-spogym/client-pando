@@ -39,7 +39,7 @@ export default function Profile() {
 
   const handleLogout = async () => {
     await logout();
-    toast.success('로그아웃 되었습니다.');
+    toast.success('로그아웃되었어요.');
     navigate('/login', { replace: true });
   };
 

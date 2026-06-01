@@ -93,7 +93,7 @@ export default function HealthDataIntegration() {
   const handleSync = () => {
     const next = syncHealthData(member.id);
     refreshState(next);
-    toast.success('최근 30일 활동 요약을 다시 불러왔습니다.');
+    toast.success('최근 30일 활동 요약을 다시 불러왔어요.');
   };
 
   const handlePermission = (mode: HealthDataState['permissionStatus']) => {
@@ -112,7 +112,7 @@ export default function HealthDataIntegration() {
     const next = disconnectHealthData(member.id);
     refreshState(next);
     setDisconnectOpen(false);
-    toast.success('신규 수집이 중단되었습니다. 기존 요약은 유지됩니다.');
+    toast.success('신규 수집이 중단되었어요. 기존 요약은 유지돼요.');
   };
 
   const connected = state.status === 'connected' || state.status === 'partial' || state.status === 'delayed';

@@ -322,7 +322,7 @@ export default function TrainerDetail() {
           size="lg"
           className="flex-1"
           onClick={() => {
-            toast.info('예약 요청을 보냈습니다. 강사 확인 후 메신저로 회신됩니다.');
+            toast.info('예약 요청을 보냈어요. 강사 확인 후 메신저로 회신돼요.');
             navigate('/messages');
           }}
         >

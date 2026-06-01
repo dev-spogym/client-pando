@@ -193,7 +193,7 @@ export default function LessonSignature() {
     try {
       if (isPreviewMode()) {
         setDone(true);
-        toast.success('서명이 완료되었습니다!');
+        toast.success('서명이 완료되었어요!');
         setTimeout(() => navigate('/lessons', { replace: true }), 2000);
         return;
       }
@@ -243,10 +243,10 @@ export default function LessonSignature() {
         completed_at: signedAt,
       } : prev);
       setDone(true);
-      toast.success('서명이 완료되었습니다!');
+      toast.success('서명이 완료되었어요!');
       setTimeout(() => navigate('/lessons', { replace: true }), 2000);
     } catch {
-      toast.error('서명 저장 중 오류가 발생했습니다.');
+      toast.error('서명 저장 중 오류가 발생했어요.');
     } finally {
       setSaving(false);
     }
@@ -303,7 +303,7 @@ export default function LessonSignature() {
           <div className="w-20 h-20 rounded-full bg-state-success/10 flex items-center justify-center mx-auto mb-4">
             <Check size={40} className="text-state-success" />
           </div>
-          <h2 className="text-[20px] font-bold text-content mb-2">서명이 완료되었습니다!</h2>
+          <h2 className="text-[20px] font-bold text-content mb-2">서명이 완료되었어요!</h2>
           <p className="text-[14px] text-content-secondary">수업 확인이 완료되었습니다.</p>
         </div>
       </div>

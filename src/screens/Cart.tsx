@@ -117,7 +117,7 @@ export default function Cart() {
 
   const handlePay = () => {
     if (!member) {
-      toast.error('로그인이 필요합니다.');
+      toast.error('로그인이 필요해요.');
       return;
     }
     if (selectedItems.length === 0) {

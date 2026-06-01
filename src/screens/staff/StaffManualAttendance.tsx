@@ -23,7 +23,7 @@ export default function StaffManualAttendance() {
       handledBy: '데스크 김유리',
     });
 
-    toast.success('수동 출석을 저장했습니다.');
+    toast.success('출석 처리 완료');
     setReason('');
     setVersion((value) => value + 1);
   };

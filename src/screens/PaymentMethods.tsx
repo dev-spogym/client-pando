@@ -15,6 +15,7 @@ import {
   getPaymentMethods,
   removePaymentMethod,
   setDefaultPaymentMethod,
+  setPaymentMethods,
   updatePaymentMethod,
   type PaymentMethodKind,
   type SavedPaymentMethod,
@@ -40,35 +41,99 @@ export default function PaymentMethods() {
   const { member } = useAuthStore();
   const [methods, setMethods] = useState<SavedPaymentMethod[]>([]);
   const [hydrated, setHydrated] = useState(false);
+  const [showAddCard, setShowAddCard] = useState(false);
+  const [cardCompany, setCardCompany] = useState('');
+  const [cardLast4, setCardLast4] = useState('');
+  const [cardExpiry, setCardExpiry] = useState('');
+  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     if (!member) return;
-    setMethods(getPaymentMethods(member.id));
-    setHydrated(true);
+    fetch(`/api/payment-methods?memberId=${member.id}`)
+      .then(async (response) => {
+        if (!response.ok) throw new Error('payment_methods_fetch_failed');
+        const result = await response.json();
+        setMethods(result.data?.length ? result.data.map(mapRemotePaymentMethod) : getPaymentMethods(member.id));
+      })
+      .catch(() => setMethods(getPaymentMethods(member.id)))
+      .finally(() => setHydrated(true));
   }, [member]);
 
   const cards = useMemo(() => methods.filter((m) => m.kind === 'card'), [methods]);
   const pays = useMemo(() => methods.filter((m) => m.kind !== 'card'), [methods]);
 
-  const handleSetDefault = (id: string) => {
+  const handleSetDefault = async (id: string) => {
     if (!member) return;
     const next = setDefaultPaymentMethod(member.id, id);
     setMethods(next);
+    await patchRemotePaymentMethod(member.id, id, { isDefault: true });
     toast.success('기본 결제 수단으로 설정했어요.');
   };
 
-  const handleRemove = (id: string) => {
+  const handleRemove = async (id: string) => {
     if (!member) return;
     if (!window.confirm('이 결제수단을 삭제할까요?')) return;
     const next = removePaymentMethod(member.id, id);
     setMethods(next);
+    await deleteRemotePaymentMethod(member.id, id);
     toast.success('결제수단을 삭제했어요.');
   };
 
-  const handleToggleEnabled = (id: string, enabled: boolean) => {
+  const handleToggleEnabled = async (id: string, enabled: boolean) => {
     if (!member) return;
     const next = updatePaymentMethod(member.id, id, { enabled });
     setMethods(next);
+    await patchRemotePaymentMethod(member.id, id, { enabled });
+  };
+
+  const handleAddCard = async () => {
+    if (!member) return;
+    const last4 = cardLast4.replace(/\D/g, '').slice(-4);
+    if (!cardCompany.trim() || last4.length !== 4) {
+      toast.error('카드사와 카드 끝 4자리를 입력해 주세요.');
+      return;
+    }
+
+    setSaving(true);
+    try {
+      const response = await fetch('/api/payment-methods', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          memberId: member.id,
+          kind: 'card',
+          company: cardCompany.trim(),
+          last4,
+          expiry: cardExpiry.trim() || null,
+        }),
+      });
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error ?? 'payment_method_add_failed');
+
+      setMethods((items) => [...items, mapRemotePaymentMethod(result.data)]);
+      setCardCompany('');
+      setCardLast4('');
+      setCardExpiry('');
+      setShowAddCard(false);
+      toast.success('결제수단을 등록했어요.');
+    } catch {
+      const next: SavedPaymentMethod = {
+        id: `pm-local-${Date.now()}`,
+        kind: 'card',
+        company: cardCompany.trim(),
+        last4,
+        expiry: cardExpiry.trim() || null,
+        isDefault: methods.length === 0,
+        enabled: true,
+      };
+      const updated = [...methods, next];
+      setPaymentMethods(member.id, updated);
+      setMethods(updated);
+      setShowAddCard(false);
+      toast.success('결제수단을 등록했어요.');
+    } finally {
+      setSaving(false);
+    }
   };
 
   if (!hydrated || !member) {
@@ -157,10 +222,43 @@ export default function PaymentMethods() {
             </div>
           )}
 
-          {/* 카드 추가 placeholder */}
+          {showAddCard && (
+            <Card variant="soft" padding="md" className="mt-3">
+              <div className="space-y-3">
+                <input
+                  value={cardCompany}
+                  onChange={(event) => setCardCompany(event.target.value)}
+                  placeholder="카드사 또는 카드명"
+                  className="w-full rounded-input border border-line-strong bg-surface px-4 h-12 text-body outline-none focus:border-primary"
+                />
+                <input
+                  value={cardLast4}
+                  onChange={(event) => setCardLast4(event.target.value.replace(/\D/g, '').slice(0, 4))}
+                  inputMode="numeric"
+                  placeholder="카드 끝 4자리"
+                  className="w-full rounded-input border border-line-strong bg-surface px-4 h-12 text-body outline-none focus:border-primary"
+                />
+                <input
+                  value={cardExpiry}
+                  onChange={(event) => setCardExpiry(event.target.value.slice(0, 5))}
+                  placeholder="유효기간 MM/YY"
+                  className="w-full rounded-input border border-line-strong bg-surface px-4 h-12 text-body outline-none focus:border-primary"
+                />
+                <div className="flex gap-2">
+                  <Button variant="outline" fullWidth onClick={() => setShowAddCard(false)}>
+                    취소
+                  </Button>
+                  <Button variant="primary" fullWidth loading={saving} onClick={handleAddCard}>
+                    등록
+                  </Button>
+                </div>
+              </div>
+            </Card>
+          )}
+
           <button
             type="button"
-            onClick={() => toast.message('카드 추가 기능을 준비 중이에요.')}
+            onClick={() => setShowAddCard(true)}
             className="mt-3 w-full rounded-card border-2 border-dashed border-line-strong bg-surface px-4 py-5 text-content-secondary inline-flex items-center justify-center gap-2 active:bg-surface-tertiary"
           >
             <Plus className="w-5 h-5" />
@@ -214,6 +312,31 @@ export default function PaymentMethods() {
       </div>
     </div>
   );
+}
+
+function mapRemotePaymentMethod(item: SavedPaymentMethod & { id: number | string }): SavedPaymentMethod {
+  return {
+    ...item,
+    id: String(item.id),
+  };
+}
+
+async function patchRemotePaymentMethod(memberId: number, id: string, patch: Record<string, unknown>) {
+  if (!/^\d+$/.test(id)) return;
+  await fetch('/api/payment-methods', {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ memberId, id: Number(id), ...patch }),
+  }).catch(() => undefined);
+}
+
+async function deleteRemotePaymentMethod(memberId: number, id: string) {
+  if (!/^\d+$/.test(id)) return;
+  await fetch('/api/payment-methods', {
+    method: 'DELETE',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ memberId, id: Number(id) }),
+  }).catch(() => undefined);
 }
 
 function ToggleSwitch({

@@ -51,7 +51,7 @@ export default function ClassFeedback() {
     fetchClass();
   }, [classId]);
 
-  if (!member) return <LoadingSpinner fullScreen text="후기 화면을 준비 중..." />;
+  if (!member) return <LoadingSpinner fullScreen text="로그인 정보를 확인 중..." />;
 
   const existing = getFeedbackByClass(member.id, classId);
 
@@ -76,7 +76,7 @@ export default function ClassFeedback() {
       createdAt: new Date().toISOString(),
     });
 
-    toast.success('후기가 저장되었습니다.');
+    toast.success('후기가 등록되었어요.');
     navigate('/lessons', { replace: true });
   };
 

@@ -4,6 +4,8 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { useAuthStore } from '@/stores/authStore';
 import { cancelWaitlistEntry, getWaitlistEntries, type WaitlistEntry } from '@/lib/memberExperience';
+import { cancelLessonBooking, getActiveLessonBooking, getRemoteWaitlistEntries } from '@/lib/remoteReservations';
+import { isPreviewMode } from '@/lib/preview';
 import { cn, formatDateKo, formatTime } from '@/lib/utils';
 import { PageHeader, EmptyState } from '@/components/ui';
 
@@ -15,15 +17,28 @@ export default function Waitlist() {
 
   useEffect(() => {
     if (!member) return;
-    setEntries(getWaitlistEntries(member.id));
+    if (isPreviewMode()) {
+      setEntries(getWaitlistEntries(member.id));
+      return;
+    }
+
+    getRemoteWaitlistEntries(member.id)
+      .then(setEntries)
+      .catch(() => setEntries(getWaitlistEntries(member.id)));
   }, [member]);
 
   if (!member) return null;
 
-  const handleCancel = (classId: number) => {
-    cancelWaitlistEntry(member.id, classId);
-    setEntries(getWaitlistEntries(member.id));
-    toast.success('대기 예약이 취소되었습니다.');
+  const handleCancel = async (classId: number) => {
+    if (!isPreviewMode()) {
+      const booking = await getActiveLessonBooking(member.id, classId);
+      if (booking) await cancelLessonBooking(booking.id, '회원이 대기 예약을 취소함');
+      setEntries((items) => items.filter((entry) => entry.classId !== classId));
+    } else {
+      cancelWaitlistEntry(member.id, classId);
+      setEntries(getWaitlistEntries(member.id));
+    }
+    toast.success('대기 예약이 취소되었어요.');
   };
 
   return (

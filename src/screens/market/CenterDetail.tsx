@@ -655,9 +655,9 @@ export default function CenterDetail() {
                 if (typeof navigator !== 'undefined' && navigator.share) {
                   navigator.share({ title: center.name, url }).catch(() => undefined);
                 } else if (url && typeof navigator !== 'undefined' && navigator.clipboard) {
-                  navigator.clipboard.writeText(url).then(() => toast.success('링크가 복사되었습니다.'));
+                  navigator.clipboard.writeText(url).then(() => toast.success('링크가 복사되었어요.'));
                 } else {
-                  toast.info('공유 기능을 사용할 수 없는 환경입니다.');
+                  toast.info('공유 기능을 사용할 수 없는 환경이에요.');
                 }
               }}
               className="w-9 h-9 rounded-full bg-black/30 backdrop-blur-sm flex items-center justify-center text-white"

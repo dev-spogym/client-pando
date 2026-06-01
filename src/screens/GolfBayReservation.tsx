@@ -34,6 +34,8 @@ export default function GolfBayReservation() {
   const [selectedSlot, setSelectedSlot] = useState<GolfInstructorSlot | null>(null);
   const [coachBookings, setCoachBookings] = useState<GolfCoachBooking[]>([]);
   const [loading, setLoading] = useState(true);
+  // 대기열에 등록된 슬롯 ID 집합 — 해당 슬롯 버튼을 "대기 중"으로 표시
+  const [waitlistedBayIds, setWaitlistedBayIds] = useState<Set<number>>(new Set());
 
   useEffect(() => {
     fetchBays();
@@ -99,8 +101,15 @@ export default function GolfBayReservation() {
     setSelectedSlot(null);
   };
 
-  const handleWaitlist = () => {
-    toast.info('골프 타석 대기열에 등록되었어요. 예상 대기 시간: 약 30분');
+  const handleWaitlist = (bayId?: number) => {
+    if (bayId !== undefined) {
+      // 개별 타석 대기열 등록 — state에 반영해 버튼 상태를 "대기 중"으로 전환
+      setWaitlistedBayIds((prev) => new Set([...prev, bayId]));
+      toast.info('해당 타석 대기열에 등록되었어요. 이용 가능 시 알림을 드릴게요.');
+    } else {
+      // 타석 전체 만석 시 대기열 등록 (가용 타석이 없는 상황)
+      toast.info('골프 타석 대기열에 등록되었어요. 예상 대기 시간: 약 30분');
+    }
   };
 
   const statusConfig: Record<string, { label: string; color: string; bgColor: string }> = {
@@ -257,18 +266,30 @@ export default function GolfBayReservation() {
               ) : (
                 <div className="grid grid-cols-4 gap-3">
                   {bays.map((bay) => {
-                    const config = statusConfig[bay.status];
+                    const isWaitlisted = waitlistedBayIds.has(bay.id);
+                    // 대기 중인 타석은 별도 스타일로 표시
+                    const config = isWaitlisted
+                      ? { label: '대기 중', color: 'text-state-info', bgColor: 'bg-state-info/10 border-state-info/30' }
+                      : statusConfig[bay.status];
 
                     return (
                       <button
                         key={bay.id}
-                        onClick={() => handleReserveBay(bay)}
-                        disabled={bay.status !== 'available'}
+                        onClick={() => {
+                          if (isWaitlisted) return;
+                          if (bay.status === 'in_use' || bay.status === 'reserved') {
+                            // 이용 중/예약된 타석은 대기열 등록 가능
+                            handleWaitlist(bay.id);
+                          } else {
+                            handleReserveBay(bay);
+                          }
+                        }}
+                        disabled={bay.status === 'maintenance' || isWaitlisted}
                         className={cn(
                           'aspect-square rounded-card border-2 p-2 flex flex-col items-center justify-center transition-all',
                           config.bgColor,
-                          bay.status === 'available' && 'active:scale-95 cursor-pointer',
-                          bay.status !== 'available' && 'cursor-default'
+                          (bay.status === 'available' || bay.status === 'in_use' || bay.status === 'reserved') && !isWaitlisted && 'active:scale-95 cursor-pointer',
+                          (bay.status === 'maintenance' || isWaitlisted) && 'cursor-default'
                         )}
                       >
                         <span className="text-body font-bold">{bay.number}</span>
@@ -287,7 +308,7 @@ export default function GolfBayReservation() {
                 <AlertCircle className="w-8 h-8 text-state-warning mx-auto mb-2" />
                 <p className="text-body font-medium mb-1">현재 이용 가능한 타석이 없습니다</p>
                 <p className="text-caption text-content-secondary mb-3">예상 대기 시간: 약 30분</p>
-                <Button variant="secondary" onClick={handleWaitlist}>
+                <Button variant="secondary" onClick={() => handleWaitlist()}>
                   대기열 등록
                 </Button>
               </div>

@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
 import { ArrowLeft, RefreshCw, Shield, CalendarClock } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
@@ -13,6 +13,10 @@ import { cn } from '@/lib/utils';
  * 화면 밝기 자동 최대화: Web API(Screen Brightness)는 현재 미지원.
  * 실 앱(WebView)에서는 네이티브 브리지로 처리 필요.
  */
+
+/** 자동 재시도 최대 횟수 — 초과 시 수동 갱신으로 전환 */
+const MAX_AUTO_RETRY = 3;
+
 export default function QrCheckin() {
   const navigate = useNavigate();
   const { member } = useAuthStore();
@@ -21,6 +25,8 @@ export default function QrCheckin() {
   const [isExpired, setIsExpired] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  // 연속 실패 횟수 추적 — ref로 관리해 렌더 트리거 없이 판단
+  const autoRetryRef = useRef(0);
 
   // MA-110: 7일 토큰 발급일 — 마운트 시점을 발급일로 사용 (mock)
   const tokenIssuedAt = useMemo(() => new Date(), []);
@@ -47,6 +53,8 @@ export default function QrCheckin() {
       setRemainSeconds(60);
       setIsExpired(false);
       setIsLoading(false);
+      // 성공했으므로 재시도 카운터 초기화
+      autoRetryRef.current = 0;
       return;
     }
 
@@ -63,8 +71,10 @@ export default function QrCheckin() {
       }
 
       setQrValue(result.token);
-      setRemainSeconds(60);
+      setRemainSeconds(60); // 발급 성공 시 60초로 정확히 리셋
       setIsExpired(false);
+      // 성공했으므로 재시도 카운터 초기화
+      autoRetryRef.current = 0;
     } catch {
       setQrValue('');
       setIsExpired(true);
@@ -79,7 +89,7 @@ export default function QrCheckin() {
     generateQr();
   }, [generateQr]);
 
-  // 카운트다운 타이머
+  // 카운트다운 타이머 — isExpired=false 일 때만 동작
   useEffect(() => {
     if (isExpired) return;
     const timer = setInterval(() => {
@@ -94,14 +104,21 @@ export default function QrCheckin() {
     return () => clearInterval(timer);
   }, [isExpired]);
 
-  // 만료 시 자동 갱신
+  // 만료 시 자동 갱신 — 재시도 횟수가 MAX_AUTO_RETRY 이하일 때만 실행
   useEffect(() => {
-    if (isExpired) {
-      const autoRefresh = setTimeout(() => {
-        generateQr();
-      }, 1000);
-      return () => clearTimeout(autoRefresh);
-    }
+    if (!isExpired) return;
+
+    // 최대 재시도 횟수 초과 시 수동 갱신 대기
+    if (autoRetryRef.current >= MAX_AUTO_RETRY) return;
+
+    // 지수 백오프: 1초, 2초, 4초 간격으로 재시도
+    const delay = Math.pow(2, autoRetryRef.current) * 1000;
+    autoRetryRef.current += 1;
+
+    const autoRefresh = setTimeout(() => {
+      generateQr();
+    }, delay);
+    return () => clearTimeout(autoRefresh);
   }, [isExpired, generateQr]);
 
   if (!member) return null;

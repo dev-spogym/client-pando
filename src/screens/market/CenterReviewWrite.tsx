@@ -1,11 +1,11 @@
 'use client';
 
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Star, X } from 'lucide-react';
 import { toast } from 'sonner';
 import { PageHeader, Card, Button, Badge } from '@/components/ui';
-import { getCenterById, img } from '@/lib/marketplace';
+import { getCenterById } from '@/lib/marketplace';
 import { useAuthStore } from '@/stores/authStore';
 import { cn } from '@/lib/utils';
 
@@ -19,8 +19,6 @@ const RATING_LABELS: Record<number, string> = {
   4: '만족',
   5: '매우 만족',
 };
-
-const SAMPLE_PHOTOS = [img('review-sample-1', 400, 400), img('review-sample-2', 400, 400)];
 
 function StarInput({
   value,
@@ -73,8 +71,10 @@ export default function CenterReviewWrite() {
   );
   const [body, setBody] = useState('');
   const [agreed, setAgreed] = useState(false);
-  const [photos, setPhotos] = useState<string[]>(SAMPLE_PHOTOS);
+  // 초기값 빈 배열 — 회원이 직접 선택한 사진만 표시
+  const [photos, setPhotos] = useState<string[]>([]);
   const [submitting, setSubmitting] = useState(false);
+  const photoInputRef = useRef<HTMLInputElement>(null);
 
   const isValid = overallRating > 0 && body.length >= 30 && agreed;
 
@@ -84,13 +84,24 @@ export default function CenterReviewWrite() {
   const removePhoto = (idx: number) =>
     setPhotos((prev) => prev.filter((_, i) => i !== idx));
 
-  const addSamplePhoto = () => {
+  const handleAddPhoto = () => {
     if (photos.length >= 5) {
       toast.info('사진은 최대 5장까지 첨부할 수 있어요.');
       return;
     }
-    const next = img(`review-extra-${Date.now()}`, 400, 400);
-    setPhotos((prev) => [...prev, next]);
+    photoInputRef.current?.click();
+  };
+
+  const handlePhotoChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(event.target.files ?? []);
+    if (files.length === 0) return;
+    // 남은 슬롯만큼만 추가 (최대 5장 제한)
+    const remaining = 5 - photos.length;
+    const selected = files.slice(0, remaining);
+    const urls = selected.map((f) => URL.createObjectURL(f));
+    setPhotos((prev) => [...prev, ...urls]);
+    // 같은 파일 재선택 허용
+    event.target.value = '';
   };
 
   const handleSubmit = () => {
@@ -222,15 +233,26 @@ export default function CenterReviewWrite() {
               </div>
             ))}
             {photos.length < 5 && (
-              <button
-                type="button"
-                aria-label="사진 추가"
-                onClick={addSamplePhoto}
-                className="aspect-square rounded-card border-2 border-dashed border-line-strong flex flex-col items-center justify-center gap-1 text-content-tertiary active:bg-surface-tertiary"
-              >
-                <span className="text-h3 leading-none">+</span>
-                <span className="text-micro">추가</span>
-              </button>
+              <>
+                {/* 숨김 파일 input — 실제 갤러리/카메라 선택창 트리거 */}
+                <input
+                  ref={photoInputRef}
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  className="hidden"
+                  onChange={handlePhotoChange}
+                />
+                <button
+                  type="button"
+                  aria-label="사진 추가"
+                  onClick={handleAddPhoto}
+                  className="aspect-square rounded-card border-2 border-dashed border-line-strong flex flex-col items-center justify-center gap-1 text-content-tertiary active:bg-surface-tertiary"
+                >
+                  <span className="text-h3 leading-none">+</span>
+                  <span className="text-micro">추가</span>
+                </button>
+              </>
             )}
           </div>
         </Card>

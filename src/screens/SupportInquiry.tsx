@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, type FormEvent } from 'react';
+import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { toast } from 'sonner';
 import { CheckCircle2, Clock3, MessageSquareText, Paperclip, Send } from 'lucide-react';
 import { Badge, Button, Card, Input, PageHeader } from '@/components/ui';
@@ -28,6 +28,9 @@ export default function SupportInquiry() {
   const [body, setBody] = useState('');
   const [recentInquiries, setRecentInquiries] = useState<Inquiry[]>(RECENT_INQUIRIES);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  // 첨부 파일 선택 결과 표시용
+  const [attachedFiles, setAttachedFiles] = useState<string[]>([]);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const canSubmit = title.trim().length >= 2 && body.trim().length >= 10;
 
@@ -161,13 +164,30 @@ export default function SupportInquiry() {
             <span className="mt-1.5 block text-caption text-content-tertiary">최소 10자 이상 입력</span>
           </label>
 
+          {/* 실제 파일 선택 input — 숨김 처리 후 버튼 클릭으로 트리거 */}
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            multiple
+            className="hidden"
+            onChange={(event) => {
+              const files = Array.from(event.target.files ?? []);
+              if (files.length === 0) return;
+              setAttachedFiles(files.map((f) => f.name));
+              // 파일 선택 후 input 값 초기화 (같은 파일 재선택 허용)
+              event.target.value = '';
+            }}
+          />
           <button
             type="button"
-            onClick={() => toast.message('첨부 파일 선택창을 열었어요')}
+            onClick={() => fileInputRef.current?.click()}
             className="flex w-full items-center justify-center gap-2 rounded-card border-2 border-dashed border-line-strong bg-surface px-4 py-4 text-body-sm font-semibold text-content-secondary"
           >
             <Paperclip className="h-4 w-4" />
-            스크린샷 첨부
+            {attachedFiles.length > 0
+              ? `${attachedFiles.length}개 파일 선택됨 · ${attachedFiles[0]}${attachedFiles.length > 1 ? ` 외 ${attachedFiles.length - 1}개` : ''}`
+              : '스크린샷 첨부'}
           </button>
 
           <Button type="submit" variant="primary" size="lg" fullWidth disabled={!canSubmit || isSubmitting}>

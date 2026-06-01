@@ -84,16 +84,54 @@ export default function Referral() {
     }
   };
 
-  const handleShareKakao = () => {
-    toast('카카오톡 공유 시트를 열었어요', {
-      description: '친구를 선택해 초대해 보세요',
-    });
+  const handleShareKakao = async () => {
+    // Web Share API가 있으면 실제 공유 시트를 연다. 없으면 클립보드 복사로 대체.
+    if (typeof navigator !== 'undefined' && navigator.share) {
+      try {
+        await navigator.share({
+          title: 'FitGenie 친구 초대',
+          text: `나의 추천 코드 ${referralCode}로 FitGenie에 가입하면 둘 다 1만원 적립!`,
+          url: referralLink,
+        });
+      } catch {
+        // 사용자가 공유 취소한 경우 — 별도 피드백 없음
+      }
+    } else {
+      // 카카오 SDK 미설치 환경 — 링크 복사로 안내
+      try {
+        await navigator.clipboard.writeText(referralLink);
+        toast.success('초대 링크를 복사했어요', {
+          description: '카카오톡에 직접 붙여넣어 공유해 보세요.',
+        });
+      } catch {
+        toast.error('복사에 실패했어요. 직접 링크를 복사해 주세요.');
+      }
+    }
   };
 
-  const handleShareInstagram = () => {
-    toast('인스타그램 스토리로 공유했어요', {
-      description: '추천 코드와 함께 자동 카드가 들어갔어요',
-    });
+  const handleShareInstagram = async () => {
+    // Web Share API가 있으면 실제 공유 시트를 연다. 없으면 클립보드 복사로 대체.
+    if (typeof navigator !== 'undefined' && navigator.share) {
+      try {
+        await navigator.share({
+          title: 'FitGenie 친구 초대',
+          text: `나의 추천 코드 ${referralCode}로 FitGenie에 가입하면 둘 다 1만원 적립!`,
+          url: referralLink,
+        });
+      } catch {
+        // 사용자가 공유 취소한 경우 — 별도 피드백 없음
+      }
+    } else {
+      // 인스타 SDK 미설치 환경 — 링크 복사로 안내
+      try {
+        await navigator.clipboard.writeText(referralLink);
+        toast.success('초대 링크를 복사했어요', {
+          description: '인스타그램에 직접 붙여넣어 공유해 보세요.',
+        });
+      } catch {
+        toast.error('복사에 실패했어요. 직접 링크를 복사해 주세요.');
+      }
+    }
   };
 
   const handleApplyReferrer = (e: FormEvent<HTMLFormElement>) => {

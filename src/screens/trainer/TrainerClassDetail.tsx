@@ -51,6 +51,13 @@ export default function TrainerClassDetail() {
   };
 
   const handleComplete = () => {
+    // 기획(MA-212): 출석 체크 후에만 수업 완료가 가능하다.
+    const hasUnchecked = trainerClass.participants.some((p) => p.attendanceStatus === 'pending');
+    if (hasUnchecked) {
+      toast.error('출석 체크 후 완료할 수 있어요.');
+      return;
+    }
+
     if (trainerClass.type === 'GOLF') {
       navigate(`/trainer/classes/${trainerClass.id}/signature`);
       return;

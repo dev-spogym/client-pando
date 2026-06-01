@@ -82,16 +82,22 @@ test('J6 환불 요청 — 카드 결제건 환불 접수 (MA-830)', async ({ pa
 
 // ───────────────────────── 트레이너(trainer) ─────────────────────────
 
-test('J7 수업 시작/완료 — PT 수업 진행 (MA-212)', async ({ page }) => {
+test('J7 수업 시작/출석/완료 — PT 수업 진행 (MA-212)', async ({ page }) => {
   await page.goto(`/trainer/classes/8101${T}`, { waitUntil: 'domcontentloaded' });
   await settle(page);
   const startBtn = page.getByRole('button', { name: '수업 시작' });
   await expect(startBtn).toBeEnabled();
   await startBtn.click();
-  await expectToast(page, /수업.*시작/);
+  await expectToast(page, /수업 시작/);
+  await settle(page);
+  // 출석 체크 없이 완료 시도 → 차단 (기획: 출석 후 완료)
+  await page.getByRole('button', { name: '수업 완료' }).click();
+  await expectToast(page, /출석 체크 후 완료/);
+  // 출석(참석) 체크 후 완료 → 상태 completed
+  await page.getByRole('button', { name: '참석' }).click();
   await settle(page);
   await page.getByRole('button', { name: '수업 완료' }).click();
-  await expectToast(page, /수업.*완료/);
+  await expect(page.getByText('completed').first()).toBeVisible({ timeout: 8000 });
 });
 
 test('J8 골프 쌍방서명 진입 — GOLF 수업에서 서명 분기 (MA-312)', async ({ page }) => {

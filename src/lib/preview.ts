@@ -276,7 +276,16 @@ export function getPreviewClassesForDate(date: string, filter: 'ALL' | 'PT' | 'G
     })),
   ];
 
-  return mergedClasses.filter((item) => {
+  // 회원 클래스와 트레이너 오픈 슬롯이 동일 수업(같은 제목·시간·강사)을 중복 노출하지 않도록 정리한다.
+  const seen = new Set<string>();
+  const dedupedClasses = mergedClasses.filter((item) => {
+    const key = `${item.title}|${item.startTime}|${item.staffName}`;
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+
+  return dedupedClasses.filter((item) => {
     const sameDate = item.startTime.startsWith(date);
     const sameFilter = filter === 'ALL' || item.type === filter;
     return sameDate && sameFilter;

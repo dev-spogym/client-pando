@@ -232,6 +232,7 @@ export default function ClassList() {
             {classes.map((cls) => {
               const isFull = cls.booked >= cls.capacity;
               const remaining = cls.capacity - cls.booked;
+              const isPast = new Date(cls.startTime).getTime() < Date.now();
 
               return (
                 <Card key={cls.id} interactive onClick={() => navigate(`/classes/${cls.id}`)}>
@@ -279,28 +280,34 @@ export default function ClassList() {
 
                   <div className="mt-3 flex items-center justify-between">
                     <div className="flex items-center gap-1">
-                      {!isFull && (
+                      {isPast ? (
+                        <span className="text-caption text-content-tertiary font-medium">종료된 수업</span>
+                      ) : isFull ? (
+                        <span className="text-caption text-state-error font-medium">마감</span>
+                      ) : (
                         <span className="text-caption text-state-success font-medium">
                           {cls.type === 'PT' ? '승인형 예약 가능' : `잔여 ${remaining}석`}
                         </span>
                       )}
-                      {isFull && <span className="text-caption text-state-error font-medium">마감</span>}
                     </div>
                     <Button
-                      variant={isFull ? 'tertiary' : 'primary'}
+                      variant={isPast || isFull ? 'tertiary' : 'primary'}
                       size="sm"
+                      disabled={isPast}
                       onClick={(e) => {
                         e.stopPropagation();
                         navigate(`/classes/${cls.id}`);
                       }}
                     >
-                      {isFull
-                        ? cls.type === 'PT'
-                          ? '마감'
-                          : '대기 등록'
-                        : cls.type === 'PT'
-                          ? '요청하기'
-                          : '예약하기'}
+                      {isPast
+                        ? '지난 수업'
+                        : isFull
+                          ? cls.type === 'PT'
+                            ? '마감'
+                            : '대기 등록'
+                          : cls.type === 'PT'
+                            ? '요청하기'
+                            : '예약하기'}
                     </Button>
                   </div>
                 </Card>
